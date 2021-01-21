@@ -328,7 +328,7 @@ func getTomlConfig(spec wso2v1beta1.Wso2IsSpec, logger logr.Logger) string {
 	if len(spec.TomlConfig) == 0 {
 		buf := new(bytes.Buffer)
 		if err := toml.NewEncoder(buf).Encode(spec.Configurations); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		logger.Info(buf.String())
 		return buf.String()
