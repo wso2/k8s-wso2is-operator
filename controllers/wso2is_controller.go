@@ -49,10 +49,13 @@ type Wso2IsReconciler struct {
 // +kubebuilder:rbac:groups=wso2.wso2.com,resources=wso2is/status,verbs=get;update;patch
 
 func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+
+	// Get context
 	ctx := context.Background()
+
+	// Get logger
 	log := r.Log.WithValues("wso2is", req.NamespacedName)
 
-	// your logic here
 	// Fetch the WSO2IS instance
 	instance := wso2v1beta1.Wso2Is{}
 
@@ -154,7 +157,8 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		log.Error(err, "Failed to get Service")
 		return ctrl.Result{}, err
 	}
-	// Update status
+
+	// Update service name in status
 	instance.Status.ServiceName = serviceFound.Name
 
 	// Add Ingress if not present
@@ -177,7 +181,8 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		log.Error(err, "Failed to get Ingress")
 		return ctrl.Result{}, err
 	}
-	// Update status
+
+	// Update ingress details in status
 	instance.Status.IngressName = ingressFound.Name
 	if len(ingressFound.Status.LoadBalancer.Ingress) > 0 {
 		instance.Status.IngressHostname = ingressFound.Status.LoadBalancer.Ingress[0].Hostname
@@ -209,6 +214,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	size := instance.Spec.Size
 	foundReplicas := found.Spec.Replicas
 
+	// Update replica status
 	instance.Status.Replicas = fmt.Sprint(*foundReplicas)
 
 	if *found.Spec.Replicas != size {
