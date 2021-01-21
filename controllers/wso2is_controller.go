@@ -118,7 +118,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 
 	// Add new config map if not present
 	confMap := &corev1.ConfigMap{}
-	err = r.Get(ctx, types.NamespacedName{Name: ing_name, Namespace: instance.Namespace}, confMap)
+	err = r.Get(ctx, types.NamespacedName{Name: config_map_name, Namespace: instance.Namespace}, confMap)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
 		cfgMap := r.addConfigMap(instance, log)

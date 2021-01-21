@@ -251,6 +251,9 @@ spec:
                   type: integer
                 tomlConfig:
                   type: string
+                version:
+                  default: 5.11.0
+                  type: string
               required:
                 - replicas
               type: object
