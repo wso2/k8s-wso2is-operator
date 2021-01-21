@@ -367,7 +367,7 @@ func (r *Wso2IsReconciler) addNewIngress(m wso2v1beta1.Wso2Is) *v1beta1.Ingress 
 								Backend: v1beta1.IngressBackend{
 									ServiceName: "wso2is-service",
 									ServicePort: intstr.IntOrString{
-										IntVal: 9443,
+										IntVal: servicePort,
 									},
 								},
 							}},
@@ -392,16 +392,16 @@ func (r *Wso2IsReconciler) addNewService(m wso2v1beta1.Wso2Is) *corev1.Service {
 			Ports: []corev1.ServicePort{{
 				Name:     "servlet-http",
 				Protocol: "TCP",
-				Port:     9763,
+				Port:     servicePortHttp,
 				TargetPort: intstr.IntOrString{
-					IntVal: 9763,
+					IntVal: servicePortHttp,
 				},
 			}, {
 				Name:     "servlet-https",
 				Protocol: "TCP",
-				Port:     9443,
+				Port:     servicePortHttps,
 				TargetPort: intstr.IntOrString{
-					IntVal: 9443,
+					IntVal: servicePortHttps,
 				},
 			}},
 			Selector: labelsForWso2IS(m.Name, m.Spec.Version),
@@ -457,10 +457,10 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 						Name:  "wso2is",
 						Image: "sureshmichael/wso2-is-5.11.0:rc1",
 						Ports: []corev1.ContainerPort{{
-							ContainerPort: 9443,
+							ContainerPort: containerPortHttps,
 							Protocol:      "TCP",
 						}, {
-							ContainerPort: 9763,
+							ContainerPort: containerPortHttp,
 							Protocol:      "TCP",
 						}},
 						Env: []corev1.EnvVar{{
@@ -500,7 +500,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 						LivenessProbe: &corev1.Probe{
 							Handler: corev1.Handler{
 								Exec: &corev1.ExecAction{
-									Command: []string{"/bin/sh", "-c", "nc -z localhost 9443"},
+									Command: []string{"/bin/sh", "-c", "nc -z localhost " + string(containerPortHttps)},
 								},
 							},
 							InitialDelaySeconds: 250,
@@ -509,7 +509,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 						ReadinessProbe: &corev1.Probe{
 							Handler: corev1.Handler{
 								Exec: &corev1.ExecAction{
-									Command: []string{"/bin/sh", "-c", "nc -z localhost 9443"},
+									Command: []string{"/bin/sh", "-c", "nc -z localhost " + string(containerPortHttps)},
 								},
 							},
 							InitialDelaySeconds: 250,
