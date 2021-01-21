@@ -20,12 +20,12 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/go-logr/logr"
-	"io/ioutil"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net/http"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strconv"
 	"strings"
 
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
@@ -88,7 +88,7 @@ func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
 	payload := strings.NewReader(SpecToJson(instance.Spec, log))
 
 	client := &http.Client{}
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: instance.Spec.InsecureSkipVerify}
 	req, err := http.NewRequest(method, url, payload)
 
 	if err != nil {
@@ -99,18 +99,18 @@ func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
 	req.Header.Add("Authorization", "Basic "+encodedToken)
 	req.Header.Add("Content-Type", "application/json")
 	res, err := client.Do(req)
+
 	if err != nil {
 		log.Error(err, "Unable to send request")
 		return
 	}
 	defer res.Body.Close()
 
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Error(err, "Unable to parse json input")
-		return
+	if res.StatusCode == 201 {
+		log.Info("UserStore has been successfully created")
+	} else {
+		log.Error(err, "Error "+strconv.Itoa(res.StatusCode)+" has occurred during UserStore creation")
 	}
-	log.Info(string(body))
 }
 
 func (r *UserstoreReconciler) SetupWithManager(mgr ctrl.Manager) error {
