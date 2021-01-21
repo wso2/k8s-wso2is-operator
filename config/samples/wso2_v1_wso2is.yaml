@@ -6,9 +6,6 @@ spec:
   replicas: 3
   configurations:
     host: identityserver
-    server:
-      hostname: $env{HOST_NAME}
-      nodeIp: $env{NODE_IP}
     superAdmin:
       username: admin
       password: admin
@@ -21,15 +18,11 @@ spec:
         url: jdbc:mysql://192.168.99.1:3306/IS_IDENTITY_DB?autoReconnect=true&amp;useSSL=false
         username: root
         password: '1234'
-        pool_options:
-          validationQuery: SELECT 1
       sharedDb:
         driver: com.mysql.jdbc.Driver
         url: jdbc:mysql://192.168.99.1:3306/IS_SHARED_DB?autoReconnect=true&amp;useSSL=false
         username: root
         password: '1234'
-        pool_options:
-          validationQuery: SELECT 1
     transport:
       https:
         properties:
@@ -38,19 +31,6 @@ spec:
       primary:
         name: wso2carbon.jks
         password: wso2carbon
-    monitoring:
-      jmx:
-        rmi_server_start: true
     clustering:
-      membership_scheme: kubernetes
-      domain: wso2.is.domain
       properties:
-        membershipSchemeClassName: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
-        KUBERNETES_NAMESPACE: default
-        KUBERNETES_SERVICES: wso2is-service
-        KUBERNETES_MASTER_SKIP_SSL_VERIFICATION: true
-        USE_DNS: false
         KUBERNETES_API_SERVER: http://192.168.99.1:8001
-    hazelcast:
-      hazelcastShutdownhookEnabled: false
-      hazelcastLoggingType: log4j
