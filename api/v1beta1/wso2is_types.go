@@ -25,7 +25,9 @@ import (
 
 // Wso2IsSpec defines the desired state of Wso2Is
 type Wso2IsSpec struct {
-	Size           int32          `json:"replicas"`
+	Size int32 `json:"replicas"`
+	// +kubebuilder:default:="5.11.0"
+	Version        string         `json:"version,omitempty"`
 	Configurations Configurations `json:"configurations,omitempty"`
 	TomlConfig     string         `json:"tomlConfig,omitempty"`
 }

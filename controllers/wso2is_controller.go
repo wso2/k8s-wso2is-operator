@@ -233,7 +233,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	podList := &corev1.PodList{}
 	listOpts := []client.ListOption{
 		client.InNamespace(instance.Namespace),
-		client.MatchingLabels(labelsForWso2IS(instance.Name)),
+		client.MatchingLabels(labelsForWso2IS(instance.Name, instance.Spec.Version)),
 	}
 	if err = r.List(ctx, podList, listOpts...); err != nil {
 		log.Error(err, "Failed to list pods", "WSO2IS.Namespace", instance.Namespace, "WSO2IS.Name", instance.Name)
@@ -256,12 +256,13 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 
 // labelsForWso2IS returns the labels for selecting the resources
 // belonging to the given WSO2IS CR name.
-func labelsForWso2IS(depname string) map[string]string {
+func labelsForWso2IS(depname string, version string) map[string]string {
 	return map[string]string{
 		"deployment": depname,
 		"app":        depname,
 		"monitoring": "jmx",
 		"pod":        depname,
+		"version":    version,
 	}
 }
 
@@ -403,7 +404,7 @@ func (r *Wso2IsReconciler) addNewService(m wso2v1beta1.Wso2Is) *corev1.Service {
 					IntVal: 9443,
 				},
 			}},
-			Selector: labelsForWso2IS(m.Name),
+			Selector: labelsForWso2IS(m.Name, m.Spec.Version),
 			Type:     corev1.ServiceTypeLoadBalancer,
 		},
 	}
@@ -413,7 +414,7 @@ func (r *Wso2IsReconciler) addNewService(m wso2v1beta1.Wso2Is) *corev1.Service {
 
 // New deployment for WSO2IS
 func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Deployment {
-	ls := labelsForWso2IS(m.Name)
+	ls := labelsForWso2IS(m.Name, m.Spec.Version)
 	replicas := m.Spec.Size
 	runasuser := int64(802)
 
