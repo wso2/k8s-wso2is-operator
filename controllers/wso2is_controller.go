@@ -72,8 +72,8 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	// Add new service account if not present
-	svcFound := &corev1.ServiceAccount{}
-	err = r.Get(ctx, types.NamespacedName{Name: "wso2svc-account", Namespace: instance.Namespace}, svcFound)
+	saFound := &corev1.ServiceAccount{}
+	err = r.Get(ctx, types.NamespacedName{Name: "wso2svc-account", Namespace: instance.Namespace}, saFound)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
 		svc := r.addServiceAccount(instance)
