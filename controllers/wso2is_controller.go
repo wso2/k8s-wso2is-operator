@@ -71,27 +71,6 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
-	// Add new namespace if not present
-	namespaceFound := &corev1.Namespace{}
-	err = r.Get(ctx, types.NamespacedName{Name: instance.Namespace}, namespaceFound)
-	if err != nil && errors.IsNotFound(err) {
-		// Define a new deployment
-		svc := r.addNamespace(instance)
-		log.Info("Creating a new NameSpace", "NameSpace.Namespace", svc.Namespace, "NameSpace.Name", svc.Name)
-		err = r.Create(ctx, &svc)
-		if err != nil {
-			log.Error(err, "Failed to create new NameSpace", "NameSpace.Namespace", svc.Namespace, "NameSpace.Name", svc.Name)
-			return ctrl.Result{}, err
-		} else {
-			log.Info("Successfully created new NameSpace", "NameSpace.Namespace", svc.Namespace, "NameSpace.Name", svc.Name)
-		}
-		// NameSpace created successfully - return and requeue
-		return ctrl.Result{Requeue: true}, nil
-	} else if err != nil {
-		log.Error(err, "Failed to get NameSpace")
-		return ctrl.Result{}, err
-	}
-
 	// Add new service account if not present
 	svcFound := &corev1.ServiceAccount{}
 	err = r.Get(ctx, types.NamespacedName{Name: "wso2svc-account", Namespace: instance.Namespace}, svcFound)
@@ -287,18 +266,6 @@ func getPodNames(pods []corev1.Pod) []string {
 		podNames = append(podNames, pod.Name)
 	}
 	return podNames
-}
-
-// addNamespace adds a new NameSpace
-func (r *Wso2IsReconciler) addNamespace(m wso2v1beta1.Wso2Is) corev1.Namespace {
-	namespace := corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   m.Namespace,
-			Labels: labelsForWso2IS(m.Name),
-		},
-	}
-	ctrl.SetControllerReference(&m, &namespace, r.Scheme)
-	return namespace
 }
 
 // addServiceAccount adds a new ServiceAccount

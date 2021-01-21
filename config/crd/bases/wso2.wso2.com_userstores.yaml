@@ -54,6 +54,9 @@ spec:
               properties:
                 description:
                   type: string
+                insecureSkipVerify:
+                  default: false
+                  type: boolean
                 name:
                   type: string
                 properties:

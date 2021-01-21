@@ -26,11 +26,12 @@ import (
 type UserstoreSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	TypeId             string                `json:"typeId"`
-	Description        string                `json:"description"`
-	Name               string                `json:"name"`
-	Properties         []UserstoreProperties `json:"properties"`
-	InsecureSkipVerify bool                  `json:"insecureSkipVerify"`
+	TypeId      string                `json:"typeId"`
+	Description string                `json:"description"`
+	Name        string                `json:"name"`
+	Properties  []UserstoreProperties `json:"properties"`
+	// +kubebuilder:default:=false
+	InsecureSkipVerify bool `json:"insecureSkipVerify,omitempty"`
 }
 
 type Auth struct {
