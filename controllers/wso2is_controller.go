@@ -118,14 +118,14 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	err = r.Get(ctx, types.NamespacedName{Name: "identity-server-conf", Namespace: instance.Namespace}, confMap)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
-		svc := r.addConfigMap(instance, log)
-		log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", svc.Namespace, "ConfigMap.Name", svc.Name)
-		err = r.Create(ctx, svc)
+		cfgMap := r.addConfigMap(instance, log)
+		log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
+		err = r.Create(ctx, cfgMap)
 		if err != nil {
-			log.Error(err, "Failed to create new ConfigMap", "ConfigMap.Namespace", svc.Namespace, "ConfigMap.Name", svc.Name)
+			log.Error(err, "Failed to create new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
 			return ctrl.Result{}, err
 		} else {
-			log.Info("Successfully created new ConfigMap", "ConfigMap.Namespace", svc.Namespace, "ConfigMap.Name", svc.Name)
+			log.Info("Successfully created new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
 		}
 		// ServiceAccount created successfully - return and requeue
 		return ctrl.Result{Requeue: true}, nil
