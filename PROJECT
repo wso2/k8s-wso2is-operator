@@ -1,0 +1,14 @@
+domain: wso2.com
+layout: go.kubebuilder.io/v2
+projectName: wso2-is-operator
+repo: github.com/wso2/k8s-wso2is-operator
+resources:
+- group: wso2
+  kind: Wso2Is
+  version: v1
+- group: wso2
+  kind: Userstore
+  version: v1beta1
+version: 3-alpha
+plugins:
+  go.sdk.operatorframework.io/v2-alpha: {}

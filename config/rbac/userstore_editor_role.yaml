@@ -1,0 +1,24 @@
+# permissions for end users to edit userstores.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: userstore-editor-role
+rules:
+  - apiGroups:
+      - wso2.wso2.com
+    resources:
+      - userstores
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - wso2.wso2.com
+    resources:
+      - userstores/status
+    verbs:
+      - get

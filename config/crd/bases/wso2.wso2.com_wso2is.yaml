@@ -1,0 +1,297 @@
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.3.0
+  creationTimestamp: null
+  name: wso2is.wso2.wso2.com
+spec:
+  additionalPrinterColumns:
+    - JSONPath: .status.serviceName
+      name: Service Name
+      type: string
+    - JSONPath: .status.ingressName
+      name: Ingress Name
+      type: string
+    - JSONPath: .status.ingressHostname
+      name: Ingress Hostname
+      type: string
+    - JSONPath: .status.ingressIP
+      name: Ingress IP
+      type: string
+    - JSONPath: .spec.replicas
+      name: Desired Replicas
+      type: string
+    - JSONPath: .status.replicas
+      name: Current Replicas
+      type: string
+    - JSONPath: .spec.configurations.host
+      name: Host Name
+      type: string
+  group: wso2.wso2.com
+  names:
+    kind: Wso2Is
+    listKind: Wso2IsList
+    plural: wso2is
+    singular: wso2is
+  scope: Namespaced
+  subresources:
+    status: { }
+  validation:
+    openAPIV3Schema:
+      description: Wso2Is is the Schema for the wso2is API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: Wso2IsSpec defines the desired state of Wso2Is
+          properties:
+            configurations:
+              properties:
+                clustering:
+                  properties:
+                    domain:
+                      type: string
+                    membership_scheme:
+                      type: string
+                    properties:
+                      properties:
+                        KUBERNETES_API_SERVER:
+                          type: string
+                        KUBERNETES_MASTER_SKIP_SSL_VERIFICATION:
+                          type: boolean
+                        KUBERNETES_NAMESPACE:
+                          type: string
+                        KUBERNETES_SERVICES:
+                          type: string
+                        USE_DNS:
+                          type: boolean
+                        membershipSchemeClassName:
+                          type: string
+                      required:
+                        - KUBERNETES_API_SERVER
+                        - KUBERNETES_MASTER_SKIP_SSL_VERIFICATION
+                        - KUBERNETES_NAMESPACE
+                        - KUBERNETES_SERVICES
+                        - USE_DNS
+                        - membershipSchemeClassName
+                      type: object
+                  required:
+                    - domain
+                    - membership_scheme
+                    - properties
+                  type: object
+                database:
+                  properties:
+                    identityDb:
+                      description: User        User        `json:"user" toml:"user"`
+                      properties:
+                        driver:
+                          type: string
+                        password:
+                          type: string
+                        pool_options:
+                          properties:
+                            validationQuery:
+                              type: string
+                          required:
+                            - validationQuery
+                          type: object
+                        url:
+                          type: string
+                        username:
+                          type: string
+                      required:
+                        - driver
+                        - password
+                        - pool_options
+                        - url
+                        - username
+                      type: object
+                    sharedDb:
+                      properties:
+                        driver:
+                          type: string
+                        password:
+                          type: string
+                        pool_options:
+                          properties:
+                            validationQuery:
+                              type: string
+                          required:
+                            - validationQuery
+                          type: object
+                        url:
+                          type: string
+                        username:
+                          type: string
+                      required:
+                        - driver
+                        - password
+                        - pool_options
+                        - url
+                        - username
+                      type: object
+                  required:
+                    - identityDb
+                    - sharedDb
+                  type: object
+                hazelcast:
+                  properties:
+                    hazelcastLoggingType:
+                      type: string
+                    hazelcastShutdownhookEnabled:
+                      type: boolean
+                  required:
+                    - hazelcastLoggingType
+                    - hazelcastShutdownhookEnabled
+                  type: object
+                host:
+                  type: string
+                keystore:
+                  description: Datasource     []Datasource   `json:"datasource" toml:"datasource"`
+                    Authentication Authentication `json:"authentication" toml:"authentication"`
+                  properties:
+                    primary:
+                      properties:
+                        name:
+                          type: string
+                        password:
+                          type: string
+                      required:
+                        - name
+                        - password
+                      type: object
+                  required:
+                    - primary
+                  type: object
+                monitoring:
+                  properties:
+                    jmx:
+                      properties:
+                        rmi_server_start:
+                          type: boolean
+                      required:
+                        - rmi_server_start
+                      type: object
+                  required:
+                    - jmx
+                  type: object
+                server:
+                  properties:
+                    hostname:
+                      type: string
+                    nodeIp:
+                      type: string
+                  required:
+                    - hostname
+                    - nodeIp
+                  type: object
+                superAdmin:
+                  properties:
+                    createAdminAccount:
+                      type: boolean
+                    password:
+                      type: string
+                    username:
+                      type: string
+                  required:
+                    - createAdminAccount
+                    - password
+                    - username
+                  type: object
+                transport:
+                  properties:
+                    https:
+                      properties:
+                        properties:
+                          properties:
+                            proxyPort:
+                              type: integer
+                          required:
+                            - proxyPort
+                          type: object
+                      required:
+                        - properties
+                      type: object
+                  required:
+                    - https
+                  type: object
+                userStore:
+                  properties:
+                    type:
+                      type: string
+                  required:
+                    - type
+                  type: object
+              required:
+                - clustering
+                - database
+                - hazelcast
+                - host
+                - keystore
+                - monitoring
+                - server
+                - superAdmin
+                - transport
+                - userStore
+              type: object
+            replicas:
+              format: int32
+              type: integer
+            tomlConfig:
+              type: string
+          required:
+            - replicas
+          type: object
+        status:
+          description: Wso2IsStatus defines the observed state of Wso2Is
+          properties:
+            ingressHostname:
+              type: string
+            ingressIP:
+              type: string
+            ingressName:
+              type: string
+            nodes:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              items:
+                type: string
+              type: array
+            replicas:
+              type: string
+            serviceName:
+              type: string
+          required:
+            - ingressHostname
+            - ingressIP
+            - ingressName
+            - nodes
+            - replicas
+            - serviceName
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+    - name: v1beta1
+      served: true
+      storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: [ ]
+  storedVersions: [ ]
