@@ -20,14 +20,8 @@ spec:
         - jsonPath: .status.serviceName
           name: Service Name
           type: string
-        - jsonPath: .status.ingressName
-          name: Ingress Name
-          type: string
         - jsonPath: .status.ingressHostname
           name: Ingress Hostname
-          type: string
-        - jsonPath: .status.ingressIP
-          name: Ingress IP
           type: string
         - jsonPath: .spec.replicas
           name: Desired Replicas
@@ -262,10 +256,6 @@ spec:
               properties:
                 ingressHostname:
                   type: string
-                ingressIP:
-                  type: string
-                ingressName:
-                  type: string
                 nodes:
                   description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
                   of cluster Important: Run "make" to regenerate code after modifying
@@ -279,8 +269,6 @@ spec:
                   type: string
               required:
                 - ingressHostname
-                - ingressIP
-                - ingressName
                 - nodes
                 - replicas
                 - serviceName

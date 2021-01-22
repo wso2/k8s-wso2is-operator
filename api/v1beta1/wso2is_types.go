@@ -176,9 +176,7 @@ type Wso2IsStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
 	Nodes           []string `json:"nodes" toml:"nodes"`
 	ServiceName     string   `json:"serviceName"`
-	IngressName     string   `json:"ingressName"`
 	IngressHostname string   `json:"ingressHostname"`
-	IngressIP       string   `json:"ingressIP"`
 	Replicas        string   `json:"replicas"`
 }
 
@@ -187,9 +185,7 @@ type Wso2IsStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Namespaced
 // +kubebuilder:printcolumn:name="Service Name",type="string",JSONPath=`.status.serviceName`
-// +kubebuilder:printcolumn:name="Ingress Name",type="string",JSONPath=`.status.ingressName`
 // +kubebuilder:printcolumn:name="Ingress Hostname",type="string",JSONPath=`.status.ingressHostname`
-// +kubebuilder:printcolumn:name="Ingress IP",type="string",JSONPath=`.status.ingressIP`
 // +kubebuilder:printcolumn:name="Desired Replicas",type="string",JSONPath=`.spec.replicas`
 // +kubebuilder:printcolumn:name="Current Replicas",type="string",JSONPath=`.status.replicas`
 // +kubebuilder:printcolumn:name="Host Name",type="string",JSONPath=`.spec.configurations.host`

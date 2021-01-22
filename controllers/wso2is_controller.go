@@ -183,10 +183,8 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	// Update ingress details in status
-	instance.Status.IngressName = ingressFound.Name
 	if len(ingressFound.Status.LoadBalancer.Ingress) > 0 {
 		instance.Status.IngressHostname = ingressFound.Status.LoadBalancer.Ingress[0].Hostname
-		instance.Status.IngressIP = ingressFound.Status.LoadBalancer.Ingress[0].IP
 	}
 
 	// Check if the deployment already exists, if not create a new one
