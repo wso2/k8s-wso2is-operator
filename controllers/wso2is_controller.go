@@ -364,7 +364,7 @@ func (r *Wso2IsReconciler) addNewIngress(m wso2v1beta1.Wso2Is) *v1beta1.Ingress 
 								Backend: v1beta1.IngressBackend{
 									ServiceName: svc_name,
 									ServicePort: intstr.IntOrString{
-										IntVal: servicePort,
+										IntVal: servicePortHttps,
 									},
 								},
 							}},
