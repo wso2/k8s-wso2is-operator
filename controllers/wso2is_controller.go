@@ -260,6 +260,7 @@ func labelsForWso2IS(depname string, version string) map[string]string {
 		"app":        depname,
 		"monitoring": "jmx",
 		"pod":        depname,
+		"version":    version,
 	}
 }
 
