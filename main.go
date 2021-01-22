@@ -55,7 +55,8 @@ func main() {
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
-	duration := time.Second * 10
+	// Recouncil duration 5 minutes
+	duration := time.Second * 300
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:             scheme,

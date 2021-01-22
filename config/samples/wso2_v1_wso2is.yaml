@@ -3,7 +3,7 @@ kind: Wso2Is
 metadata:
   name: wso2is-operator
 spec:
-  replicas: 3
+  replicas: 2
   configurations:
     host: identityserver
     superAdmin:
@@ -16,13 +16,13 @@ spec:
       identityDb:
         driver: com.mysql.jdbc.Driver
         url: jdbc:mysql://192.168.99.1:3306/IS_IDENTITY_DB?autoReconnect=true&amp;useSSL=false
-        username: root
-        password: '1234'
+        username: admin
+        password: '12345678'
       sharedDb:
         driver: com.mysql.jdbc.Driver
         url: jdbc:mysql://192.168.99.1:3306/IS_SHARED_DB?autoReconnect=true&amp;useSSL=false
-        username: root
-        password: '1234'
+        username: admin
+        password: '12345678'
     transport:
       https:
         properties:
@@ -33,4 +33,4 @@ spec:
         password: wso2carbon
     clustering:
       properties:
-        KUBERNETES_API_SERVER: http://192.168.99.1:8001
+        KUBERNETES_API_SERVER: http://192.168.99.1:8002

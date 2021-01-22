@@ -260,7 +260,6 @@ func labelsForWso2IS(depname string, version string) map[string]string {
 		"app":        depname,
 		"monitoring": "jmx",
 		"pod":        depname,
-		"version":    version,
 	}
 }
 
@@ -498,7 +497,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 						LivenessProbe: &corev1.Probe{
 							Handler: corev1.Handler{
 								Exec: &corev1.ExecAction{
-									Command: []string{"/bin/sh", "-c", "nc -z localhost " + string(containerPortHttps)},
+									Command: []string{"/bin/sh", "-c", "nc -z localhost " + fmt.Sprint(containerPortHttps)},
 								},
 							},
 							InitialDelaySeconds: 250,
@@ -507,7 +506,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 						ReadinessProbe: &corev1.Probe{
 							Handler: corev1.Handler{
 								Exec: &corev1.ExecAction{
-									Command: []string{"/bin/sh", "-c", "nc -z localhost " + string(containerPortHttps)},
+									Command: []string{"/bin/sh", "-c", "nc -z localhost " + fmt.Sprint(containerPortHttps)},
 								},
 							},
 							InitialDelaySeconds: 250,
