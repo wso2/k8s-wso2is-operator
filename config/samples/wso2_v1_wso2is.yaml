@@ -1,4 +1,4 @@
-apiVersion: wso2.wso2.com/v1beta1
+apiVersion: iam.wso2.com/v1beta1
 kind: Wso2Is
 metadata:
   name: wso2is-operator

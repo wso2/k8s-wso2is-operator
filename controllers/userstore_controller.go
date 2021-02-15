@@ -41,8 +41,8 @@ type UserstoreReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=wso2.wso2.com,resources=userstores,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=wso2.wso2.com,resources=userstores/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=iam.wso2.com,resources=userstores,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=iam.wso2.com,resources=userstores/status,verbs=get;update;patch
 
 func (r *UserstoreReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
@@ -79,6 +79,7 @@ func SpecToJson(spec wso2v1beta1.UserstoreSpec, log logr.Logger) string {
 	return string(a)
 }
 
+//@TODO check existing user stores
 func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
 	url := "https://" + instance.Auth.Host + "/api/server/v1/userstores"
 	method := "POST"
@@ -88,7 +89,7 @@ func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
 	payload := strings.NewReader(SpecToJson(instance.Spec, log))
 
 	client := &http.Client{}
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: instance.Spec.InsecureSkipVerify}
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: instance.Spec.InsecureSkipVerify} //@TODO Set it to HTTP transport, make skip insecure an annotation
 	req, err := http.NewRequest(method, url, payload)
 
 	if err != nil {
@@ -106,7 +107,7 @@ func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode == 201 {
+	if res.StatusCode == 201 { //@TODO Log error based on error codes > 400
 		log.Info("UserStore has been successfully created")
 	} else {
 		log.Error(err, "Error "+strconv.Itoa(res.StatusCode)+" has occurred during UserStore creation")

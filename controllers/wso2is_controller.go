@@ -45,8 +45,8 @@ type Wso2IsReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=wso2.wso2.com,resources=wso2is,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=wso2.wso2.com,resources=wso2is/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=iam.wso2.com,resources=wso2is,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=iam.wso2.com,resources=wso2is/status,verbs=get;update;patch
 
 func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 
@@ -54,7 +54,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 
 	// Get logger
-	log := r.Log.WithValues(deployment_name, req.NamespacedName)
+	log := r.Log.WithValues(deploymentName, req.NamespacedName)
 
 	// Fetch the WSO2IS instance
 	instance := wso2v1beta1.Wso2Is{}
@@ -74,9 +74,11 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
+	//@TODO move large functions into smaller separate functions
+
 	// Add new service account if not present
 	saFound := &corev1.ServiceAccount{}
-	err = r.Get(ctx, types.NamespacedName{Name: svc_account_name, Namespace: instance.Namespace}, saFound)
+	err = r.Get(ctx, types.NamespacedName{Name: svcAccountName, Namespace: instance.Namespace}, saFound)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
 		svc := r.addServiceAccount(instance)
@@ -97,7 +99,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 
 	// Add new persistant volume claim
 	pvcFound := &corev1.PersistentVolumeClaim{}
-	err = r.Get(ctx, types.NamespacedName{Name: us_pv_claim_name, Namespace: instance.Namespace}, pvcFound)
+	err = r.Get(ctx, types.NamespacedName{Name: usPvClaimName, Namespace: instance.Namespace}, pvcFound)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
 		pvc := r.addPersistentVolumeClaim(instance)
@@ -118,7 +120,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 
 	// Add new config map if not present
 	confMap := &corev1.ConfigMap{}
-	err = r.Get(ctx, types.NamespacedName{Name: config_map_name, Namespace: instance.Namespace}, confMap)
+	err = r.Get(ctx, types.NamespacedName{Name: configMapName, Namespace: instance.Namespace}, confMap)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
 		cfgMap := r.addConfigMap(instance, log)
@@ -139,7 +141,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 
 	// Add new service if not present
 	serviceFound := &corev1.Service{}
-	err = r.Get(ctx, types.NamespacedName{Name: svc_name, Namespace: instance.Namespace}, serviceFound)
+	err = r.Get(ctx, types.NamespacedName{Name: svcName, Namespace: instance.Namespace}, serviceFound)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new deployment
 		svc := r.addNewService(instance)
@@ -163,7 +165,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 
 	// Add Ingress if not present
 	ingressFound := v1beta1.Ingress{}
-	err = r.Get(ctx, types.NamespacedName{Name: ing_name, Namespace: instance.Namespace}, &ingressFound)
+	err = r.Get(ctx, types.NamespacedName{Name: ingName, Namespace: instance.Namespace}, &ingressFound)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new Ingress
 		svc := r.addNewIngress(instance)
@@ -277,7 +279,7 @@ func getPodNames(pods []corev1.Pod) []string {
 func (r *Wso2IsReconciler) addServiceAccount(m wso2v1beta1.Wso2Is) *corev1.ServiceAccount {
 	svc := &corev1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      svc_account_name,
+			Name:      svcAccountName,
 			Namespace: m.Namespace,
 		},
 	}
@@ -289,7 +291,7 @@ func (r *Wso2IsReconciler) addServiceAccount(m wso2v1beta1.Wso2Is) *corev1.Servi
 func (r *Wso2IsReconciler) addPersistentVolumeClaim(m wso2v1beta1.Wso2Is) *corev1.PersistentVolumeClaim {
 	pvc := &corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      us_pv_claim_name,
+			Name:      usPvClaimName,
 			Namespace: m.Namespace,
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
@@ -311,11 +313,11 @@ func (r *Wso2IsReconciler) addPersistentVolumeClaim(m wso2v1beta1.Wso2Is) *corev
 func (r *Wso2IsReconciler) addConfigMap(m wso2v1beta1.Wso2Is, logger logr.Logger) *corev1.ConfigMap {
 	configMap := &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      config_map_name,
+			Name:      configMapName,
 			Namespace: m.Namespace,
 		},
 		Data: map[string]string{
-			config_file_name: getTomlConfig(m.Spec, logger),
+			configFileName: getTomlConfig(m.Spec, logger),
 		},
 	}
 	ctrl.SetControllerReference(&m, configMap, r.Scheme)
@@ -339,7 +341,7 @@ func getTomlConfig(spec wso2v1beta1.Wso2IsSpec, logger logr.Logger) string {
 func (r *Wso2IsReconciler) addNewIngress(m wso2v1beta1.Wso2Is) *v1beta1.Ingress {
 	ingress := &v1beta1.Ingress{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      ing_name,
+			Name:      ingName,
 			Namespace: m.Namespace,
 			Annotations: map[string]string{
 				"kubernetes.io/ingress.class":                     "nginx",
@@ -363,7 +365,7 @@ func (r *Wso2IsReconciler) addNewIngress(m wso2v1beta1.Wso2Is) *v1beta1.Ingress 
 							Paths: []v1beta1.HTTPIngressPath{{
 								Path: "/",
 								Backend: v1beta1.IngressBackend{
-									ServiceName: svc_name,
+									ServiceName: svcName,
 									ServicePort: intstr.IntOrString{
 										IntVal: servicePortHttps,
 									},
@@ -383,7 +385,7 @@ func (r *Wso2IsReconciler) addNewIngress(m wso2v1beta1.Wso2Is) *v1beta1.Ingress 
 func (r *Wso2IsReconciler) addNewService(m wso2v1beta1.Wso2Is) *corev1.Service {
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      svc_name,
+			Name:      svcName,
 			Namespace: m.Namespace,
 		},
 		Spec: corev1.ServiceSpec{
@@ -433,27 +435,27 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
 						{
-							Name: pvc_name,
+							Name: pvcName,
 							VolumeSource: corev1.VolumeSource{
 								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-									ClaimName: us_pv_claim_name,
+									ClaimName: usPvClaimName,
 								},
 							},
 						},
 						{
-							Name: config_map_name,
+							Name: configMapName,
 							VolumeSource: corev1.VolumeSource{
 								ConfigMap: &corev1.ConfigMapVolumeSource{
 									LocalObjectReference: corev1.LocalObjectReference{
-										Name: config_map_name,
+										Name: configMapName,
 									},
 								},
 							},
 						},
 					},
 					Containers: []corev1.Container{{
-						Name:  deployment_name,
-						Image: "sureshmichael/wso2-is-5.11.0:rc1",
+						Name:  deploymentName,
+						Image: "sureshmichael/wso2-is-5.11.0:rc1", //@TODO make this configurable with different versions
 						Ports: []corev1.ContainerPort{{
 							ContainerPort: containerPortHttps,
 							Protocol:      "TCP",
@@ -486,13 +488,13 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 						*/
 						VolumeMounts: []corev1.VolumeMount{
 							{
-								Name:      pvc_name,
+								Name:      pvcName,
 								MountPath: "/home/wso2carbon/wso2is-5.11.0/repository/deployment/server/userstores",
 							},
 							{
-								Name:        config_map_name,
+								Name:        configMapName,
 								MountPath:   "/home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml",
-								SubPathExpr: config_file_name,
+								SubPathExpr: configFileName,
 							},
 						},
 						LivenessProbe: &corev1.Probe{
@@ -529,7 +531,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 							RunAsUser: &runasuser,
 						},
 					}},
-					ServiceAccountName: svc_account_name,
+					ServiceAccountName: svcAccountName,
 					HostAliases: []corev1.HostAlias{{
 						IP:        "127.0.0.1",
 						Hostnames: []string{m.Spec.Configurations.Host},

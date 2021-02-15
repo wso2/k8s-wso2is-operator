@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: userstores.wso2.wso2.com
+  name: userstores.iam.wso2.com
 spec:
-  group: wso2.wso2.com
+  group: iam.wso2.com
   names:
     kind: Userstore
     listKind: UserstoreList

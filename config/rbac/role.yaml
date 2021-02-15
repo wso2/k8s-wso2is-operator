@@ -7,7 +7,7 @@ metadata:
   name: manager-role
 rules:
   - apiGroups:
-      - wso2.wso2.com
+      - iam.wso2.com
     resources:
       - userstores
     verbs:
@@ -19,7 +19,7 @@ rules:
       - update
       - watch
   - apiGroups:
-      - wso2.wso2.com
+      - iam.wso2.com
     resources:
       - userstores/status
     verbs:
@@ -27,7 +27,7 @@ rules:
       - patch
       - update
   - apiGroups:
-      - wso2.wso2.com
+      - iam.wso2.com
     resources:
       - wso2is
     verbs:
@@ -39,7 +39,7 @@ rules:
       - update
       - watch
   - apiGroups:
-      - wso2.wso2.com
+      - iam.wso2.com
     resources:
       - wso2is/status
     verbs:

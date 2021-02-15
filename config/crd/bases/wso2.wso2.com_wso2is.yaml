@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: wso2is.wso2.wso2.com
+  name: wso2is.iam.wso2.com
 spec:
-  group: wso2.wso2.com
+  group: iam.wso2.com
   names:
     kind: Wso2Is
     listKind: Wso2IsList

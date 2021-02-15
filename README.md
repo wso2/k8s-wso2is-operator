@@ -47,7 +47,7 @@ Navigate to the project directory
 
 Apply the CRD by running the following command
 
-    kubectl apply -f config/crd/bases/wso2.wso2.com_wso2is.yaml
+    kubectl apply -f config/crd/bases/iam.wso2.com_wso2is.yaml
 
 You are free to change any configurations at **config/samples/wso2_v1_wso2is.yaml**
 Once you do the config changes apply the config by running

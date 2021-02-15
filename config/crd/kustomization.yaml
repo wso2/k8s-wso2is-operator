@@ -2,8 +2,8 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-  - bases/wso2.wso2.com_wso2is.yaml
-  - bases/wso2.wso2.com_userstores.yaml
+  - bases/iam.wso2.com_wso2is.yaml
+  - bases/iam.wso2.com_userstores.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 patchesStrategicMerge:
