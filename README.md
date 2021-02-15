@@ -1,3 +1,4 @@
+
 ## WSO2 Identity Server - K8S Operator
 
 The following CRD operator can be used to deploy WSO2 IS on your Kubernates Cluster. If you want to deploy the Identity
@@ -11,6 +12,9 @@ link:  [https://github.com/wso2/kubernetes-is](https://github.com/wso2/kubernete
   See  [how to grant yourself cluster-admin privileges or be logged in as admin](https://cloud.google.com/kubernetes-engine/docs/how-to/role-based-access-control#iam-rolebinding-bootstrap)
 - [Homebrew](https://brew.sh/) installed
 - Git command line installed and configured
+
+## System Architecture
+![enter image description here](https://user-images.githubusercontent.com/3047253/105663226-b9149900-5ef7-11eb-825b-0413649a99ed.jpg)
 
 ## External Database Setup
 
