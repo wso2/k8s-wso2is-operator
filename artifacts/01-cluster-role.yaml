@@ -100,12 +100,8 @@ rules:
       - iam.wso2.com
     resources:
       - customresourcedefinitions
-      - cells
-      - composites
-      - components
-      - gateways
-      - tokenservices
-      - autoscalepolicies
+      - wso2is
+      - userstores
       - '*/status'
     verbs:
       - get
