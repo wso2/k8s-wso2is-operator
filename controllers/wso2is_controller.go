@@ -54,7 +54,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 
 	// Get logger
-	log := r.Log.WithValues(deploymentName, req.NamespacedName)
+	logger := r.Log.WithValues(deploymentName, req.NamespacedName)
 
 	// Fetch the WSO2IS instance
 	instance := wso2v1beta1.Wso2Is{}
@@ -63,58 +63,34 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	err := r.Get(ctx, req.NamespacedName, &instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			// Request object not found, could have been deleted after reconcile request.
+			// Request object not depFound, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
-			log.Info("WSO2IS resource not found. Ignoring since object must be deleted")
+			logger.Info("WSO2IS resource not depFound. Ignoring since object must be deleted")
 			return ctrl.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
-		log.Error(err, "Failed to get WSO2IS Instance")
+		logger.Error(err, "Failed to get WSO2IS Instance")
 		return ctrl.Result{}, err
 	}
-
-	//@TODO move large functions into smaller separate functions
 
 	// Add new service account if not present
 	saFound := &corev1.ServiceAccount{}
 	err = r.Get(ctx, types.NamespacedName{Name: svcAccountName, Namespace: instance.Namespace}, saFound)
 	if err != nil && errors.IsNotFound(err) {
-		// Define a new deployment
-		svc := r.addServiceAccount(instance)
-		log.Info("Creating a new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
-		err = r.Create(ctx, svc)
-		if err != nil {
-			log.Error(err, "Failed to create new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
-			return ctrl.Result{}, err
-		} else {
-			log.Info("Successfully created new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
-		}
-		// ServiceAccount created successfully - return and requeue
-		return ctrl.Result{Requeue: true}, nil
+		return reconcileSva(r, instance, logger, err, ctx)
 	} else if err != nil {
-		log.Error(err, "Failed to get ServiceAccount")
+		logger.Error(err, "Failed to get ServiceAccount")
 		return ctrl.Result{}, err
 	}
 
-	// Add new persistant volume claim
+	// Add new persistent volume claim
 	pvcFound := &corev1.PersistentVolumeClaim{}
 	err = r.Get(ctx, types.NamespacedName{Name: usPvClaimName, Namespace: instance.Namespace}, pvcFound)
 	if err != nil && errors.IsNotFound(err) {
-		// Define a new deployment
-		pvc := r.addPersistentVolumeClaim(instance)
-		log.Info("Creating a new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
-		err = r.Create(ctx, pvc)
-		if err != nil {
-			log.Error(err, "Failed to create new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
-			return ctrl.Result{}, err
-		} else {
-			log.Info("Successfully created new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
-		}
-		// PersistentVolumeClaim created successfully - return and requeue
-		return ctrl.Result{Requeue: true}, nil
+		return reconcilePvc(r, instance, logger, err, ctx)
 	} else if err != nil {
-		log.Error(err, "Failed to get ServiceAccount")
+		logger.Error(err, "Failed to get PersistentVolumeClaim")
 		return ctrl.Result{}, err
 	}
 
@@ -122,20 +98,9 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	confMap := &corev1.ConfigMap{}
 	err = r.Get(ctx, types.NamespacedName{Name: configMapName, Namespace: instance.Namespace}, confMap)
 	if err != nil && errors.IsNotFound(err) {
-		// Define a new deployment
-		cfgMap := r.addConfigMap(instance, log)
-		log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
-		err = r.Create(ctx, cfgMap)
-		if err != nil {
-			log.Error(err, "Failed to create new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
-			return ctrl.Result{}, err
-		} else {
-			log.Info("Successfully created new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
-		}
-		// ServiceAccount created successfully - return and requeue
-		return ctrl.Result{Requeue: true}, nil
+		return reconcileCfg(r, instance, logger, err, ctx)
 	} else if err != nil {
-		log.Error(err, "Failed to get ConfigMap")
+		logger.Error(err, "Failed to get ConfigMap")
 		return ctrl.Result{}, err
 	}
 
@@ -143,85 +108,40 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	serviceFound := &corev1.Service{}
 	err = r.Get(ctx, types.NamespacedName{Name: svcName, Namespace: instance.Namespace}, serviceFound)
 	if err != nil && errors.IsNotFound(err) {
-		// Define a new deployment
-		svc := r.addNewService(instance)
-		log.Info("Creating a new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
-		err = r.Create(ctx, svc)
-		if err != nil {
-			log.Error(err, "Failed to create new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
-			return ctrl.Result{}, err
-		} else {
-			log.Info("Successfully created new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
-		}
-		// ServiceAccount created successfully - return and requeue
-		return ctrl.Result{Requeue: true}, nil
+		return reconcileSvc(r, instance, logger, err, ctx)
 	} else if err != nil {
-		log.Error(err, "Failed to get Service")
+		logger.Error(err, "Failed to get Service")
 		return ctrl.Result{}, err
 	}
-
-	// Update service name in status
-	instance.Status.ServiceName = serviceFound.Name
 
 	// Add Ingress if not present
 	ingressFound := v1beta1.Ingress{}
 	err = r.Get(ctx, types.NamespacedName{Name: ingName, Namespace: instance.Namespace}, &ingressFound)
 	if err != nil && errors.IsNotFound(err) {
-		// Define a new Ingress
-		svc := r.addNewIngress(instance)
-		log.Info("Creating new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
-		err = r.Create(ctx, svc)
-		if err != nil {
-			log.Error(err, "Failed to create new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
-			return ctrl.Result{}, err
-		} else {
-			log.Info("Successfully created new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
-		}
-		// Ingress created successfully - return and requeue
-		return ctrl.Result{Requeue: true}, nil
+		return reconcileIngress(r, instance, logger, err, ctx)
 	} else if err != nil {
-		log.Error(err, "Failed to get Ingress")
+		logger.Error(err, "Failed to get Ingress")
 		return ctrl.Result{}, err
 	}
 
-	// Update ingress details in status
-	if len(ingressFound.Status.LoadBalancer.Ingress) > 0 {
-		instance.Status.IngressHostname = ingressFound.Status.LoadBalancer.Ingress[0].Hostname
-	}
-
 	// Check if the deployment already exists, if not create a new one
-	found := &appsv1.Deployment{}
-	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, found)
+	depFound := &appsv1.Deployment{}
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, depFound)
 	if err != nil && errors.IsNotFound(err) {
-		// Define a new deployment
-		dep := r.deploymentForWso2Is(instance)
-		log.Info("Creating a new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-		err = r.Create(ctx, dep)
-		if err != nil {
-			log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-			return ctrl.Result{}, err
-		} else {
-			log.Info("Successfully added new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-		}
-		// Deployment created successfully - return and requeue
-		return ctrl.Result{Requeue: true}, nil
+		return reconcileDeployment(r, instance, logger, err, ctx)
 	} else if err != nil {
-		log.Error(err, "Failed to get Deployment")
+		logger.Error(err, "Failed to get Deployment")
 		return ctrl.Result{}, err
 	}
 
 	// Ensure the deployment size is the same as the spec
 	size := instance.Spec.Size
-	foundReplicas := found.Spec.Replicas
 
-	// Update replica status
-	instance.Status.Replicas = fmt.Sprint(*foundReplicas)
-
-	if *found.Spec.Replicas != size {
-		found.Spec.Replicas = &size
-		err = r.Update(ctx, found)
+	if *depFound.Spec.Replicas != size {
+		depFound.Spec.Replicas = &size
+		err = r.Update(ctx, depFound)
 		if err != nil {
-			log.Error(err, "Failed to update Deployment", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
+			logger.Error(err, "Failed to update Deployment", "Deployment.Namespace", depFound.Namespace, "Deployment.Name", depFound.Name)
 			return ctrl.Result{}, err
 		}
 		// Spec updated - return and requeue
@@ -236,7 +156,7 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		client.MatchingLabels(labelsForWso2IS(instance.Name, instance.Spec.Version)),
 	}
 	if err = r.List(ctx, podList, listOpts...); err != nil {
-		log.Error(err, "Failed to list pods", "WSO2IS.Namespace", instance.Namespace, "WSO2IS.Name", instance.Name)
+		logger.Error(err, "Failed to list pods", "WSO2IS.Namespace", instance.Namespace, "WSO2IS.Name", instance.Name)
 		return ctrl.Result{}, err
 	}
 	podNames := getPodNames(podList.Items)
@@ -246,10 +166,13 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		instance.Status.Nodes = podNames
 		err := r.Status().Update(ctx, &instance)
 		if err != nil {
-			log.Error(err, "Failed to update WSO2IS status")
+			logger.Error(err, "Failed to update WSO2IS status")
 			return ctrl.Result{}, err
 		}
 	}
+
+	// Update the status of the crd
+	updateStatus(instance, depFound, serviceFound, ingressFound)
 
 	return ctrl.Result{}, nil
 }
@@ -273,6 +196,110 @@ func getPodNames(pods []corev1.Pod) []string {
 		podNames = append(podNames, pod.Name)
 	}
 	return podNames
+}
+
+func updateStatus(instance wso2v1beta1.Wso2Is, depFound *appsv1.Deployment, serviceFound *corev1.Service, ingressFound v1beta1.Ingress) {
+	// Update service name in status
+	instance.Status.ServiceName = serviceFound.Name
+
+	// Update ingress details in status
+	if len(ingressFound.Status.LoadBalancer.Ingress) > 0 {
+		instance.Status.IngressHostname = ingressFound.Status.LoadBalancer.Ingress[0].Hostname
+	}
+
+	// Update replica status
+	instance.Status.Replicas = fmt.Sprint(depFound.Spec.Replicas)
+}
+
+func reconcileDeployment(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	// Define a new deployment
+	dep := r.deploymentForWso2Is(instance)
+	log.Info("Creating a new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+
+	err = r.Create(ctx, dep)
+	if err != nil {
+		log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+		return ctrl.Result{}, err
+	} else {
+		log.Info("Successfully added new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
+	}
+	// Deployment created successfully - return and requeue
+	return ctrl.Result{Requeue: true}, nil
+}
+
+func reconcileIngress(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	// Define a new Ingress
+	svc := r.addNewIngress(instance)
+	log.Info("Creating new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
+	err = r.Create(ctx, svc)
+	if err != nil {
+		log.Error(err, "Failed to create new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
+		return ctrl.Result{}, err
+	} else {
+		log.Info("Successfully created new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
+	}
+	// Ingress created successfully - return and requeue
+	return ctrl.Result{Requeue: true}, nil
+}
+
+func reconcileSvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	// Define a new deployment
+	svc := r.addNewService(instance)
+	log.Info("Creating a new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
+	err = r.Create(ctx, svc)
+	if err != nil {
+		log.Error(err, "Failed to create new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
+		return ctrl.Result{}, err
+	} else {
+		log.Info("Successfully created new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
+	}
+	// ServiceAccount created successfully - return and requeue
+	return ctrl.Result{Requeue: true}, nil
+}
+
+func reconcileCfg(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	// Define a new deployment
+	cfgMap := r.addConfigMap(instance, log)
+	log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
+	err = r.Create(ctx, cfgMap)
+	if err != nil {
+		log.Error(err, "Failed to create new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
+		return ctrl.Result{}, err
+	} else {
+		log.Info("Successfully created new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
+	}
+	// ServiceAccount created successfully - return and requeue
+	return ctrl.Result{Requeue: true}, nil
+}
+
+func reconcilePvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	// Define a new deployment
+	pvc := r.addPersistentVolumeClaim(instance)
+	log.Info("Creating a new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
+	err = r.Create(ctx, pvc)
+	if err != nil {
+		log.Error(err, "Failed to create new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
+		return ctrl.Result{}, err
+	} else {
+		log.Info("Successfully created new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
+	}
+	// PersistentVolumeClaim created successfully - return and requeue
+	return ctrl.Result{Requeue: true}, nil
+}
+
+func reconcileSva(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	// Define a new deployment
+	svc := r.addServiceAccount(instance)
+	log.Info("Creating a new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
+	err = r.Create(ctx, svc)
+	if err != nil {
+		log.Error(err, "Failed to create new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
+		return ctrl.Result{}, err
+	} else {
+		log.Info("Successfully created new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
+	}
+	// ServiceAccount created successfully - return and requeue
+	return ctrl.Result{Requeue: true}, nil
 }
 
 // addServiceAccount adds a new ServiceAccount

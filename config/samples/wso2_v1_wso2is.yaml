@@ -1,7 +1,7 @@
 apiVersion: iam.wso2.com/v1beta1
 kind: Wso2Is
 metadata:
-  name: wso2is-operator
+  name: identity-server
 spec:
   replicas: 2
   configurations:
