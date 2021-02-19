@@ -31,7 +31,7 @@ spec:
       properties:
         KUBERNETES_API_SERVER: http://192.168.99.1:8002
   keystoreMounts:
-    - name: sureshkeystore.jks
+    - name: samplekey1.jks
       data: sasadsadsadasdsdsadsadasdasdsd
-    - name: swarnaKeystore.jks
+    - name: samplekey2.jks
       data: sasadsadsadasdsdsadsadasdasdsd
