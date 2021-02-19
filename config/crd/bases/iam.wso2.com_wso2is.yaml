@@ -240,6 +240,21 @@ spec:
                     - transport
                     - userStore
                   type: object
+                keystoreMounts:
+                  items:
+                    properties:
+                      data:
+                        type: string
+                      name:
+                        type: string
+                      password:
+                        type: string
+                    required:
+                      - data
+                      - name
+                      - password
+                    type: object
+                  type: array
                 replicas:
                   format: int32
                   type: integer

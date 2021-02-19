@@ -104,6 +104,16 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
+	// Add new secret if not present
+	secretFound := &corev1.Secret{}
+	err = r.Get(ctx, types.NamespacedName{Name: secretName, Namespace: instance.Namespace}, secretFound)
+	if err != nil && errors.IsNotFound(err) {
+		return reconcileSecret(r, instance, logger, err, ctx)
+	} else if err != nil {
+		logger.Error(err, "Failed to get Secret")
+		return ctrl.Result{}, err
+	}
+
 	// Add new service if not present
 	serviceFound := &corev1.Service{}
 	err = r.Get(ctx, types.NamespacedName{Name: svcName, Namespace: instance.Namespace}, serviceFound)
@@ -272,6 +282,21 @@ func reconcileCfg(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Log
 	return ctrl.Result{Requeue: true}, nil
 }
 
+func reconcileSecret(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	// Define a new secret
+	secret := r.addSecret(instance, log)
+	log.Info("Creating a new Secret", "Secret.Namespace", secret.Namespace, "Secret.Name", secret.Name)
+	err = r.Create(ctx, secret)
+	if err != nil {
+		log.Error(err, "Failed to create new Secret", "Secret.Namespace", secret.Namespace, "Secret.Name", secret.Name)
+		return ctrl.Result{}, err
+	} else {
+		log.Info("Successfully created new Secret", "Secret.Namespace", secret.Namespace, "Secret.Name", secret.Name)
+	}
+	// Secret created successfully - return and requeue
+	return ctrl.Result{Requeue: true}, nil
+}
+
 func reconcilePvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
 	// Define a new deployment
 	pvc := r.addPersistentVolumeClaim(instance)
@@ -349,6 +374,25 @@ func (r *Wso2IsReconciler) addConfigMap(m wso2v1beta1.Wso2Is, logger logr.Logger
 	}
 	ctrl.SetControllerReference(&m, configMap, r.Scheme)
 	return configMap
+}
+
+func (r *Wso2IsReconciler) addSecret(m wso2v1beta1.Wso2Is, logger logr.Logger) *corev1.Secret {
+	//append all secrets to here
+	secretsMap := map[string][]byte{}
+	//mount keystore secrets to Kubernetes secrets
+	for _, element := range m.Spec.KeystoreMounts {
+		secretsMap[element.Name] = []byte(element.Data)
+	}
+	secret := &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      secretName,
+			Namespace: m.Namespace,
+		},
+		Data: secretsMap,
+	}
+	ctrl.SetControllerReference(&m, secret, r.Scheme)
+	return secret
 }
 
 func getTomlConfig(spec wso2v1beta1.Wso2IsSpec, logger logr.Logger) string {
@@ -445,6 +489,15 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 	replicas := m.Spec.Size
 	runasuser := int64(802)
 
+	//read entered secrets from spec
+	var secretItems []corev1.KeyToPath
+	for _, element := range m.Spec.KeystoreMounts {
+		secretItems = append(secretItems, corev1.KeyToPath{
+			Key:  element.Name,
+			Path: "/home/wso2carbon/wso2is-5.11.0/repository/resources/security",
+		})
+	}
+
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
@@ -476,6 +529,15 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 									LocalObjectReference: corev1.LocalObjectReference{
 										Name: configMapName,
 									},
+								},
+							},
+						},
+						{
+							Name: secretName,
+							VolumeSource: corev1.VolumeSource{
+								Secret: &corev1.SecretVolumeSource{
+									SecretName: secretName,
+									Items:      secretItems,
 								},
 							},
 						},

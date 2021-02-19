@@ -27,9 +27,16 @@ import (
 type Wso2IsSpec struct {
 	Size int32 `json:"replicas"`
 	// +kubebuilder:default:="5.11.0"
-	Version        string         `json:"version,omitempty"`
-	Configurations Configurations `json:"configurations,omitempty"`
-	TomlConfig     string         `json:"tomlConfig,omitempty"`
+	Version        string          `json:"version,omitempty"`
+	Configurations Configurations  `json:"configurations,omitempty"`
+	TomlConfig     string          `json:"tomlConfig,omitempty"`
+	KeystoreMounts []KeystoreMount `json:"keystoreMounts,omitempty"`
+}
+
+type KeystoreMount struct {
+	Name     string `json:"name"`
+	Data     string `json:"data"`
+	Password string `json:"password"`
 }
 
 type Configurations struct {
