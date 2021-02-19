@@ -103,13 +103,15 @@ spec:
                                   default: SELECT 1
                                   type: string
                               type: object
+                            type:
+                              type: string
                             url:
                               type: string
                             username:
                               type: string
                           required:
-                            - driver
                             - password
+                            - type
                             - url
                             - username
                           type: object
@@ -127,13 +129,15 @@ spec:
                                   default: SELECT 1
                                   type: string
                               type: object
+                            type:
+                              type: string
                             url:
                               type: string
                             username:
                               type: string
                           required:
-                            - driver
                             - password
+                            - type
                             - url
                             - username
                           type: object
@@ -208,6 +212,10 @@ spec:
                         - username
                       type: object
                     transport:
+                      default:
+                        https:
+                          properties:
+                            proxyPort: 443
                       properties:
                         https:
                           properties:
@@ -237,7 +245,6 @@ spec:
                     - host
                     - keystore
                     - superAdmin
-                    - transport
                     - userStore
                   type: object
                 keystoreMounts:

@@ -45,7 +45,8 @@ type Configurations struct {
 	SuperAdmin SuperAdmin `json:"superAdmin" toml:"super_admin"`
 	UserStore  UserStore  `json:"userStore" toml:"user_store"`
 	Database   Database   `json:"database" toml:"database"`
-	Transport  Transport  `json:"transport" toml:"transport"`
+	// +kubebuilder:default:={ "https" : { "properties" : { "proxyPort" : 443 } } }
+	Transport  Transport  `json:"transport,omitempty" toml:"transport"`
 	Keystore   Keystore   `json:"keystore" toml:"keystore"`
 	Clustering Clustering `json:"clustering" toml:"clustering"`
 	// +kubebuilder:default:={ "jmx" : { "rmi_server_start" : true } }
@@ -79,34 +80,38 @@ type PoolOptions struct {
 	ValidationQuery string `json:"validationQuery,omitempty" toml:"validationQuery"`
 }
 type User struct {
+	Type     string `json:"type" toml:"type"`
 	URL      string `json:"url" toml:"url"`
 	Username string `json:"username" toml:"username"`
 	Password string `json:"password" toml:"password"`
-	Driver   string `json:"driver" toml:"driver"`
+	Driver   string `json:"driver,omitempty" toml:"driver"`
 	// +kubebuilder:default:={ "validationQuery" : "SELECT 1" }
 	PoolOptions PoolOptions `json:"pool_options,omitempty" toml:"pool_options"`
 }
 type IdentityDb struct {
+	Type     string `json:"type" toml:"type"`
 	URL      string `json:"url" toml:"url"`
 	Username string `json:"username" toml:"username"`
 	Password string `json:"password" toml:"password"`
-	Driver   string `json:"driver" toml:"driver"`
+	Driver   string `json:"driver,omitempty" toml:"driver"`
 	// +kubebuilder:default:={ "validationQuery" : "SELECT 1" }
 	PoolOptions PoolOptions `json:"pool_options,omitempty" toml:"pool_options"`
 }
 type SharedDb struct {
+	Type     string `json:"type" toml:"type"`
 	URL      string `json:"url" toml:"url"`
 	Username string `json:"username" toml:"username"`
 	Password string `json:"password" toml:"password"`
-	Driver   string `json:"driver" toml:"driver"`
+	Driver   string `json:"driver,omitempty" toml:"driver"`
 	// +kubebuilder:default:={ "validationQuery" : "SELECT 1" }
 	PoolOptions PoolOptions `json:"pool_options,omitempty" toml:"pool_options"`
 }
 type BpsDatabase struct {
+	Type     string `json:"type" toml:"type"`
 	URL      string `json:"url" toml:"url"`
 	Username string `json:"username" toml:"username"`
 	Password string `json:"password" toml:"password"`
-	Driver   string `json:"driver" toml:"driver"`
+	Driver   string `json:"driver,omitempty" toml:"driver"`
 	// +kubebuilder:default:={ "validationQuery" : "SELECT 1" }
 	PoolOptions PoolOptions `json:"pool_options,omitempty" toml:"pool_options"`
 }
