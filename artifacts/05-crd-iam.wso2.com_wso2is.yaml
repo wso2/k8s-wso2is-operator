@@ -93,6 +93,8 @@ spec:
                           properties:
                             driver:
                               type: string
+                            hostname:
+                              type: string
                             password:
                               type: string
                             pool_options:
@@ -111,14 +113,14 @@ spec:
                               type: string
                           required:
                             - password
-                            - type
-                            - url
                             - username
                           type: object
                         sharedDb:
                           properties:
                             driver:
                               type: string
+                            hostname:
+                              type: string
                             password:
                               type: string
                             pool_options:
@@ -137,8 +139,6 @@ spec:
                               type: string
                           required:
                             - password
-                            - type
-                            - url
                             - username
                           type: object
                       required:
@@ -234,6 +234,14 @@ spec:
                       type: object
                     userStore:
                       properties:
+                        base_dn:
+                          type: string
+                        connection_name:
+                          type: string
+                        connection_password:
+                          type: string
+                        connection_url:
+                          type: string
                         type:
                           type: string
                       required:

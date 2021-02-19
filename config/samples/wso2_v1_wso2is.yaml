@@ -14,13 +14,11 @@ spec:
       type: database_unique_id
     database:
       identityDb:
-        type: mysql
         driver: com.mysql.jdbc.Driver
         url: jdbc:mysql://192.168.99.1:3306/IS_IDENTITY_DB?autoReconnect=true&amp;useSSL=false
         username: admin
         password: '12345678'
       sharedDb:
-        type: mysql
         driver: com.mysql.jdbc.Driver
         url: jdbc:mysql://192.168.99.1:3306/IS_SHARED_DB?autoReconnect=true&amp;useSSL=false
         username: admin
