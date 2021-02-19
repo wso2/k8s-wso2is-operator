@@ -247,12 +247,9 @@ spec:
                         type: string
                       name:
                         type: string
-                      password:
-                        type: string
                     required:
                       - data
                       - name
-                      - password
                     type: object
                   type: array
                 replicas:

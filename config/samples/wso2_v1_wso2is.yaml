@@ -37,4 +37,5 @@ spec:
   keystoreMounts:
     - name: sureshkeystore.jks
       data: sasadsadsadasdsdsadsadasdasdsd
-      password: wso2carbon
+    - name: swarnaKeystore.jks
+      data: sasadsadsadasdsdsadsadasdasdsd

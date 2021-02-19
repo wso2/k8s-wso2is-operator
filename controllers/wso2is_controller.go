@@ -489,15 +489,6 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 	replicas := m.Spec.Size
 	runasuser := int64(802)
 
-	//read entered secrets from spec
-	var secretItems []corev1.KeyToPath
-	for _, element := range m.Spec.KeystoreMounts {
-		secretItems = append(secretItems, corev1.KeyToPath{
-			Key:  element.Name,
-			Path: "/home/wso2carbon/wso2is-5.11.0/repository/resources/security",
-		})
-	}
-
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
@@ -537,7 +528,6 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
 									SecretName: secretName,
-									Items:      secretItems,
 								},
 							},
 						},
@@ -584,6 +574,11 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 								Name:        configMapName,
 								MountPath:   "/home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml",
 								SubPathExpr: configFileName,
+							},
+							{
+								Name:      secretName,
+								MountPath: "/home/wso2carbon/wso2is-5.11.0/repository/resources/security/controller-keystores",
+								ReadOnly:  true,
 							},
 						},
 						LivenessProbe: &corev1.Probe{

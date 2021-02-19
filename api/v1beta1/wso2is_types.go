@@ -34,9 +34,8 @@ type Wso2IsSpec struct {
 }
 
 type KeystoreMount struct {
-	Name     string `json:"name"`
-	Data     string `json:"data"`
-	Password string `json:"password"`
+	Name string `json:"name"`
+	Data string `json:"data"`
 }
 
 type Configurations struct {
