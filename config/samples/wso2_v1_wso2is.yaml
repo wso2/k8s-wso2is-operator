@@ -1,7 +1,7 @@
 apiVersion: iam.wso2.com/v1beta1
 kind: Wso2Is
 metadata:
-  name: wso2is-operator
+  name: identity-server
 spec:
   replicas: 2
   configurations:
@@ -23,10 +23,6 @@ spec:
         url: jdbc:mysql://192.168.99.1:3306/IS_SHARED_DB?autoReconnect=true&amp;useSSL=false
         username: admin
         password: '12345678'
-    transport:
-      https:
-        properties:
-          proxyPort: 443
     keystore:
       primary:
         name: wso2carbon.jks
@@ -34,3 +30,8 @@ spec:
     clustering:
       properties:
         KUBERNETES_API_SERVER: http://192.168.99.1:8002
+  keystoreMounts:
+    - name: samplekey1.jks
+      data: sasadsadsadasdsdsadsadasdasdsd
+    - name: samplekey2.jks
+      data: sasadsadsadasdsdsadsadasdasdsd

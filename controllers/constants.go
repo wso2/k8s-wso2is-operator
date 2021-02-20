@@ -23,3 +23,5 @@ const pvcName string = "user-store-persistent-storage"
 const deploymentName string = "wso2is"
 
 const configFileName string = "deployment.toml"
+
+const secretName string = "wso2is-secret"

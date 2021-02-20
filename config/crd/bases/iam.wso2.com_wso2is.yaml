@@ -93,6 +93,8 @@ spec:
                           properties:
                             driver:
                               type: string
+                            hostname:
+                              type: string
                             password:
                               type: string
                             pool_options:
@@ -103,20 +105,22 @@ spec:
                                   default: SELECT 1
                                   type: string
                               type: object
+                            type:
+                              type: string
                             url:
                               type: string
                             username:
                               type: string
                           required:
-                            - driver
                             - password
-                            - url
                             - username
                           type: object
                         sharedDb:
                           properties:
                             driver:
                               type: string
+                            hostname:
+                              type: string
                             password:
                               type: string
                             pool_options:
@@ -127,14 +131,14 @@ spec:
                                   default: SELECT 1
                                   type: string
                               type: object
+                            type:
+                              type: string
                             url:
                               type: string
                             username:
                               type: string
                           required:
-                            - driver
                             - password
-                            - url
                             - username
                           type: object
                       required:
@@ -208,6 +212,10 @@ spec:
                         - username
                       type: object
                     transport:
+                      default:
+                        https:
+                          properties:
+                            proxyPort: 443
                       properties:
                         https:
                           properties:
@@ -226,6 +234,14 @@ spec:
                       type: object
                     userStore:
                       properties:
+                        base_dn:
+                          type: string
+                        connection_name:
+                          type: string
+                        connection_password:
+                          type: string
+                        connection_url:
+                          type: string
                         type:
                           type: string
                       required:
@@ -237,9 +253,20 @@ spec:
                     - host
                     - keystore
                     - superAdmin
-                    - transport
                     - userStore
                   type: object
+                keystoreMounts:
+                  items:
+                    properties:
+                      data:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                      - data
+                      - name
+                    type: object
+                  type: array
                 replicas:
                   format: int32
                   type: integer
