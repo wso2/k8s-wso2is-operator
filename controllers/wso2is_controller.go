@@ -27,7 +27,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -84,11 +83,12 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
-	// Add new persistent volume claim
+	// Check for persistent volume claim
 	pvcFound := &corev1.PersistentVolumeClaim{}
 	err = r.Get(ctx, types.NamespacedName{Name: usPvClaimName, Namespace: instance.Namespace}, pvcFound)
 	if err != nil && errors.IsNotFound(err) {
-		return reconcilePvc(r, instance, logger, err, ctx)
+		logger.Info("Unable to detect PVC claim in your cluster. You may configure your own")
+		return ctrl.Result{}, nil
 	} else if err != nil {
 		logger.Error(err, "Failed to get PersistentVolumeClaim")
 		return ctrl.Result{}, err
@@ -124,11 +124,12 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
-	// Add Ingress if not present
+	// Check for ingress
 	ingressFound := v1beta1.Ingress{}
 	err = r.Get(ctx, types.NamespacedName{Name: ingName, Namespace: instance.Namespace}, &ingressFound)
 	if err != nil && errors.IsNotFound(err) {
-		return reconcileIngress(r, instance, logger, err, ctx)
+		logger.Info("Unable to detect Ingress in your cluster. You may configure your own")
+		return ctrl.Result{}, nil
 	} else if err != nil {
 		logger.Error(err, "Failed to get Ingress")
 		return ctrl.Result{}, err
@@ -237,21 +238,6 @@ func reconcileDeployment(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log l
 	return ctrl.Result{Requeue: true}, nil
 }
 
-func reconcileIngress(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new Ingress
-	svc := r.addNewIngress(instance)
-	log.Info("Creating new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
-	err = r.Create(ctx, svc)
-	if err != nil {
-		log.Error(err, "Failed to create new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
-		return ctrl.Result{}, err
-	} else {
-		log.Info("Successfully created new Ingress", "Ingress.Namespace", svc.Namespace, "Ingress.Name", svc.Name)
-	}
-	// Ingress created successfully - return and requeue
-	return ctrl.Result{Requeue: true}, nil
-}
-
 func reconcileSvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
 	// Define a new deployment
 	svc := r.addNewService(instance)
@@ -297,21 +283,6 @@ func reconcileSecret(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.
 	return ctrl.Result{Requeue: true}, nil
 }
 
-func reconcilePvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new deployment
-	pvc := r.addPersistentVolumeClaim(instance)
-	log.Info("Creating a new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
-	err = r.Create(ctx, pvc)
-	if err != nil {
-		log.Error(err, "Failed to create new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
-		return ctrl.Result{}, err
-	} else {
-		log.Info("Successfully created new PersistentVolumeClaim", "PersistentVolumeClaim.Namespace", pvc.Namespace, "PersistentVolumeClaim.Name", pvc.Name)
-	}
-	// PersistentVolumeClaim created successfully - return and requeue
-	return ctrl.Result{Requeue: true}, nil
-}
-
 func reconcileSva(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
 	// Define a new deployment
 	svc := r.addServiceAccount(instance)
@@ -337,28 +308,6 @@ func (r *Wso2IsReconciler) addServiceAccount(m wso2v1beta1.Wso2Is) *corev1.Servi
 	}
 	ctrl.SetControllerReference(&m, svc, r.Scheme)
 	return svc
-}
-
-// add adds a new PersistentVolume
-func (r *Wso2IsReconciler) addPersistentVolumeClaim(m wso2v1beta1.Wso2Is) *corev1.PersistentVolumeClaim {
-	pvc := &corev1.PersistentVolumeClaim{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      usPvClaimName,
-			Namespace: m.Namespace,
-		},
-		Spec: corev1.PersistentVolumeClaimSpec{
-			AccessModes: []corev1.PersistentVolumeAccessMode{
-				"ReadWriteMany",
-			},
-			Resources: corev1.ResourceRequirements{
-				Requests: corev1.ResourceList{
-					corev1.ResourceStorage: resource.MustParse("1Gi"),
-				},
-			},
-		},
-	}
-	ctrl.SetControllerReference(&m, pvc, r.Scheme)
-	return pvc
 }
 
 // addConfigMap adds a new ConfigMap
@@ -406,50 +355,6 @@ func getTomlConfig(spec wso2v1beta1.Wso2IsSpec, logger logr.Logger) string {
 	} else {
 		return spec.TomlConfig
 	}
-}
-
-// addNewIngress adds a new Ingress Controller
-func (r *Wso2IsReconciler) addNewIngress(m wso2v1beta1.Wso2Is) *v1beta1.Ingress {
-	ingress := &v1beta1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      ingName,
-			Namespace: m.Namespace,
-			Annotations: map[string]string{
-				"kubernetes.io/ingress.class":                     "nginx",
-				"nginx.ingress.kubernetes.io/backend-protocol":    "HTTPS",
-				"nginx.ingress.kubernetes.io/affinity":            "cookie",
-				"nginx.ingress.kubernetes.io/session-cookie-name": "route",
-				"nginx.ingress.kubernetes.io/session-cookie-hash": "sha1",
-			},
-		},
-		Spec: v1beta1.IngressSpec{
-			TLS: []v1beta1.IngressTLS{
-				{
-					Hosts: []string{m.Spec.Configurations.Host},
-				},
-			},
-			Rules: []v1beta1.IngressRule{
-				{
-					Host: m.Spec.Configurations.Host,
-					IngressRuleValue: v1beta1.IngressRuleValue{
-						HTTP: &v1beta1.HTTPIngressRuleValue{
-							Paths: []v1beta1.HTTPIngressPath{{
-								Path: "/",
-								Backend: v1beta1.IngressBackend{
-									ServiceName: svcName,
-									ServicePort: intstr.IntOrString{
-										IntVal: servicePortHttps,
-									},
-								},
-							}},
-						},
-					},
-				},
-			},
-		},
-	}
-	ctrl.SetControllerReference(&m, ingress, r.Scheme)
-	return ingress
 }
 
 // addNewService adds a new Service
@@ -534,7 +439,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 					},
 					Containers: []corev1.Container{{
 						Name:  deploymentName,
-						Image: "sureshmichael/wso2-is-5.11.0:rc1", //@TODO make this configurable with different versions
+						Image: containerImage,
 						Ports: []corev1.ContainerPort{{
 							ContainerPort: containerPortHttps,
 							Protocol:      "TCP",
