@@ -359,6 +359,17 @@ func getTomlConfig(spec wso2v1beta1.Wso2IsSpec, logger logr.Logger) string {
 
 // addNewService adds a new Service
 func (r *Wso2IsReconciler) addNewService(m wso2v1beta1.Wso2Is) *corev1.Service {
+
+	// Make Service type configurable
+	serviceType := corev1.ServiceTypeNodePort
+	if m.Spec.Configurations.ServiceType == "NodePort" {
+		serviceType = corev1.ServiceTypeNodePort
+	} else if m.Spec.Configurations.ServiceType == "ClusterIP" {
+		serviceType = corev1.ServiceTypeClusterIP
+	} else if m.Spec.Configurations.ServiceType == "LoadBalancer" {
+		serviceType = corev1.ServiceTypeLoadBalancer
+	}
+
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      svcName,
@@ -381,7 +392,7 @@ func (r *Wso2IsReconciler) addNewService(m wso2v1beta1.Wso2Is) *corev1.Service {
 				},
 			}},
 			Selector: labelsForWso2IS(m.Name, m.Spec.Version),
-			Type:     corev1.ServiceTypeLoadBalancer,
+			Type:     serviceType,
 		},
 	}
 	ctrl.SetControllerReference(&m, svc, r.Scheme)

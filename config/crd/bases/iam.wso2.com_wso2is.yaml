@@ -198,6 +198,9 @@ spec:
                           default: $env{NODE_IP}
                           type: string
                       type: object
+                    serviceType:
+                      default: NodePort
+                      type: string
                     superAdmin:
                       properties:
                         createAdminAccount:

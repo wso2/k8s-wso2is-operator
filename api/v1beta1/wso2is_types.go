@@ -40,6 +40,8 @@ type KeystoreMount struct {
 
 type Configurations struct {
 	Host string `json:"host"`
+	// +kubebuilder:default:="NodePort"
+	ServiceType string `json:"serviceType,omitempty"`
 	// +kubebuilder:default:={ "hostname" : "$env{HOST_NAME}", "nodeIp": "$env{NODE_IP}" }
 	Server     Server     `json:"server,omitempty" toml:"server"`
 	SuperAdmin SuperAdmin `json:"superAdmin" toml:"super_admin"`
