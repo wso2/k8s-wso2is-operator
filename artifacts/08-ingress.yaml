@@ -4,11 +4,11 @@ metadata:
   namespace: default
   name: wso2is-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx,
-    nginx.ingress.kubernetes.io/backend-protocol: HTTPS,
-    nginx.ingress.kubernetes.io/affinity: cookie,
-    nginx.ingress.kubernetes.io/session-cookie-name: route,
-    nginx.ingress.kubernetes.io/session-cookie-hash: sha1,
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
 spec:
   tls:
     - hosts:
