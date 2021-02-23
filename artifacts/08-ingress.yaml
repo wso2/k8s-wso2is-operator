@@ -12,9 +12,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - wso2is
+        - identityserver
   rules:
-    - host: wso2is
+    - host: identityserver
       http:
         paths:
           - backend:

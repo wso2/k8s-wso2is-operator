@@ -28,7 +28,7 @@ type Wso2IsSpec struct {
 	Size int32 `json:"replicas"`
 	// +kubebuilder:default:="5.11.0"
 	Version        string          `json:"version,omitempty"`
-	Configurations Configurations  `json:"configurations,omitempty"`
+	Configurations Configurations  `json:"configurations"`
 	TomlConfig     string          `json:"tomlConfig,omitempty"`
 	KeystoreMounts []KeystoreMount `json:"keystoreMounts,omitempty"`
 }
@@ -43,18 +43,22 @@ type Configurations struct {
 	// +kubebuilder:default:="NodePort"
 	ServiceType string `json:"serviceType,omitempty"`
 	// +kubebuilder:default:={ "hostname" : "$env{HOST_NAME}", "nodeIp": "$env{NODE_IP}" }
-	Server     Server     `json:"server,omitempty" toml:"server"`
-	SuperAdmin SuperAdmin `json:"superAdmin" toml:"super_admin"`
-	UserStore  UserStore  `json:"userStore" toml:"user_store"`
-	Database   Database   `json:"database" toml:"database"`
+	Server Server `json:"server,omitempty" toml:"server"`
+	// +kubebuilder:default:={ "username" : "admin", "password": "admin", "createAdminAccount": true }
+	SuperAdmin SuperAdmin `json:"superAdmin,omitempty" toml:"super_admin"`
+	// +kubebuilder:default:={ "type" : "read_write_ldap_unique_id", "connection_url": "ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}", "connection_name" : "uid=admin,ou=system", "connection_password" : "admin", "base_dn" : "dc=wso2,dc=org" }
+	UserStore UserStore `json:"userStore,omitempty" toml:"user_store"`
+	// +kubebuilder:default:={ "identityDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"},"sharedDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"} }
+	Database Database `json:"database,omitempty" toml:"database"`
 	// +kubebuilder:default:={ "https" : { "properties" : { "proxyPort" : 443 } } }
-	Transport  Transport  `json:"transport,omitempty" toml:"transport"`
-	Keystore   Keystore   `json:"keystore" toml:"keystore"`
-	Clustering Clustering `json:"clustering" toml:"clustering"`
+	Transport Transport `json:"transport,omitempty" toml:"transport,omitempty"`
+	// +kubebuilder:default:= { "primary":{"name":"wso2carbon.jks","password":"wso2carbon"} }
+	Keystore   Keystore   `json:"keystore,omitempty" toml:"keystore,omitempty"`
+	Clustering Clustering `json:"clustering,omitempty" toml:"clustering,omitempty"`
 	// +kubebuilder:default:={ "jmx" : { "rmi_server_start" : true } }
-	Monitoring Monitoring `json:"monitoring,omitempty" toml:"monitoring"`
+	Monitoring Monitoring `json:"monitoring,omitempty" toml:"monitoring,omitempty"`
 	// +kubebuilder:default:={ "hazelcastShutdownhookEnabled" : false, "hazelcastLoggingType" : "log4j"  }
-	Hazelcast Hazelcast `json:"hazelcast,omitempty" toml:"hazelcast"`
+	Hazelcast Hazelcast `json:"hazelcast,omitempty" toml:"hazelcast,omitempty"`
 }
 type Server struct {
 	// +kubebuilder:default:="$env{HOST_NAME}"
@@ -63,8 +67,10 @@ type Server struct {
 	NodeIP string `json:"nodeIp,omitempty" toml:"node_ip"`
 }
 type SuperAdmin struct {
-	Username string `json:"username" toml:"username"`
-	Password string `json:"password" toml:"password"`
+	// +kubebuilder:default:="admin"
+	Username string `json:"username,omitempty" toml:"username"`
+	// +kubebuilder:default:="admin"
+	Password string `json:"password,omitempty" toml:"password"`
 	// +kubebuilder:default:=true
 	CreateAdminAccount bool `json:"createAdminAccount,omitempty" toml:"create_admin_account"`
 }
@@ -165,23 +171,23 @@ type Keystore struct {
 }
 type Clustering struct {
 	// +kubebuilder:default:="kubernetes"
-	MembershipScheme string `json:"membership_scheme,omitempty" toml:"membership_scheme"`
+	MembershipScheme string `json:"membership_scheme,omitempty" toml:"membership_scheme,omitempty"`
 	// +kubebuilder:default:="wso2.is.domain"
-	Domain     string               `json:"domain,omitempty" toml:"domain"`
-	Properties ClusteringProperties `json:"properties" toml:"properties"`
+	Domain     string               `json:"domain,omitempty" toml:"domain,omitempty"`
+	Properties ClusteringProperties `json:"properties" toml:"properties,omitempty"`
 }
 type ClusteringProperties struct {
 	// +kubebuilder:default:="org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
-	PropertiesMembershipSchemeClassName string `json:"membershipSchemeClassName,omitempty" toml:"membershipSchemeClassName"`
+	PropertiesMembershipSchemeClassName string `json:"membershipSchemeClassName,omitempty" toml:"membershipSchemeClassName,omitempty"`
 	// +kubebuilder:default:="default"
-	PropertiesKUBERNETESNAMESPACE string `json:"KUBERNETES_NAMESPACE,omitempty" toml:"KUBERNETES_NAMESPACE"`
+	PropertiesKUBERNETESNAMESPACE string `json:"KUBERNETES_NAMESPACE,omitempty" toml:"KUBERNETES_NAMESPACE,omitempty"`
 	// +kubebuilder:default:="wso2is-service"
-	PropertiesKUBERNETESSERVICES string `json:"KUBERNETES_SERVICES,omitempty" toml:"KUBERNETES_SERVICES"`
+	PropertiesKUBERNETESSERVICES string `json:"KUBERNETES_SERVICES,omitempty" toml:"KUBERNETES_SERVICES,omitempty"`
 	// +kubebuilder:default:=true
-	PropertiesKUBERNETESMASTERSKIPSSLVERIFICATION bool `json:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty" toml:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION"`
+	PropertiesKUBERNETESMASTERSKIPSSLVERIFICATION bool `json:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty" toml:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty"`
 	// +kubebuilder:default:=false
 	PropertiesUSEDNS                bool   `json:"USE_DNS,omitempty" toml:"USE_DNS,omitempty"`
-	PropertiesKUBERNETES_API_SERVER string `json:"KUBERNETES_API_SERVER" toml:"KUBERNETES_API_SERVER"`
+	PropertiesKUBERNETES_API_SERVER string `json:"KUBERNETES_API_SERVER" toml:"KUBERNETES_API_SERVER,omitempty"`
 }
 type Jmx struct {
 	// +kubebuilder:default:=true
