@@ -124,6 +124,9 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
+	// Update service details in status
+	instance.Status.ServiceName = serviceFound.Name
+
 	// Check for ingress
 	ingressFound := v1beta1.Ingress{}
 	err = r.Get(ctx, types.NamespacedName{Name: ingName, Namespace: instance.Namespace}, &ingressFound)
@@ -135,6 +138,11 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ctrl.Result{}, err
 	}
 
+	// Update ingress details in status
+	if len(ingressFound.Status.LoadBalancer.Ingress) > 0 {
+		instance.Status.IngressHostname = ingressFound.Status.LoadBalancer.Ingress[0].Hostname
+	}
+
 	// Check if the deployment already exists, if not create a new one
 	depFound := &appsv1.Deployment{}
 	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, depFound)
@@ -144,6 +152,9 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		logger.Error(err, "Failed to get Deployment")
 		return ctrl.Result{}, err
 	}
+
+	// Update replica status
+	instance.Status.Replicas = fmt.Sprint(depFound.Spec.Replicas)
 
 	// Ensure the deployment size is the same as the spec
 	size := instance.Spec.Size
@@ -182,9 +193,6 @@ func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		}
 	}
 
-	// Update the status of the crd
-	updateStatus(instance, depFound, serviceFound, ingressFound)
-
 	return ctrl.Result{}, nil
 }
 
@@ -207,19 +215,6 @@ func getPodNames(pods []corev1.Pod) []string {
 		podNames = append(podNames, pod.Name)
 	}
 	return podNames
-}
-
-func updateStatus(instance wso2v1beta1.Wso2Is, depFound *appsv1.Deployment, serviceFound *corev1.Service, ingressFound v1beta1.Ingress) {
-	// Update service name in status
-	instance.Status.ServiceName = serviceFound.Name
-
-	// Update ingress details in status
-	if len(ingressFound.Status.LoadBalancer.Ingress) > 0 {
-		instance.Status.IngressHostname = ingressFound.Status.LoadBalancer.Ingress[0].Hostname
-	}
-
-	// Update replica status
-	instance.Status.Replicas = fmt.Sprint(depFound.Spec.Replicas)
 }
 
 func reconcileDeployment(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
