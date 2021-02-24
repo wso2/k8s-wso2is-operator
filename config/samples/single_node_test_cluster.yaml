@@ -1,9 +1,9 @@
 apiVersion: iam.wso2.com/v1beta1
 kind: Wso2Is
 metadata:
-  name: identity-server
+  name: identity-server-test
 spec:
-  replicas: 2
+  replicas: 1
   configurations:
     host: identityserver
-    serviceType: NodePort
+    serviceType: ClusterIP
