@@ -6,7 +6,7 @@ spec:
   replicas: 2
   configurations:
     host: identityserver
-    serviceType: NodePort
+    serviceType: ClusterIP
     superAdmin:
       username: admin
       password: admin
@@ -33,6 +33,4 @@ spec:
         KUBERNETES_API_SERVER: http://192.168.99.1:8002
   keystoreMounts:
     - name: samplekey1.jks
-      data: sasadsadsadasdsdsadsadasdasdsd
-    - name: samplekey2.jks
       data: sasadsadsadasdsdsadsadasdasdsd

@@ -5,6 +5,15 @@ The following CRD operator can be used to deploy WSO2 IS on your Kubernates Clus
 Server via Helm operator please refer to the given
 link:  [https://github.com/wso2/kubernetes-is](https://github.com/wso2/kubernetes-is)
 
+#### Key benefits
+- Auto healing
+- Ability to make a test clusters
+- Ability to provision multiple ISs on same cluster 
+- Custom Keystore addition 
+- Ability to mount custom deployment TOML files
+- Seameless updates
+
+
 ## Prerequisites (Development)[](https://sdk.operatorframework.io/docs/building-operators/golang/tutorial/#prerequisites)
 
 - Access to a Kubernetes v1.11.3+ cluster (v1.16.0+ if using  `apiextensions.k8s.io/v1`  CRDs).
@@ -69,15 +78,18 @@ Finally run the following command to run the operator in your cluster
 
 It is possible to deploy a stand alone version of the IS Operator in your cluster as well. You many follow the given steps in order to setup correctly.
 
-Run the given commands in correct order within your cluster
+**Prerequisites** 
+- A database configured and it should be accessible by all pods
+- A persistence storage has be configured with ReadWriteMany permission
+-- For AWS users, you can refer to Elastic File System (EFS) docs and learn about the configuration https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
+-- Microsoft Azure users can use AzureFile as the persistent storage
+-- Google Cloud users may use GCEPersistentDisk
+- Also you will need to have a Ingress controller ready, something that matches to your endpoint
 
-    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/00-namespace.yaml
-    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/01-cluster-role.yaml
-    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/02-service-account.yaml
-    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/03-cluster-role-binding.yaml
-    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/04-crd-iam.wso2.com_userstores.yaml
-    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/05-crd-iam.wso2.com_wso2is.yaml
-    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/06-controller.yaml
+
+Run the given command  within your cluster
+
+    kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/operator.yaml
     
 Finally you may apply your own configurations by refering to the formats given in samples
 https://github.com/wso2/k8s-wso2is-operator/tree/main/config/samples
