@@ -88,6 +88,17 @@ spec:
                         - properties
                       type: object
                     database:
+                      default:
+                        identityDb:
+                          password: wso2carbon
+                          type: h2
+                          url: jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          username: wso2carbon
+                        sharedDb:
+                          password: wso2carbon
+                          type: h2
+                          url: jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          username: wso2carbon
                       properties:
                         identityDb:
                           properties:
@@ -160,6 +171,10 @@ spec:
                     host:
                       type: string
                     keystore:
+                      default:
+                        primary:
+                          name: wso2carbon.jks
+                          password: wso2carbon
                       properties:
                         primary:
                           properties:
@@ -198,18 +213,24 @@ spec:
                           default: $env{NODE_IP}
                           type: string
                       type: object
+                    serviceType:
+                      default: NodePort
+                      type: string
                     superAdmin:
+                      default:
+                        createAdminAccount: true
+                        password: admin
+                        username: admin
                       properties:
                         createAdminAccount:
                           default: true
                           type: boolean
                         password:
+                          default: admin
                           type: string
                         username:
+                          default: admin
                           type: string
-                      required:
-                        - password
-                        - username
                       type: object
                     transport:
                       default:
@@ -233,6 +254,12 @@ spec:
                         - https
                       type: object
                     userStore:
+                      default:
+                        base_dn: dc=wso2,dc=org
+                        connection_name: uid=admin,ou=system
+                        connection_password: admin
+                        connection_url: ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}
+                        type: read_write_ldap_unique_id
                       properties:
                         base_dn:
                           type: string
@@ -248,12 +275,7 @@ spec:
                         - type
                       type: object
                   required:
-                    - clustering
-                    - database
                     - host
-                    - keystore
-                    - superAdmin
-                    - userStore
                   type: object
                 keystoreMounts:
                   items:
@@ -276,6 +298,7 @@ spec:
                   default: 5.11.0
                   type: string
               required:
+                - configurations
                 - replicas
               type: object
             status:

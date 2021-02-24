@@ -6,6 +6,7 @@ spec:
   replicas: 2
   configurations:
     host: identityserver
+    serviceType: NodePort
     superAdmin:
       username: admin
       password: admin
