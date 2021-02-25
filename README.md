@@ -75,7 +75,7 @@ Finally run the following command to run the operator in your cluster
 
     make run
 
-## Installation (Stand alone)
+## Installation
 
 It is possible to deploy a stand alone version of the IS Operator in your cluster as well. You many follow the given steps in order to setup correctly.
 
