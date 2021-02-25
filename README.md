@@ -97,8 +97,8 @@ Run the given command  within your cluster
     kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/operator.yaml
 
 For step by step instructions on setting up, please refer to the two articles that we've published
-[Part 01: Deploying WSO2 Identity Server 5.11.0 on Kubernetes with all new K8s Operator](https://tsmpeiris.medium.com/part-01-deploying-wso2-identity-server-5-11-0-on-kubernetes-with-all-new-k8s-operator-e6d9e76d7e7)
-[Part 02: Deploying WSO2 Identity Server 5.11.0 on Kubernetes with all new K8s Operator](https://medium.com/@tsmpeiris/part-02-deploying-wso2-identity-server-5-11-0-on-kubernetes-with-all-new-k8s-operator-5d751c1f4ba0)
+- [Part 01: Deploying WSO2 Identity Server 5.11.0 on Kubernetes with all new K8s Operator](https://tsmpeiris.medium.com/part-01-deploying-wso2-identity-server-5-11-0-on-kubernetes-with-all-new-k8s-operator-e6d9e76d7e7)
+- [Part 02: Deploying WSO2 Identity Server 5.11.0 on Kubernetes with all new K8s Operator](https://medium.com/@tsmpeiris/part-02-deploying-wso2-identity-server-5-11-0-on-kubernetes-with-all-new-k8s-operator-5d751c1f4ba0)
     
     
 Finally you may apply your own configurations by refering to the formats given in samples
