@@ -28,14 +28,13 @@ spec:
       primary:
         name: wso2carbon.jks
         password: wso2carbon
+    clustering:
+      properties:
+        KUBERNETES_API_SERVER: http://192.168.99.1:8002
     authentication:
       authenticator:
         totp:
           enable: true
-        sms_otp:
-          enable: true
-        email_otp:
-          enable: false
   keystoreMounts:
     - name: samplekey1.jks
       data: sasadsadsadasdsdsadsadasdasdsd
