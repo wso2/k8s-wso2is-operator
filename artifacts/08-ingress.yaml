@@ -1,7 +1,7 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  namespace: wso2-iam-system
+  namespace: default
   name: wso2is-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -18,9 +18,6 @@ spec:
       http:
         paths:
           - backend:
-              service:
-                name: wso2is-service
-                port:
-                  number: 9443
+              serviceName: wso2is-service
+              servicePort: 9443
             path: /
-            pathType: Prefix

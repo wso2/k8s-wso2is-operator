@@ -25,7 +25,7 @@ import (
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	networkingv1 "k8s.io/api/networking/v1"
+	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -47,7 +47,10 @@ type Wso2IsReconciler struct {
 // +kubebuilder:rbac:groups=iam.wso2.com,resources=wso2is,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=iam.wso2.com,resources=wso2is/status,verbs=get;update;patch
 
-func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *Wso2IsReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
+
+	// Get context
+	ctx := context.Background()
 
 	// Get logger
 	logger := r.Log.WithValues(deploymentName, req.NamespacedName)
@@ -125,8 +128,7 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	instance.Status.ServiceName = serviceFound.Name
 
 	// Check for ingress
-	ingressFound := networkingv1.Ingress{}
-	logger.Info("ingress name: " + ingName + "namespace: " + instance.Namespace)
+	ingressFound := v1beta1.Ingress{}
 	err = r.Get(ctx, types.NamespacedName{Name: ingName, Namespace: instance.Namespace}, &ingressFound)
 	if err != nil && errors.IsNotFound(err) {
 		logger.Info("Unable to detect Ingress in your cluster. You may configure your own")
@@ -491,7 +493,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 							},
 						},
 						LivenessProbe: &corev1.Probe{
-							ProbeHandler: corev1.ProbeHandler{
+							Handler: corev1.Handler{
 								Exec: &corev1.ExecAction{
 									Command: []string{"/bin/sh", "-c", "nc -z localhost " + fmt.Sprint(containerPortHttps)},
 								},
@@ -500,7 +502,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 							PeriodSeconds:       10,
 						},
 						ReadinessProbe: &corev1.Probe{
-							ProbeHandler: corev1.ProbeHandler{
+							Handler: corev1.Handler{
 								Exec: &corev1.ExecAction{
 									Command: []string{"/bin/sh", "-c", "nc -z localhost " + fmt.Sprint(containerPortHttps)},
 								},
@@ -509,7 +511,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 							PeriodSeconds:       10,
 						},
 						Lifecycle: &corev1.Lifecycle{
-							PreStop: &corev1.LifecycleHandler{
+							PreStop: &corev1.Handler{
 								Exec: &corev1.ExecAction{
 									Command: []string{
 										"sh",
