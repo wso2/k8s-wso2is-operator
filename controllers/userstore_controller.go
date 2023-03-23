@@ -44,8 +44,7 @@ type UserstoreReconciler struct {
 // +kubebuilder:rbac:groups=iam.wso2.com,resources=userstores,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=iam.wso2.com,resources=userstores/status,verbs=get;update;patch
 
-func (r *UserstoreReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	ctx := context.Background()
+func (r *UserstoreReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := r.Log.WithValues("userstore", req.NamespacedName)
 
 	//isInstance := wso2v1beta1.Wso2Is{}
@@ -79,7 +78,7 @@ func SpecToJson(spec wso2v1beta1.UserstoreSpec, log logr.Logger) string {
 	return string(a)
 }
 
-//@TODO check existing user stores
+// @TODO check existing user stores
 func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
 	url := "https://" + instance.Auth.Host + "/api/server/v1/userstores"
 	method := "POST"
