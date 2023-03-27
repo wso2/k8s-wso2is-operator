@@ -3,7 +3,7 @@ kind: Wso2Is
 metadata:
   name: identity-server-test
 spec:
-  replicas: 1
+  replicas: 2
   configurations:
     host: identityserver
     serviceType: ClusterIP
