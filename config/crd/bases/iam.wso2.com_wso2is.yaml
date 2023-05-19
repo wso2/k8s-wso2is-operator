@@ -486,6 +486,13 @@ spec:
                         default: admin
                         type: string
                     type: object
+                  tenant_context:
+                    default:
+                      enableTenantQualifiedUrls: true
+                    properties:
+                      enableTenantQualifiedUrls:
+                        type: boolean
+                    type: object
                   tenant_mgt:
                     properties:
                       enable_email_domain:

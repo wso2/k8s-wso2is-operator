@@ -63,7 +63,9 @@ type Configurations struct {
 	OutputAdapter  OutputAdapter      `toml:"output_adapter,omitempty" json:"output_adapter,omitempty"`
 	Clustering     Clustering         `json:"clustering,omitempty" toml:"clustering,omitempty"`
 	TenantMgt      TenantMgt          `json:"tenant_mgt,omitempty" toml:"tenant_mgt,omitempty"`
-	AdminService   AdminService       `json:"admin_service,omitempty" toml:"admin_service,omitempty"`
+	// +kubebuilder:default:={ "enableTenantQualifiedUrls":true }
+	TenantCtx    TenantCtx    `json:"tenant_context,omitempty" toml:"tenant_context,omitempty"`
+	AdminService AdminService `json:"admin_service,omitempty" toml:"admin_service,omitempty"`
 }
 
 /* Primary server configs */
@@ -406,6 +408,9 @@ type OutputAdapter struct {
 type TenantMgt struct {
 	// +kubebuilder:default:=false
 	EnableEmailDomain bool `toml:"enable_email_domain,omitempty" json:"enable_email_domain,omitempty"`
+}
+type TenantCtx struct {
+	EnableQualifiedUrls bool `toml:"enable_tenant_qualified_urls,omitempty" json:"enableTenantQualifiedUrls,omitempty"`
 }
 type Wsdl struct {
 	// +kubebuilder:default:=false
