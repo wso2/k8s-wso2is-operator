@@ -46,7 +46,7 @@ type Configurations struct {
 	Server Server `json:"server,omitempty" toml:"server"`
 	// +kubebuilder:default:={ "username" : "admin", "password": "admin", "createAdminAccount": true }
 	SuperAdmin SuperAdmin `json:"superAdmin,omitempty" toml:"super_admin"`
-	// +kubebuilder:default:={ "type" : "read_write_ldap_unique_id", "connection_url": "ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}", "connection_name" : "uid=admin,ou=system", "connection_password" : "admin", "base_dn" : "dc=wso2,dc=org" }
+	// +kubebuilder:default:={ "type" : "database_unique_id"}
 	UserStore UserStore `json:"userStore,omitempty" toml:"user_store"`
 	// +kubebuilder:default:={ "identityDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"},"sharedDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"} }
 	Database Database `json:"database,omitempty" toml:"database"`
