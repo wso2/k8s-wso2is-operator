@@ -20,6 +20,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
+	"reflect"
+
 	"github.com/BurntSushi/toml"
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
@@ -31,8 +34,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"log"
-	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -232,7 +233,7 @@ func reconcileDeployment(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log l
 }
 
 func reconcileSvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new deployment
+	// Define a new Service
 	svc := r.addNewService(instance)
 	log.Info("Creating a new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
 	err = r.Create(ctx, svc)
@@ -242,12 +243,12 @@ func reconcileSvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Log
 	} else {
 		log.Info("Successfully created new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
 	}
-	// ServiceAccount created successfully - return and requeue
+	// Service created successfully - return and requeue
 	return ctrl.Result{Requeue: true}, nil
 }
 
 func reconcileCfg(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new deployment
+	// Define a new ConfigMap
 	cfgMap := r.addConfigMap(instance, log)
 	log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
 	err = r.Create(ctx, cfgMap)
@@ -257,7 +258,7 @@ func reconcileCfg(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Log
 	} else {
 		log.Info("Successfully created new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
 	}
-	// ServiceAccount created successfully - return and requeue
+	// ConfigMap created successfully - return and requeue
 	return ctrl.Result{Requeue: true}, nil
 }
 
@@ -277,7 +278,7 @@ func reconcileSecret(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.
 }
 
 func reconcileSva(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new deployment
+	// Define a new ServiceAccount
 	svc := r.addServiceAccount(instance)
 	log.Info("Creating a new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
 	err = r.Create(ctx, svc)
