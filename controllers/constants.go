@@ -1,6 +1,6 @@
 package controllers
 
-const containerImage string = "rukshanjs/wso2is:v6.2.0-m3"
+const containerImage string = "rukshanjs/wso2is:v6.1.0"
 
 const containerPortHttps int32 = 9443
 
