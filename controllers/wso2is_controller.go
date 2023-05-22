@@ -102,6 +102,18 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, err
 	}
 
+	// Check if the tomlConfig field has changed
+	if confMap.Data["tomlConfig"] != instance.Spec.TomlConfig {
+		logger.Info("Updating the ConfigMap due to tomlConfig change")
+		confMap.Data["tomlConfig"] = instance.Spec.TomlConfig // Update the tomlConfig field
+		remountVolume(r, instance, logger, ctx)
+		if err != nil {
+			logger.Error(err, "Failed to update ConfigMap")
+			return ctrl.Result{}, err
+		}
+		logger.Info("ConfigMap updated successfully")
+	}
+
 	// Add new secret if not present
 	secretFound := &corev1.Secret{}
 	err = r.Get(ctx, types.NamespacedName{Name: secretName, Namespace: instance.Namespace}, secretFound)
@@ -557,4 +569,31 @@ func (r *Wso2IsReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&wso2v1beta1.Wso2Is{}).
 		Complete(r)
+}
+
+func remountVolume(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, ctx context.Context) (ctrl.Result, error) {
+	log.Info("Remounting volume")
+
+	// Get the ConfigMap
+	configMap := &corev1.ConfigMap{}
+	err := r.Get(ctx, types.NamespacedName{Name: configMapName, Namespace: instance.Namespace}, configMap)
+	if err != nil {
+		log.Error(err, "Failed to get ConfigMap")
+		return ctrl.Result{}, err
+	}
+
+	// Update the ConfigMap data with the new content
+	configMap.Data[configFileName] = getTomlConfig(instance.Spec, log)
+
+	// Update the ConfigMap
+	err = r.Update(ctx, configMap)
+	if err != nil {
+		log.Error(err, "Failed to update ConfigMap")
+		return ctrl.Result{}, err
+	}
+
+	log.Info("ConfigMap updated successfully")
+
+	// Return reconcile result
+	return ctrl.Result{}, nil
 }
