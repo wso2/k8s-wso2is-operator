@@ -3,12 +3,15 @@ kind: Wso2Is
 metadata:
   name: identity-server-test
 spec:
+  template:
+    annotations:
+      configmapHash: ""
   replicas: 1
   configurations:
     host: identityserver
     serviceType: ClusterIP
   tomlConfig: |
-    [server]
+    [server]  
     hostname = "localhost"
     node_ip = "127.0.0.1"
     base_path = "https://$ref{server.hostname}:${carbon.management.port}"

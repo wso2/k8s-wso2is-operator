@@ -19,6 +19,8 @@ package controllers
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"reflect"
@@ -101,11 +103,9 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		logger.Error(err, "Failed to get ConfigMap")
 		return ctrl.Result{}, err
 	}
-
 	// Check if the tomlConfig field has changed
-	if confMap.Data["tomlConfig"] != instance.Spec.TomlConfig {
+	if confMap.Data[configFileName] != instance.Spec.TomlConfig {
 		logger.Info("Updating the ConfigMap due to tomlConfig change")
-		confMap.Data["tomlConfig"] = instance.Spec.TomlConfig // Update the tomlConfig field
 		remountVolume(r, instance, logger, ctx)
 		if err != nil {
 			logger.Error(err, "Failed to update ConfigMap")
@@ -164,13 +164,29 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, err
 	}
 
+	wso2Is := &wso2v1beta1.Wso2Is{}
+	err = r.Get(ctx, types.NamespacedName{Namespace: "wso2-iam-system", Name: "identity-server-test"}, wso2Is)
+	if err != nil {
+		logger.Error(err, "Failed to get Wso2Is resource")
+		return ctrl.Result{}, err
+	}
+
+	if depFound.Spec.Template.ObjectMeta.Annotations["configmapHash"] != wso2Is.Spec.Template.Annotations["configmapHash"] {
+		depFound.Spec.Template.ObjectMeta.Annotations["configmapHash"] = wso2Is.Spec.Template.Annotations["configmapHash"]
+		err = r.Update(ctx, depFound)
+		if err != nil {
+			logger.Error(err, "Failed to update Wso2Is resource")
+			return ctrl.Result{}, err
+		}
+	}
+
 	// Update replica status
 	instance.Status.Replicas = fmt.Sprint(depFound.Spec.Replicas)
 
 	// Ensure the deployment size is the same as the spec
 	size := instance.Spec.Size
 
-	if *depFound.Spec.Replicas != size {
+	if depFound.Spec.Replicas == nil || *depFound.Spec.Replicas != size {
 		depFound.Spec.Replicas = &size
 		err = r.Update(ctx, depFound)
 		if err != nil {
@@ -423,7 +439,8 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: ls,
+					Labels:      ls,
+					Annotations: m.Spec.Template.Annotations,
 				},
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
@@ -490,7 +507,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 						VolumeMounts: []corev1.VolumeMount{
 							{
 								Name:      pvcName,
-								MountPath: "/home/wso2carbon/wso2is-5.11.0/repository/deployment/server/userstores",
+								MountPath: `/home/wso2carbon/wso2is-{m.Spec.Version}/repository/deployment/server/userstores`,
 							},
 							{
 								Name:        configMapName,
@@ -499,7 +516,7 @@ func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Dep
 							},
 							{
 								Name:      secretName,
-								MountPath: "/home/wso2carbon/wso2is-5.11.0/repository/resources/security/controller-keystores",
+								MountPath: `/home/wso2carbon/wso2is-{m.Spec.Version}/repository/resources/security/controller-keystores`,
 								ReadOnly:  true,
 							},
 						},
@@ -592,8 +609,31 @@ func remountVolume(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Lo
 		return ctrl.Result{}, err
 	}
 
+	wso2Is := &wso2v1beta1.Wso2Is{}
+	err = r.Get(ctx, types.NamespacedName{Namespace: "wso2-iam-system", Name: "identity-server-test"}, wso2Is)
+	if err != nil {
+		log.Error(err, "Failed to get Wso2Is resource")
+		return ctrl.Result{}, err
+	}
+	wso2Is.Spec.Template.Annotations["configmapHash"] = calculateConfigMapHash(configMap)
+	err = r.Update(ctx, wso2Is) //This doesn't work 2nd time?
+	if err != nil {
+		log.Error(err, "Failed to update Wso2Is resource")
+		return ctrl.Result{}, err
+	}
+
 	log.Info("ConfigMap updated successfully")
 
 	// Return reconcile result
 	return ctrl.Result{}, nil
+}
+
+func calculateConfigMapHash(configMap *corev1.ConfigMap) string {
+	data := ""
+	for _, value := range configMap.Data {
+		data += value
+	}
+
+	hash := md5.Sum([]byte(data))
+	return hex.EncodeToString(hash[:])
 }

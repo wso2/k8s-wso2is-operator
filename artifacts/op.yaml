@@ -791,6 +791,13 @@ spec:
                           default: admin
                           type: string
                       type: object
+                    tenant_context:
+                      default:
+                        enableTenantQualifiedUrls: true
+                      properties:
+                        enableTenantQualifiedUrls:
+                          type: boolean
+                      type: object
                     tenant_mgt:
                       properties:
                         enable_email_domain:
@@ -859,10 +866,19 @@ spec:
                 replicas:
                   format: int32
                   type: integer
+                template:
+                  description: Template       Template        `json:"template,omitempty"`
+                  properties:
+                    annotations:
+                      additionalProperties:
+                        type: string
+                      description: Metadata TemplateMetadata `json:"metadata,omitempty"`
+                      type: object
+                  type: object
                 tomlConfig:
                   type: string
                 version:
-                  default: 5.11.0
+                  default: 6.1.0
                   type: string
               required:
                 - configurations
@@ -894,11 +910,13 @@ spec:
       served: true
       storage: true
       subresources:
-        status: { }
+        status: {}
 status:
   acceptedNames:
     kind: ""
     plural: ""
-  conditions: [ ]
-  storedVersions: [ ]
+  conditions: []
+  storedVersions: []
+
+
 ---

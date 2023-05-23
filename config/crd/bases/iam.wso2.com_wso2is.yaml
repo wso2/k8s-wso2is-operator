@@ -561,10 +561,17 @@ spec:
               replicas:
                 format: int32
                 type: integer
+              template:
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    type: object
+                type: object
               tomlConfig:
                 type: string
               version:
-                default: 5.11.0
+                default: 6.1.0
                 type: string
             required:
             - configurations

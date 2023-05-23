@@ -26,11 +26,16 @@ import (
 // Wso2IsSpec defines the desired state of Wso2Is
 type Wso2IsSpec struct {
 	Size int32 `json:"replicas"`
-	// +kubebuilder:default:="5.11.0"
-	Version        string          `json:"version,omitempty"`
-	Configurations Configurations  `json:"configurations"`
-	TomlConfig     string          `json:"tomlConfig,omitempty"`
-	KeystoreMounts []KeystoreMount `json:"keystoreMounts,omitempty"`
+	// +kubebuilder:default:="6.1.0"
+	Version        string              `json:"version,omitempty"`
+	Configurations Configurations      `json:"configurations"`
+	TomlConfig     string              `json:"tomlConfig,omitempty"`
+	KeystoreMounts []KeystoreMount     `json:"keystoreMounts,omitempty"`
+	Template       TemplateAnnotations `json:"template,omitempty"`
+}
+
+type TemplateAnnotations struct {
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 type KeystoreMount struct {
