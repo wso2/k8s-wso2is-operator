@@ -6,7 +6,7 @@ spec:
   template:
     annotations:
       configmapHash: ""
-  replicas: 2
+  replicas: 3
   configurations:
     host: identityserver
     serviceType: ClusterIP

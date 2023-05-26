@@ -10,7 +10,7 @@ const servicePortHttp int32 = 9763
 
 const servicePortHttps int32 = 9443
 
-const svcAccountName string = "wso2is-svcaccount"
+const svcAccountName string = "wso2is-serviceaccount"
 
 const svcName string = "wso2is-service"
 

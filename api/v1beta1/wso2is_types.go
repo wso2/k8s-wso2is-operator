@@ -224,7 +224,7 @@ type Clustering struct {
 	// +kubebuilder:default:="kubernetes"
 	MembershipScheme string `json:"membership_scheme,omitempty" toml:"membership_scheme,omitempty"`
 	// +kubebuilder:default:="wso2.is.domain"
-	Domain     string               `json:"domain,omitempty" toml:"domain,omitempty"`
+	//Domain     string               `json:"domain,omitempty" toml:"domain,omitempty"`
 	Properties ClusteringProperties `json:"properties" toml:"properties,omitempty"`
 }
 
@@ -239,8 +239,8 @@ type ClusteringProperties struct {
 	// +kubebuilder:default:=true
 	PropertiesKUBERNETESMASTERSKIPSSLVERIFICATION bool `json:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty" toml:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty"`
 	// +kubebuilder:default:=false
-	PropertiesUSEDNS                bool   `json:"USE_DNS,omitempty" toml:"USE_DNS,omitempty"`
-	PropertiesKUBERNETES_API_SERVER string `json:"KUBERNETES_API_SERVER" toml:"KUBERNETES_API_SERVER,omitempty"`
+	PropertiesUSEDNS bool `json:"USE_DNS,omitempty" toml:"USE_DNS,omitempty"`
+	//PropertiesKUBERNETES_API_SERVER string `json:"KUBERNETES_API_SERVER" toml:"KUBERNETES_API_SERVER,omitempty"`
 }
 
 /* Jmx monitoring configurations */

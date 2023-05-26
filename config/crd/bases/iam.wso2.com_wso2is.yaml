@@ -256,17 +256,14 @@ spec:
                   clustering:
                     description: ' Clustering configurations'
                     properties:
-                      domain:
-                        default: wso2.is.domain
-                        type: string
                       membership_scheme:
                         default: kubernetes
                         type: string
                       properties:
-                        description: ' Clustering Properties'
+                        default: wso2.is.domain
+                        description: Domain     string               `json:"domain,omitempty"
+                          toml:"domain,omitempty"`
                         properties:
-                          KUBERNETES_API_SERVER:
-                            type: string
                           KUBERNETES_MASTER_SKIP_SSL_VERIFICATION:
                             default: true
                             type: boolean
@@ -282,8 +279,6 @@ spec:
                           membershipSchemeClassName:
                             default: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
                             type: string
-                        required:
-                        - KUBERNETES_API_SERVER
                         type: object
                     required:
                     - properties

@@ -133,7 +133,7 @@ func (r *Wso2IsReconciler) statefulSetForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.St
 									Scheme: corev1.URISchemeHTTPS,
 								},
 							},
-							PeriodSeconds: 1,
+							PeriodSeconds: 10,
 						},
 						ReadinessProbe: &corev1.Probe{
 							ProbeHandler: corev1.ProbeHandler{

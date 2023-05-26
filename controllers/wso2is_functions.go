@@ -128,7 +128,7 @@ func (r *Wso2IsReconciler) addRoleBinding(m wso2v1beta1.Wso2Is) *rbacv1.RoleBind
 		Subjects: []rbacv1.Subject{
 			{
 				Kind:      "ServiceAccount",
-				Name:      roleBindingName,
+				Name:      svcAccountName,
 				Namespace: m.Namespace,
 			},
 		},
