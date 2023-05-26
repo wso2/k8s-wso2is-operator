@@ -568,7 +568,7 @@ spec:
                           default: kubernetes
                           type: string
                         properties:
-                          description: ' Clustering Properties'
+                          description: 'Clustering Properties'
                           properties:
                             KUBERNETES_API_SERVER:
                               type: string

@@ -232,7 +232,7 @@ type Clustering struct {
 type ClusteringProperties struct {
 	// +kubebuilder:default:="org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
 	PropertiesMembershipSchemeClassName string `json:"membershipSchemeClassName,omitempty" toml:"membershipSchemeClassName,omitempty"`
-	// +kubebuilder:default:="default"
+	// +kubebuilder:default:="wso2-iam-system"
 	PropertiesKUBERNETESNAMESPACE string `json:"KUBERNETES_NAMESPACE,omitempty" toml:"KUBERNETES_NAMESPACE,omitempty"`
 	// +kubebuilder:default:="wso2is-service"
 	PropertiesKUBERNETESSERVICES string `json:"KUBERNETES_SERVICES,omitempty" toml:"KUBERNETES_SERVICES,omitempty"`

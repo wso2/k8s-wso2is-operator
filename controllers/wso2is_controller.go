@@ -17,35 +17,20 @@ limitations under the License.
 package controllers
 
 import (
-	"bytes"
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
-	"log"
+	appsv1 "k8s.io/api/apps/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	"reflect"
 
-	"github.com/BurntSushi/toml"
-	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
-
-// Wso2IsReconciler reconciles a Wso2Is object
-type Wso2IsReconciler struct {
-	client.Client
-	Log    logr.Logger
-	Scheme *runtime.Scheme
-}
 
 // +kubebuilder:rbac:groups=iam.wso2.com,resources=wso2is,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=iam.wso2.com,resources=wso2is/status,verbs=get;update;patch
@@ -57,15 +42,16 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 
 	// Fetch the WSO2IS instance
 	instance := wso2v1beta1.Wso2Is{}
+	err := r.Get(ctx, req.NamespacedName, &instance)
 
 	// Check if WSO2 custom resource is present
-	err := r.Get(ctx, req.NamespacedName, &instance)
+	err = r.Get(ctx, req.NamespacedName, &instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			// Request object not depFound, could have been deleted after reconcile request.
+			// Request object not found, could have been deleted after reconcile request.
 			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
 			// Return and don't requeue
-			logger.Info("WSO2IS resource not depFound. Ignoring since object must be deleted")
+			logger.Info("WSO2IS resource not found. Ignoring since object must be deleted")
 			return ctrl.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
@@ -154,26 +140,27 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		instance.Status.IngressHostname = ingressFound.Status.LoadBalancer.Ingress[0].Hostname
 	}
 
-	// Check if the deployment already exists, if not create a new one
-	depFound := &appsv1.Deployment{}
-	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, depFound)
+	//---------------------------StatefulSet pattern-------------------------------------------
+	// Check if the StatefulSet already exists, if not create a new one
+	statefulSet := &appsv1.StatefulSet{}
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, statefulSet)
 	if err != nil && errors.IsNotFound(err) {
-		return reconcileDeployment(r, instance, logger, err, ctx)
+		return reconcileStatefulSet(r, instance, logger, err, ctx)
 	} else if err != nil {
-		logger.Error(err, "Failed to get Deployment")
+		logger.Error(err, "Failed to get StatefulSet")
 		return ctrl.Result{}, err
 	}
 
 	wso2Is := &wso2v1beta1.Wso2Is{}
-	err = r.Get(ctx, types.NamespacedName{Namespace: "wso2-iam-system", Name: "identity-server-test"}, wso2Is)
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, wso2Is)
 	if err != nil {
 		logger.Error(err, "Failed to get Wso2Is resource")
 		return ctrl.Result{}, err
 	}
 
-	if depFound.Spec.Template.ObjectMeta.Annotations["configmapHash"] != wso2Is.Spec.Template.Annotations["configmapHash"] {
-		depFound.Spec.Template.ObjectMeta.Annotations["configmapHash"] = wso2Is.Spec.Template.Annotations["configmapHash"]
-		err = r.Update(ctx, depFound)
+	if statefulSet.Spec.Template.ObjectMeta.Annotations["configmapHash"] != wso2Is.Spec.Template.Annotations["configmapHash"] {
+		statefulSet.Spec.Template.ObjectMeta.Annotations["configmapHash"] = wso2Is.Spec.Template.Annotations["configmapHash"]
+		err = r.Update(ctx, statefulSet)
 		if err != nil {
 			logger.Error(err, "Failed to update Wso2Is resource")
 			return ctrl.Result{}, err
@@ -181,21 +168,68 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	}
 
 	// Update replica status
-	instance.Status.Replicas = fmt.Sprint(depFound.Spec.Replicas)
+	instance.Status.Replicas = fmt.Sprint(*statefulSet.Spec.Replicas)
 
-	// Ensure the deployment size is the same as the spec
+	// Ensure the StatefulSet size is the same as the spec
 	size := instance.Spec.Size
 
-	if depFound.Spec.Replicas == nil || *depFound.Spec.Replicas != size {
-		depFound.Spec.Replicas = &size
-		err = r.Update(ctx, depFound)
+	if *statefulSet.Spec.Replicas != size {
+		statefulSet.Spec.Replicas = &size
+		err = r.Update(ctx, statefulSet)
 		if err != nil {
-			logger.Error(err, "Failed to update Deployment", "Deployment.Namespace", depFound.Namespace, "Deployment.Name", depFound.Name)
+			logger.Error(err, "Failed to update StatefulSet", "StatefulSet.Namespace", statefulSet.Namespace, "StatefulSet.Name", statefulSet.Name)
 			return ctrl.Result{}, err
 		}
 		// Spec updated - return and requeue
 		return ctrl.Result{Requeue: true}, nil
 	}
+
+	//---------------------------StatefulSet pattern-------------------------------------------
+
+	//---------------------------Deployment pattern-------------------------------------------
+	//// Check if the deployment already exists, if not create a new one
+	//depFound := &appsv1.Deployment{}
+	//err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, depFound)
+	//if err != nil && errors.IsNotFound(err) {
+	//	return reconcileDeployment(r, instance, logger, err, ctx)
+	//} else if err != nil {
+	//	logger.Error(err, "Failed to get Deployment")
+	//	return ctrl.Result{}, err
+	//}
+	//
+	//wso2Is := &wso2v1beta1.Wso2Is{}
+	//err = r.Get(ctx, types.NamespacedName{Namespace: "wso2-iam-system", Name: "identity-server-test"}, wso2Is)
+	//if err != nil {
+	//	logger.Error(err, "Failed to get Wso2Is resource")
+	//	return ctrl.Result{}, err
+	//}
+	//
+	//if depFound.Spec.Template.ObjectMeta.Annotations["configmapHash"] != wso2Is.Spec.Template.Annotations["configmapHash"] {
+	//	depFound.Spec.Template.ObjectMeta.Annotations["configmapHash"] = wso2Is.Spec.Template.Annotations["configmapHash"]
+	//	err = r.Update(ctx, depFound)
+	//	if err != nil {
+	//		logger.Error(err, "Failed to update Wso2Is resource")
+	//		return ctrl.Result{}, err
+	//	}
+	//}
+	//
+	//// Update replica status
+	//instance.Status.Replicas = fmt.Sprint(depFound.Spec.Replicas)
+	//
+	//// Ensure the deployment size is the same as the spec
+	//size := instance.Spec.Size
+	//
+	//if depFound.Spec.Replicas == nil || *depFound.Spec.Replicas != size {
+	//	depFound.Spec.Replicas = &size
+	//	err = r.Update(ctx, depFound)
+	//	if err != nil {
+	//		logger.Error(err, "Failed to update Deployment", "Deployment.Namespace", depFound.Namespace, "Deployment.Name", depFound.Name)
+	//		return ctrl.Result{}, err
+	//	}
+	//	// Spec updated - return and requeue
+	//	return ctrl.Result{Requeue: true}, nil
+	//}
+	//---------------------------Deployment pattern-------------------------------------------
 
 	// Update the IS status with the pod names
 	// List the pods for this IS's deployment
@@ -220,420 +254,32 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		}
 	}
 
+	// Add new role if not present
+	roleFound := &rbacv1.Role{}
+	err = r.Get(ctx, types.NamespacedName{Name: roleName, Namespace: instance.Namespace}, roleFound)
+	if err != nil && errors.IsNotFound(err) {
+		return reconcileRole(r, instance, logger, err, ctx)
+	} else if err != nil {
+		logger.Error(err, "Failed to get Role")
+		return ctrl.Result{}, err
+	}
+
+	// Update role details in status
+	//instance.Status.ServiceName = serviceFound.Name
+
+	// Add new role binding if not present
+	roleBindingFound := &rbacv1.RoleBinding{}
+	err = r.Get(ctx, types.NamespacedName{Name: roleBindingName, Namespace: instance.Namespace}, roleBindingFound)
+	if err != nil && errors.IsNotFound(err) {
+		return reconcileRoleBinding(r, instance, logger, err, ctx)
+	} else if err != nil {
+		logger.Error(err, "Failed to get RoleBinding")
+		return ctrl.Result{}, err
+	}
+
+	// Update role binding details in status
+	//instance.Status.ServiceName = serviceFound.Name
+
 	return ctrl.Result{}, nil
-}
 
-// labelsForWso2IS returns the labels for selecting the resources
-// belonging to the given WSO2IS CR name.
-func labelsForWso2IS(depname string, version string) map[string]string {
-	return map[string]string{
-		"deployment": depname,
-		"app":        depname,
-		"monitoring": "jmx",
-		"pod":        depname,
-		"version":    version,
-	}
-}
-
-// getPodNames returns the pod names of the array of pods passed in
-func getPodNames(pods []corev1.Pod) []string {
-	var podNames []string
-	for _, pod := range pods {
-		podNames = append(podNames, pod.Name)
-	}
-	return podNames
-}
-
-func reconcileDeployment(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new deployment
-	dep := r.deploymentForWso2Is(instance)
-	log.Info("Creating a new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-
-	err = r.Create(ctx, dep)
-	if err != nil {
-		log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-		return ctrl.Result{}, err
-	} else {
-		log.Info("Successfully added new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-	}
-	// Deployment created successfully - return and requeue
-	return ctrl.Result{Requeue: true}, nil
-}
-
-func reconcileSvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new Service
-	svc := r.addNewService(instance)
-	log.Info("Creating a new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
-	err = r.Create(ctx, svc)
-	if err != nil {
-		log.Error(err, "Failed to create new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
-		return ctrl.Result{}, err
-	} else {
-		log.Info("Successfully created new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
-	}
-	// Service created successfully - return and requeue
-	return ctrl.Result{Requeue: true}, nil
-}
-
-func reconcileCfg(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new ConfigMap
-	cfgMap := r.addConfigMap(instance, log)
-	log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
-	err = r.Create(ctx, cfgMap)
-	if err != nil {
-		log.Error(err, "Failed to create new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
-		return ctrl.Result{}, err
-	} else {
-		log.Info("Successfully created new ConfigMap", "ConfigMap.Namespace", cfgMap.Namespace, "ConfigMap.Name", cfgMap.Name)
-	}
-	// ConfigMap created successfully - return and requeue
-	return ctrl.Result{Requeue: true}, nil
-}
-
-func reconcileSecret(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new secret
-	secret := r.addSecret(instance, log)
-	log.Info("Creating a new Secret", "Secret.Namespace", secret.Namespace, "Secret.Name", secret.Name)
-	err = r.Create(ctx, secret)
-	if err != nil {
-		log.Error(err, "Failed to create new Secret", "Secret.Namespace", secret.Namespace, "Secret.Name", secret.Name)
-		return ctrl.Result{}, err
-	} else {
-		log.Info("Successfully created new Secret", "Secret.Namespace", secret.Namespace, "Secret.Name", secret.Name)
-	}
-	// Secret created successfully - return and requeue
-	return ctrl.Result{Requeue: true}, nil
-}
-
-func reconcileSva(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
-	// Define a new ServiceAccount
-	svc := r.addServiceAccount(instance)
-	log.Info("Creating a new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
-	err = r.Create(ctx, svc)
-	if err != nil {
-		log.Error(err, "Failed to create new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
-		return ctrl.Result{}, err
-	} else {
-		log.Info("Successfully created new ServiceAccount", "ServiceAccount.Namespace", svc.Namespace, "ServiceAccount.Name", svc.Name)
-	}
-	// ServiceAccount created successfully - return and requeue
-	return ctrl.Result{Requeue: true}, nil
-}
-
-// addServiceAccount adds a new ServiceAccount
-func (r *Wso2IsReconciler) addServiceAccount(m wso2v1beta1.Wso2Is) *corev1.ServiceAccount {
-	svc := &corev1.ServiceAccount{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      svcAccountName,
-			Namespace: m.Namespace,
-		},
-	}
-	ctrl.SetControllerReference(&m, svc, r.Scheme)
-	return svc
-}
-
-// addConfigMap adds a new ConfigMap
-func (r *Wso2IsReconciler) addConfigMap(m wso2v1beta1.Wso2Is, logger logr.Logger) *corev1.ConfigMap {
-	configMap := &corev1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      configMapName,
-			Namespace: m.Namespace,
-		},
-		Data: map[string]string{
-			configFileName: getTomlConfig(m.Spec, logger),
-		},
-	}
-	ctrl.SetControllerReference(&m, configMap, r.Scheme)
-	return configMap
-}
-
-func (r *Wso2IsReconciler) addSecret(m wso2v1beta1.Wso2Is, logger logr.Logger) *corev1.Secret {
-	//append all secrets to here
-	secretsMap := map[string][]byte{}
-	//mount keystore secrets to Kubernetes secrets
-	for _, element := range m.Spec.KeystoreMounts {
-		secretsMap[element.Name] = []byte(element.Data)
-	}
-	secret := &corev1.Secret{
-		TypeMeta: metav1.TypeMeta{},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      secretName,
-			Namespace: m.Namespace,
-		},
-		Data: secretsMap,
-	}
-	ctrl.SetControllerReference(&m, secret, r.Scheme)
-	return secret
-}
-
-func getTomlConfig(spec wso2v1beta1.Wso2IsSpec, logger logr.Logger) string {
-	if len(spec.TomlConfig) == 0 {
-		buf := new(bytes.Buffer)
-		if err := toml.NewEncoder(buf).Encode(spec.Configurations); err != nil {
-			log.Println(err)
-		}
-		logger.Info(buf.String())
-		return buf.String()
-	} else {
-		return spec.TomlConfig
-	}
-}
-
-// addNewService adds a new Service
-func (r *Wso2IsReconciler) addNewService(m wso2v1beta1.Wso2Is) *corev1.Service {
-
-	// Make Service type configurable
-	serviceType := corev1.ServiceTypeNodePort
-	if m.Spec.Configurations.ServiceType == "NodePort" {
-		serviceType = corev1.ServiceTypeNodePort
-	} else if m.Spec.Configurations.ServiceType == "ClusterIP" {
-		serviceType = corev1.ServiceTypeClusterIP
-	} else if m.Spec.Configurations.ServiceType == "LoadBalancer" {
-		serviceType = corev1.ServiceTypeLoadBalancer
-	}
-
-	svc := &corev1.Service{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      svcName,
-			Namespace: m.Namespace,
-		},
-		Spec: corev1.ServiceSpec{
-			Ports: []corev1.ServicePort{{
-				Name:     "servlet-http",
-				Protocol: "TCP",
-				Port:     servicePortHttp,
-				TargetPort: intstr.IntOrString{
-					IntVal: servicePortHttp,
-				},
-			}, {
-				Name:     "servlet-https",
-				Protocol: "TCP",
-				Port:     servicePortHttps,
-				TargetPort: intstr.IntOrString{
-					IntVal: servicePortHttps,
-				},
-			}},
-			Selector: labelsForWso2IS(m.Name, m.Spec.Version),
-			Type:     serviceType,
-		},
-	}
-	ctrl.SetControllerReference(&m, svc, r.Scheme)
-	return svc
-}
-
-// New deployment for WSO2IS
-func (r *Wso2IsReconciler) deploymentForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.Deployment {
-	ls := labelsForWso2IS(m.Name, m.Spec.Version)
-	replicas := m.Spec.Size
-	runasuser := int64(802)
-
-	dep := &appsv1.Deployment{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      m.Name,
-			Namespace: m.Namespace,
-		},
-		Spec: appsv1.DeploymentSpec{
-			Replicas: &replicas,
-			Selector: &metav1.LabelSelector{
-				MatchLabels: ls,
-			},
-			Template: corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels:      ls,
-					Annotations: m.Spec.Template.Annotations,
-				},
-				Spec: corev1.PodSpec{
-					Volumes: []corev1.Volume{
-						{
-							Name: pvcName,
-							VolumeSource: corev1.VolumeSource{
-								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-									ClaimName: usPvClaimName,
-								},
-							},
-						},
-						{
-							Name: configMapName,
-							VolumeSource: corev1.VolumeSource{
-								ConfigMap: &corev1.ConfigMapVolumeSource{
-									LocalObjectReference: corev1.LocalObjectReference{
-										Name: configMapName,
-									},
-								},
-							},
-						},
-						{
-							Name: secretName,
-							VolumeSource: corev1.VolumeSource{
-								Secret: &corev1.SecretVolumeSource{
-									SecretName: secretName,
-								},
-							},
-						},
-					},
-					Containers: []corev1.Container{{
-						Name:  deploymentName,
-						Image: containerImage,
-						Ports: []corev1.ContainerPort{{
-							ContainerPort: containerPortHttps,
-							Protocol:      "TCP",
-						}, {
-							ContainerPort: containerPortHttp,
-							Protocol:      "TCP",
-						}},
-						Env: []corev1.EnvVar{{
-							Name: "NODE_IP",
-							ValueFrom: &corev1.EnvVarSource{
-								FieldRef: &corev1.ObjectFieldSelector{
-									FieldPath: "status.podIP",
-								},
-							},
-						}, {
-							Name:  "HOST_NAME",
-							Value: m.Spec.Configurations.Host,
-						}},
-						/* @TODO Please uncomment for live production
-						Resources: corev1.ResourceRequirements{
-							Requests: corev1.ResourceList{
-								corev1.ResourceCPU:    resource.MustParse("1Gi"),
-								corev1.ResourceMemory: resource.MustParse("1000m"),
-							},
-							Limits: corev1.ResourceList{
-								corev1.ResourceCPU:    resource.MustParse("2Gi"),
-								corev1.ResourceMemory: resource.MustParse("2000m"),
-							},
-						},
-						*/
-						VolumeMounts: []corev1.VolumeMount{
-							{
-								Name:      pvcName,
-								MountPath: `/home/wso2carbon/wso2is-{m.Spec.Version}/repository/deployment/server/userstores`,
-							},
-							{
-								Name:        configMapName,
-								MountPath:   "/home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml",
-								SubPathExpr: configFileName,
-							},
-							{
-								Name:      secretName,
-								MountPath: `/home/wso2carbon/wso2is-{m.Spec.Version}/repository/resources/security/controller-keystores`,
-								ReadOnly:  true,
-							},
-						},
-						LivenessProbe: &corev1.Probe{
-							ProbeHandler: corev1.ProbeHandler{
-								Exec: &corev1.ExecAction{
-									Command: []string{"/bin/sh", "-c", "nc -z localhost " + fmt.Sprint(containerPortHttps)},
-								},
-							},
-							InitialDelaySeconds: 250,
-							PeriodSeconds:       10,
-						},
-						ReadinessProbe: &corev1.Probe{
-							ProbeHandler: corev1.ProbeHandler{
-								Exec: &corev1.ExecAction{
-									Command: []string{"/bin/sh", "-c", "nc -z localhost " + fmt.Sprint(containerPortHttps)},
-								},
-							},
-							InitialDelaySeconds: 250,
-							PeriodSeconds:       10,
-						},
-						Lifecycle: &corev1.Lifecycle{
-							PreStop: &corev1.LifecycleHandler{
-								Exec: &corev1.ExecAction{
-									Command: []string{
-										"sh",
-										"-c",
-										"${WSO2_SERVER_HOME}/bin/wso2server.sh stop",
-									},
-								},
-							},
-						},
-						ImagePullPolicy: "IfNotPresent",
-						SecurityContext: &corev1.SecurityContext{
-							RunAsUser: &runasuser,
-						},
-					}},
-					ServiceAccountName: svcAccountName,
-					HostAliases: []corev1.HostAlias{{
-						IP:        "127.0.0.1",
-						Hostnames: []string{m.Spec.Configurations.Host},
-					}},
-				},
-			},
-			Strategy: appsv1.DeploymentStrategy{
-				Type: "RollingUpdate",
-				RollingUpdate: &appsv1.RollingUpdateDeployment{
-					MaxUnavailable: &intstr.IntOrString{
-						Type:   intstr.Int,
-						IntVal: 0,
-					},
-					MaxSurge: &intstr.IntOrString{
-						Type:   intstr.Int,
-						IntVal: 1,
-					},
-				},
-			},
-			MinReadySeconds: 30,
-		},
-	}
-	// Set WSO2IS instance as the owner and controller
-	ctrl.SetControllerReference(&m, dep, r.Scheme)
-	return dep
-}
-
-func (r *Wso2IsReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&wso2v1beta1.Wso2Is{}).
-		Complete(r)
-}
-
-func remountVolume(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, ctx context.Context) (ctrl.Result, error) {
-	log.Info("Remounting volume")
-
-	// Get the ConfigMap
-	configMap := &corev1.ConfigMap{}
-	err := r.Get(ctx, types.NamespacedName{Name: configMapName, Namespace: instance.Namespace}, configMap)
-	if err != nil {
-		log.Error(err, "Failed to get ConfigMap")
-		return ctrl.Result{}, err
-	}
-
-	// Update the ConfigMap data with the new content
-	configMap.Data[configFileName] = getTomlConfig(instance.Spec, log)
-
-	// Update the ConfigMap
-	err = r.Update(ctx, configMap)
-	if err != nil {
-		log.Error(err, "Failed to update ConfigMap")
-		return ctrl.Result{}, err
-	}
-
-	wso2Is := &wso2v1beta1.Wso2Is{}
-	err = r.Get(ctx, types.NamespacedName{Namespace: "wso2-iam-system", Name: "identity-server-test"}, wso2Is)
-	if err != nil {
-		log.Error(err, "Failed to get Wso2Is resource")
-		return ctrl.Result{}, err
-	}
-	wso2Is.Spec.Template.Annotations["configmapHash"] = calculateConfigMapHash(configMap)
-	err = r.Update(ctx, wso2Is) //This doesn't work 2nd time?
-	if err != nil {
-		log.Error(err, "Failed to update Wso2Is resource")
-		return ctrl.Result{}, err
-	}
-
-	log.Info("ConfigMap updated successfully")
-
-	// Return reconcile result
-	return ctrl.Result{}, nil
-}
-
-func calculateConfigMapHash(configMap *corev1.ConfigMap) string {
-	data := ""
-	for _, value := range configMap.Data {
-		data += value
-	}
-
-	hash := md5.Sum([]byte(data))
-	return hex.EncodeToString(hash[:])
 }

@@ -271,7 +271,7 @@ spec:
                             default: true
                             type: boolean
                           KUBERNETES_NAMESPACE:
-                            default: default
+                            default: wso2-iam-system
                             type: string
                           KUBERNETES_SERVICES:
                             default: wso2is-service
