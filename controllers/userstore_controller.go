@@ -80,13 +80,13 @@ func SpecToJson(spec wso2v1beta1.UserstoreSpec, log logr.Logger) string {
 
 // @TODO check existing user stores
 func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
-	url := "https://" + instance.Auth.Host + "/api/server/v1/userstores"
+	url := "https://" + instance.Spec.Auth.Host + "/api/server/v1/userstores"
 	method := "POST"
+	payload := strings.NewReader(SpecToJson(instance.Spec, log))
 
 	log.Info("Reading from: " + url)
 
-	payload := strings.NewReader(SpecToJson(instance.Spec, log))
-
+	// Send HTTP request to create userstore
 	client := &http.Client{}
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: instance.Spec.InsecureSkipVerify} //@TODO Set it to HTTP transport, make skip insecure an annotation
 	req, err := http.NewRequest(method, url, payload)
@@ -95,7 +95,7 @@ func GenerateUserstore(instance wso2v1beta1.Userstore, log logr.Logger) {
 		log.Error(err, "An error has occured")
 		return
 	}
-	encodedToken := b64.StdEncoding.EncodeToString([]byte(instance.Auth.Username + ":" + instance.Auth.Password))
+	encodedToken := b64.StdEncoding.EncodeToString([]byte(instance.Spec.Auth.Username + ":" + instance.Spec.Auth.Password))
 	req.Header.Add("Authorization", "Basic "+encodedToken)
 	req.Header.Add("Content-Type", "application/json")
 	res, err := client.Do(req)

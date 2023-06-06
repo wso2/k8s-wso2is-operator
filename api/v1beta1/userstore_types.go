@@ -32,6 +32,7 @@ type UserstoreSpec struct {
 	Properties  []UserstoreProperties `json:"properties"`
 	// +kubebuilder:default:=false
 	InsecureSkipVerify bool `json:"insecureSkipVerify,omitempty"`
+	Auth               Auth `json:"auth"`
 }
 
 type Auth struct {
@@ -61,8 +62,6 @@ type Userstore struct {
 
 	Spec   UserstoreSpec   `json:"spec,omitempty"`
 	Status UserstoreStatus `json:"status,omitempty"`
-
-	Auth Auth `json:"auth"`
 }
 
 // +kubebuilder:object:root=true
