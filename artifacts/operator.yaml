@@ -27,7 +27,7 @@ metadata:
   name: controller
 rules:
   - apiGroups:
-      - ""
+      - ''
     resources:
       - pods
       - namespaces
@@ -205,13 +205,11 @@ subjects:
     name: controller
     namespace: wso2-iam-system
 ---
-
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.3.0
+    controller-gen.kubebuilder.io/version: v0.6.2
   creationTimestamp: null
   name: userstores.iam.wso2.com
 spec:
@@ -229,36 +227,29 @@ spec:
           description: Userstore is the Schema for the userstores API
           properties:
             apiVersion:
-              description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
               type: string
-            auth:
-              properties:
-                host:
-                  type: string
-                password:
-                  type: string
-                username:
-                  type: string
-              required:
-                - host
-                - password
-                - username
-              type: object
             kind:
-              description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
               type: string
             metadata:
               type: object
             spec:
-              description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN! NOTE:
-              json tags are required.  Any new fields you add must have json tags
-              for the fields to be serialized. UserstoreSpec defines the desired state
-              of Userstore'
+              description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN! NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized. UserstoreSpec defines the desired state of Userstore'
               properties:
+                auth:
+                  properties:
+                    host:
+                      type: string
+                    password:
+                      type: string
+                    username:
+                      type: string
+                  required:
+                    - host
+                    - password
+                    - username
+                  type: object
                 description:
                   type: string
                 insecureSkipVerify:
@@ -279,10 +270,10 @@ spec:
                     type: object
                   type: array
                 typeId:
-                  description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                  Important: Run "make" to regenerate code after modifying this file'
+                  description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster Important: Run "make" to regenerate code after modifying this file'
                   type: string
               required:
+                - auth
                 - description
                 - name
                 - properties
@@ -291,19 +282,17 @@ spec:
             status:
               description: UserstoreStatus defines the observed state of Userstore
               type: object
-          required:
-            - auth
           type: object
       served: true
       storage: true
       subresources:
-        status: { }
+        status: {}
 status:
   acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: [ ]
-  storedVersions: [ ]
+    kind: ''
+    plural: ''
+  conditions: []
+  storedVersions: []
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -343,14 +332,10 @@ spec:
           description: Wso2Is is the Schema for the wso2is API
           properties:
             apiVersion:
-              description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
               type: string
             kind:
-              description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
               type: string
             metadata:
               type: object
@@ -513,9 +498,9 @@ spec:
                                     encodingMethod: Base32
                                     enrolUserInAuthenticationFlow: true
                                     secondaryUserstore: primary
-                                    timeStepSize: "30"
+                                    timeStepSize: '30'
                                     usecase: local
-                                    windowSize: "3"
+                                    windowSize: '3'
                                   description: ' TOTP parameters'
                                   properties:
                                     Issuer:
@@ -546,13 +531,13 @@ spec:
                                       default: primary
                                       type: string
                                     timeStepSize:
-                                      default: "30"
+                                      default: '30'
                                       type: string
                                     usecase:
                                       default: local
                                       type: string
                                     windowSize:
-                                      default: "3"
+                                      default: '3'
                                       type: string
                                   type: object
                               type: object
@@ -568,10 +553,8 @@ spec:
                           default: kubernetes
                           type: string
                         properties:
-                          description: ' Clustering Properties'
+                          description: 'Clustering Properties'
                           properties:
-                            KUBERNETES_API_SERVER:
-                              type: string
                             KUBERNETES_MASTER_SKIP_SSL_VERIFICATION:
                               default: true
                               type: boolean
@@ -587,8 +570,6 @@ spec:
                             membershipSchemeClassName:
                               default: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
                               type: string
-                          required:
-                            - KUBERNETES_API_SERVER
                           type: object
                       required:
                         - properties
@@ -735,7 +716,7 @@ spec:
                             password:
                               type: string
                             port:
-                              default: "587"
+                              default: '587'
                               type: string
                             username:
                               type: string
@@ -791,6 +772,13 @@ spec:
                           default: admin
                           type: string
                       type: object
+                    tenant_context:
+                      default:
+                        enableTenantQualifiedUrls: true
+                      properties:
+                        enableTenantQualifiedUrls:
+                          type: boolean
+                      type: object
                     tenant_mgt:
                       properties:
                         enable_email_domain:
@@ -823,11 +811,7 @@ spec:
                       type: object
                     userStore:
                       default:
-                        base_dn: dc=wso2,dc=org
-                        connection_name: uid=admin,ou=system
-                        connection_password: admin
-                        connection_url: ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}
-                        type: read_write_ldap_unique_id
+                        type: database_unique_id
                       description: ' UserStore configs'
                       properties:
                         base_dn:
@@ -863,10 +847,19 @@ spec:
                 replicas:
                   format: int32
                   type: integer
+                template:
+                  description: Template       Template        `json:"template,omitempty"`
+                  properties:
+                    annotations:
+                      additionalProperties:
+                        type: string
+                      description: Metadata TemplateMetadata `json:"metadata,omitempty"`
+                      type: object
+                  type: object
                 tomlConfig:
                   type: string
                 version:
-                  default: 5.11.0
+                  default: 6.1.0
                   type: string
               required:
                 - configurations
@@ -878,9 +871,7 @@ spec:
                 ingressHostname:
                   type: string
                 nodes:
-                  description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
+                  description: 'INSERT ADDITIONAL STATUS FIELD - define observed state of cluster Important: Run "make" to regenerate code after modifying this file'
                   items:
                     type: string
                   type: array
@@ -898,32 +889,13 @@ spec:
       served: true
       storage: true
       subresources:
-        status: { }
+        status: {}
 status:
   acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: [ ]
-  storedVersions: [ ]
+    kind: ''
+    plural: ''
+  conditions: []
+  storedVersions: []
+
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: controller
-  namespace: wso2-iam-system
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: controller
-  template:
-    metadata:
-      annotations:
-        sidecar.istio.io/inject: "false"
-      labels:
-        app: controller
-    spec:
-      containers:
-        - name: controller
-          image: sureshmichael/wso2-iam-operator:latest
-      serviceAccountName: controller
+

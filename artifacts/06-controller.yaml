@@ -11,11 +11,11 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/inject: "false"
+        sidecar.istio.io/inject: 'false'
       labels:
         app: controller
     spec:
       containers:
         - name: controller
-          image: sureshmichael/wso2-iam-operator:latest
+          image: sureshmichael/wso2-iam-operator:latest # TODO: change this
       serviceAccountName: controller
