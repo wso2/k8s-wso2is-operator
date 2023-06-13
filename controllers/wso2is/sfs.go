@@ -1,28 +1,34 @@
-package controllers
+package wso2is
 
 import (
+	"context"
 	"fmt"
+
+	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
+	"github.com/wso2/k8s-wso2is-operator/variables"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-func (r *Wso2IsReconciler) statefulSetForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.StatefulSet {
+func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.StatefulSet {
 	ls := labelsForWso2IS(m.Name, m.Spec.Version)
 	replicas := m.Spec.Size
 	runasuser := int64(802)
 
-	statefulSet := &appsv1.StatefulSet{
+	sfs := &appsv1.StatefulSet{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
 			Namespace: m.Namespace,
 		},
 		Spec: appsv1.StatefulSetSpec{
 			Replicas:    &replicas,
-			ServiceName: svcName,
+			ServiceName: variables.ServiceName,
 			Selector: &metav1.LabelSelector{
 				MatchLabels: ls,
 			},
@@ -34,40 +40,40 @@ func (r *Wso2IsReconciler) statefulSetForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.St
 				Spec: corev1.PodSpec{
 					Volumes: []corev1.Volume{
 						{
-							Name: pvName,
+							Name: variables.PersistenVolumeName,
 							VolumeSource: corev1.VolumeSource{
 								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-									ClaimName: usPvClaimName,
+									ClaimName: variables.UserstorePVCName,
 								},
 							},
 						},
 						{
-							Name: configMapName,
+							Name: variables.ConfigMapName,
 							VolumeSource: corev1.VolumeSource{
 								ConfigMap: &corev1.ConfigMapVolumeSource{
 									LocalObjectReference: corev1.LocalObjectReference{
-										Name: configMapName,
+										Name: variables.ConfigMapName,
 									},
 								},
 							},
 						},
 						{
-							Name: secretName,
+							Name: variables.SecretName,
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
-									SecretName: secretName,
+									SecretName: variables.SecretName,
 								},
 							},
 						},
 					},
 					Containers: []corev1.Container{{
-						Name:  deploymentName,
-						Image: containerImage,
+						Name:  variables.DeploymentName,
+						Image: variables.ContainerImage,
 						Ports: []corev1.ContainerPort{{
-							ContainerPort: containerPortHttps,
+							ContainerPort: variables.ContainerPortHttps,
 							Protocol:      "TCP",
 						}, {
-							ContainerPort: containerPortHttp,
+							ContainerPort: variables.ContainerPortHttp,
 							Protocol:      "TCP",
 						}},
 						Env: []corev1.EnvVar{{
@@ -97,16 +103,16 @@ func (r *Wso2IsReconciler) statefulSetForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.St
 						*/
 						VolumeMounts: []corev1.VolumeMount{
 							{
-								Name:      pvName,
+								Name:      variables.PersistenVolumeName,
 								MountPath: fmt.Sprintf("/home/wso2carbon/wso2is-%s/repository/deployment/server/userstores", m.Spec.Version),
 							},
 							{
-								Name:        configMapName,
+								Name:        variables.ConfigMapName,
 								MountPath:   "/home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml",
-								SubPathExpr: configFileName,
+								SubPathExpr: "deployment.toml",
 							},
 							{
-								Name:      secretName,
+								Name:      variables.SecretName,
 								MountPath: fmt.Sprintf("/home/wso2carbon/wso2is-%s/repository/resources/security/controller-keystores", m.Spec.Version),
 								ReadOnly:  true,
 							},
@@ -162,7 +168,7 @@ func (r *Wso2IsReconciler) statefulSetForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.St
 							RunAsUser: &runasuser,
 						},
 					}},
-					ServiceAccountName: svcAccountName,
+					ServiceAccountName: variables.ServiceAccountName,
 					//HostAliases: []corev1.HostAlias{{
 					//	IP:        "127.0.0.1",
 					//	Hostnames: []string{m.Spec.Configurations.Host},
@@ -173,6 +179,61 @@ func (r *Wso2IsReconciler) statefulSetForWso2Is(m wso2v1beta1.Wso2Is) *appsv1.St
 		},
 	}
 	// Set WSO2IS instance as the owner and controller
-	ctrl.SetControllerReference(&m, statefulSet, r.Scheme)
-	return statefulSet
+	ctrl.SetControllerReference(&m, sfs, r.Scheme)
+	return sfs
+}
+
+func reconcileStatefulSet(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
+	sfsDefinition := r.defineStatefulSet(instance)
+	sfs := &appsv1.StatefulSet{}
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, sfs)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			log.Info("StatefulSet resource " + instance.Name + " not found. Creating or re-creating statefulset")
+			err = r.Create(ctx, sfsDefinition)
+			if err != nil {
+				log.Error(err, "Failed to create new StatefulSet", "StatefulSet.Namespace", sfsDefinition.Namespace, "StatefulSet.Name", sfsDefinition.Name)
+				return ctrl.Result{}, err
+			}
+		} else {
+			log.Info("Failed to get statefulset resource " + instance.Name + ". Re-running reconcile.")
+			return ctrl.Result{}, err
+		}
+	} else {
+		log.Info("Found StatefulSet")
+		// Note: For simplication purposes StatefulSets are not updated - see deployment section
+		// wso2Is := &wso2v1beta1.Wso2Is{}
+		// err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, wso2Is)
+		// if err != nil {
+		// 	log.Error(err, "Failed to get Wso2Is resource")
+		// 	return ctrl.Result{}, err
+		// }
+
+		//if sfs.Spec.Template.ObjectMeta.Annotations["configmapHash"] != instance.Spec.Template.Annotations["configmapHash"] {
+		//	sfs.Spec.Template.ObjectMeta.Annotations["configmapHash"] = instance.Spec.Template.Annotations["configmapHash"]
+		//	err = r.Update(ctx, sfs)
+		//	if err != nil {
+		//		log.Error(err, "Failed to update Wso2Is resource")
+		//		return ctrl.Result{}, err
+		//	}
+		//}
+
+		// Update replica status
+		instance.Status.Replicas = fmt.Sprint(*sfs.Spec.Replicas)
+
+		// Ensure the StatefulSet size is the same as the spec
+		size := instance.Spec.Size
+
+		if *sfs.Spec.Replicas != size {
+			sfs.Spec.Replicas = &size
+			err = r.Update(ctx, sfs)
+			if err != nil {
+				log.Error(err, "Failed to update StatefulSet", "StatefulSet.Namespace", sfs.Namespace, "StatefulSet.Name", sfs.Name)
+				return ctrl.Result{}, err
+			}
+			// Spec updated - return and requeue
+			return ctrl.Result{Requeue: true}, nil
+		}
+	}
+	return ctrl.Result{}, nil
 }

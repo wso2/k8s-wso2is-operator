@@ -1,4 +1,4 @@
-package controllers
+package wso2is
 
 import (
 	"github.com/go-logr/logr"

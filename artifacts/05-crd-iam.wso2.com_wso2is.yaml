@@ -566,6 +566,8 @@ spec:
                   type: object
                 tomlConfig:
                   type: string
+                tomlConfigFile:
+                  type: string
                 version:
                   default: 6.1.0
                   type: string

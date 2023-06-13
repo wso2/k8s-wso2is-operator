@@ -18,6 +18,8 @@ package main
 
 import (
 	"flag"
+	"github.com/wso2/k8s-wso2is-operator/controllers/userstore"
+	"github.com/wso2/k8s-wso2is-operator/controllers/wso2is"
 	"os"
 	"time"
 
@@ -29,7 +31,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
-	"github.com/wso2/k8s-wso2is-operator/controllers"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -71,7 +72,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.Wso2IsReconciler{
+	if err = (&wso2is.Wso2IsReconciler{
 		Client: mgr.GetClient(),
 		Log:    ctrl.Log.WithName("controllers").WithName("Wso2Is"),
 		Scheme: mgr.GetScheme(),
@@ -79,7 +80,7 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Wso2Is")
 		os.Exit(1)
 	}
-	if err = (&controllers.UserstoreReconciler{
+	if err = (&userstore.UserstoreReconciler{
 		Client: mgr.GetClient(),
 		Log:    ctrl.Log.WithName("controllers").WithName("Userstore"),
 		Scheme: mgr.GetScheme(),

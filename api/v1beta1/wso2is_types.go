@@ -30,6 +30,7 @@ type Wso2IsSpec struct {
 	Version        string              `json:"version,omitempty"`
 	Configurations Configurations      `json:"configurations"`
 	TomlConfig     string              `json:"tomlConfig,omitempty"`
+	TomlConfigFile string              `json:"tomlConfigFile,omitempty"`
 	KeystoreMounts []KeystoreMount     `json:"keystoreMounts,omitempty"`
 	Template       TemplateAnnotations `json:"template,omitempty"`
 }

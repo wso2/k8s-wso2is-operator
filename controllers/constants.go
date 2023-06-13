@@ -1,32 +1,34 @@
 package controllers
 
-const containerImage string = "rukshanjs/wso2is:v6.1.0"
+const something = ""
 
-const containerPortHttps int32 = 9443
+// const containerImage string = "rukshanjs/wso2is:v6.1.0"
 
-const containerPortHttp int32 = 9763
+// const containerPortHttps int32 = 9443
 
-const servicePortHttp int32 = 9763
+// const containerPortHttp int32 = 9763
 
-const servicePortHttps int32 = 9443
+// const servicePortHttp int32 = 9763
 
-const svcAccountName string = "wso2is-serviceaccount"
+// const servicePortHttps int32 = 9443
 
-const svcName string = "wso2is-service"
+// const svcAccountName string = "wso2is-serviceaccount"
 
-const configMapName string = "identity-server-conf"
+// const svcName string = "wso2is-service"
 
-const ingName string = "wso2is-ingress"
+// // var variables.ConfigMapName string = "identity-server-conf"
 
-const deploymentName string = "wso2is"
+//
 
-const configFileName string = "deployment.toml"
+// const deploymentName string = "wso2is"
 
-const secretName string = "wso2is-secret"
+// const configFileName string = "deployment.toml"
 
-const roleName string = "endpoints-reader-role"
-const roleBindingName string = "endpoints-reader-role-wso2-binding"
+// const secretName string = "wso2is-secret"
 
-const usPvClaimName string = "identity-server-shared-userstores-volume-claim"
+// const roleName string = "endpoints-reader-role"
+// const roleBindingName string = "endpoints-reader-role-wso2-binding"
 
-const pvName string = "user-store-persistent-storage"
+// const usPvClaimName string = "identity-server-shared-userstores-volume-claim"
+
+// const pvName string = "user-store-persistent-storage"
