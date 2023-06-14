@@ -44,7 +44,7 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	instance := wso2v1beta1.Wso2Is{}
 	//err := r.Get(ctx, req.NamespacedName, &instance)
 	// TODO: literal strings remove.
-	err := r.Get(ctx, types.NamespacedName{Name: "identity-server-test", Namespace: variables.Wso2IsNamespace}, &instance)
+	err := r.Get(ctx, types.NamespacedName{Name: "wso2is", Namespace: variables.Wso2IsNamespace}, &instance)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// Request object not found, could have been deleted after reconcile request.

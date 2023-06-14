@@ -1,7 +1,7 @@
 apiVersion: iam.wso2.com/v1beta1
 kind: Wso2Is
 metadata:
-  name: identity-server-test
+  name: wso2is
   namespace: wso2-iam-system
 spec:
   template:
@@ -18,8 +18,8 @@ spec:
     base_path = "https://$ref{server.hostname}"
 
     [super_admin]
-    username = "ruks2"
-    password = "ruks2"
+    username = "testing"
+    password = "testing"
     create_admin_account = true
 
     [user_store]

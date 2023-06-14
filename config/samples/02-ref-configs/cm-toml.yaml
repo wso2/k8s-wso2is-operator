@@ -15,7 +15,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: identity-server-conf
+  name: myis-config
   namespace: wso2-iam-system
 
 data:
@@ -26,8 +26,8 @@ data:
     base_path = "https://$ref{server.hostname}"
 
     [super_admin]
-    username = "admin5"
-    password = "admin5"
+    username = "rukis"
+    password = "rukis"
     create_admin_account = true
 
     [user_store]

@@ -3,14 +3,14 @@
 apiVersion: iam.wso2.com/v1beta1
 kind: Wso2Is
 metadata:
-  name: identity-server-test
+  name: wso2is
   namespace: wso2-iam-system
 spec:
   template:
     annotations:
       configmapHash: ''
-  replicas: 1
+  replicas: 2
   configurations:
     host: identityserver
     serviceType: ClusterIP
-  tomlConfigFile: identity-server-conf
+  tomlConfigFile: myis-config
