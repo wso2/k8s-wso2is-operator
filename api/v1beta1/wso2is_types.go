@@ -66,7 +66,7 @@ type Configurations struct {
 	Hazelcast      Hazelcast          `json:"hazelcast,omitempty" toml:"hazelcast,omitempty"`
 	Authentication StepAuthentication `json:"authentication,omitempty" toml:"authentication,omitempty"`
 	Recaptcha      Recaptcha          `json:"recaptcha,omitempty" toml:"recaptcha,omitempty"`
-	OutputAdapter  OutputAdapter      `toml:"output_adapter,omitempty" json:"output_adapter,omitempty"`
+	OutputAdapter  OutputAdapter      `json:"output_adapter,omitempty" toml:"output_adapter,omitempty"`
 	Clustering     Clustering         `json:"clustering,omitempty" toml:"clustering,omitempty"`
 	TenantMgt      TenantMgt          `json:"tenant_mgt,omitempty" toml:"tenant_mgt,omitempty"`
 	// +kubebuilder:default:={ "enableTenantQualifiedUrls":true }
@@ -75,6 +75,7 @@ type Configurations struct {
 }
 
 /* Primary server configs */
+
 type Server struct {
 	// +kubebuilder:default:="$env{HOST_NAME}"
 	Hostname string `json:"hostname,omitempty" toml:"hostname"`
@@ -247,183 +248,183 @@ type ClusteringProperties struct {
 /* Jmx monitoring configurations */
 type Jmx struct {
 	// +kubebuilder:default:=true
-	RmiServerStart bool `toml:"rmi_server_start" json:"rmi_server_start,omitempty"`
+	RmiServerStart bool `json:"rmi_server_start,omitempty" toml:"rmi_server_start"`
 }
 
 /* Monitoring configurations */
 type Monitoring struct {
-	Jmx Jmx `toml:"jmx" json:"jmx,omitempty"`
+	Jmx Jmx `json:"jmx,omitempty" toml:"jmx"`
 }
 
 /* TOTP parameters */
 type TotpParameters struct {
 	// +kubebuilder:default:="Base32"
-	EncodingMethod string `toml:"encodingMethod,omitempty" json:"encodingMethod,omitempty"`
+	EncodingMethod string `json:"encodingMethod,omitempty" toml:"encodingMethod,omitempty"`
 	// +kubebuilder:default:="30"
-	TimeStepSize string `toml:"timeStepSize,omitempty" json:"timeStepSize,omitempty"`
+	TimeStepSize string `json:"timeStepSize,omitempty" toml:"timeStepSize,omitempty"`
 	// +kubebuilder:default:="3"
-	WindowSize string `toml:"windowSize,omitempty" json:"windowSize,omitempty"`
+	WindowSize string `json:"windowSize,omitempty" toml:"windowSize,omitempty"`
 	// +kubebuilder:default:=true
-	AuthenticationMandatory bool `toml:"authenticationMandatory,omitempty" json:"authenticationMandatory,omitempty"`
+	AuthenticationMandatory bool `json:"authenticationMandatory,omitempty" toml:"authenticationMandatory,omitempty"`
 	// +kubebuilder:default:=true
-	EnrolUserInAuthenticationFlow bool `toml:"enrolUserInAuthenticationFlow,omitempty" json:"enrolUserInAuthenticationFlow,omitempty"`
+	EnrolUserInAuthenticationFlow bool `json:"enrolUserInAuthenticationFlow,omitempty" toml:"enrolUserInAuthenticationFlow,omitempty"`
 	// +kubebuilder:default:="local"
-	Usecase string `toml:"usecase,omitempty" json:"usecase,omitempty"`
+	Usecase string `json:"usecase,omitempty" toml:"usecase,omitempty"`
 	// +kubebuilder:default:="primary"
-	SecondaryUserstore string `toml:"secondaryUserstore,omitempty" json:"secondaryUserstore,omitempty"`
+	SecondaryUserstore string `json:"secondaryUserstore,omitempty" toml:"secondaryUserstore,omitempty"`
 	// +kubebuilder:default:="/totpauthenticationendpoint/totp.jsp"
-	TOTPAuthenticationEndpointURL string `toml:"TOTPAuthenticationEndpointURL,omitempty" json:"TOTPAuthenticationEndpointURL,omitempty"`
+	TOTPAuthenticationEndpointURL string `json:"TOTPAuthenticationEndpointURL,omitempty" toml:"TOTPAuthenticationEndpointURL,omitempty"`
 	// +kubebuilder:default:="/totpauthenticationendpoint/totpError.jsp"
-	TOTPAuthenticationEndpointErrorPage string `toml:"TOTPAuthenticationEndpointErrorPage,omitempty" json:"TOTPAuthenticationEndpointErrorPage,omitempty"`
+	TOTPAuthenticationEndpointErrorPage string `json:"TOTPAuthenticationEndpointErrorPage,omitempty" toml:"TOTPAuthenticationEndpointErrorPage,omitempty"`
 	// +kubebuilder:default:="/totpauthenticationendpoint/enableTOTP.jsp"
-	TOTPAuthenticationEndpointEnableTOTPPage string `toml:"TOTPAuthenticationEndpointEnableTOTPPage,omitempty" json:"TOTPAuthenticationEndpointEnableTOTPPage,omitempty"`
+	TOTPAuthenticationEndpointEnableTOTPPage string `json:"TOTPAuthenticationEndpointEnableTOTPPage,omitempty" toml:"TOTPAuthenticationEndpointEnableTOTPPage,omitempty"`
 	// +kubebuilder:default:="WSO2"
-	Issuer string `toml:"Issuer,omitempty" json:"Issuer,omitempty"`
+	Issuer string `json:"Issuer,omitempty" toml:"Issuer,omitempty"`
 	// +kubebuilder:default:=true
-	UseCommonIssuer bool `toml:"UseCommonIssuer,omitempty" json:"UseCommonIssuer,omitempty"`
+	UseCommonIssuer bool `json:"UseCommonIssuer,omitempty" toml:"UseCommonIssuer,omitempty"`
 }
 
 /* TOTP configurations */
 type Totp struct {
 	// +kubebuilder:default:={"Issuer":"WSO2","TOTPAuthenticationEndpointEnableTOTPPage":"/totpauthenticationendpoint/enableTOTP.jsp","TOTPAuthenticationEndpointErrorPage":"/totpauthenticationendpoint/totpError.jsp","TOTPAuthenticationEndpointURL":"/totpauthenticationendpoint/totp.jsp","UseCommonIssuer":true,"authenticationMandatory":true,"encodingMethod":"Base32","enrolUserInAuthenticationFlow":true,"secondaryUserstore":"primary","timeStepSize":"30","usecase":"local","windowSize":"3"}
-	Parameters TotpParameters `toml:"parameters,omitempty" json:"parameters,omitempty"`
+	Parameters TotpParameters `json:"parameters,omitempty" toml:"parameters,omitempty"`
 	// +kubebuilder:default:=false
-	Enable bool `toml:"enable,omitempty" json:"enable,omitempty"`
+	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 }
 
 /* Email authentication parameters */
 type EmailOtpParameters struct {
 	// +kubebuilder:default:="/emailotpauthenticationendpoint/emailotp.jsp"
-	EMAILOTPAuthenticationEndpointURL string `toml:"EMAILOTPAuthenticationEndpointURL,omitempty" json:"EMAILOTPAuthenticationEndpointURL,omitempty"`
+	EMAILOTPAuthenticationEndpointURL string `json:"EMAILOTPAuthenticationEndpointURL,omitempty" toml:"EMAILOTPAuthenticationEndpointURL,omitempty"`
 	// +kubebuilder:default:="/emailotpauthenticationendpoint/emailotpError.jsp"
-	EmailOTPAuthenticationEndpointErrorPage string `toml:"EmailOTPAuthenticationEndpointErrorPage,omitempty" json:"EmailOTPAuthenticationEndpointErrorPage,omitempty"`
+	EmailOTPAuthenticationEndpointErrorPage string `json:"EmailOTPAuthenticationEndpointErrorPage,omitempty" toml:"EmailOTPAuthenticationEndpointErrorPage,omitempty"`
 	// +kubebuilder:default:="/emailotpauthenticationendpoint/emailAddress.jsp"
-	EmailAddressRequestPage string `toml:"EmailAddressRequestPage,omitempty" json:"EmailAddressRequestPage,omitempty"`
+	EmailAddressRequestPage string `json:"EmailAddressRequestPage,omitempty" toml:"EmailAddressRequestPage,omitempty"`
 	// +kubebuilder:default:="local"
-	Usecase string `toml:"usecase,omitempty" json:"usecase,omitempty"`
+	Usecase string `json:"usecase,omitempty" toml:"usecase,omitempty"`
 	// +kubebuilder:default:="primary"
-	SecondaryUserstore string `toml:"secondaryUserstore,omitempty" json:"secondaryUserstore,omitempty"`
+	SecondaryUserstore string `json:"secondaryUserstore,omitempty" toml:"secondaryUserstore,omitempty"`
 	// +kubebuilder:default:=false
-	EMAILOTPMandatory bool `toml:"EMAILOTPMandatory,omitempty" json:"EMAILOTPMandatory,omitempty"`
+	EMAILOTPMandatory bool `json:"EMAILOTPMandatory,omitempty" toml:"EMAILOTPMandatory,omitempty"`
 	// +kubebuilder:default:=false
-	SendOTPToFederatedEmailAttribute bool `toml:"sendOTPToFederatedEmailAttribute,omitempty" json:"sendOTPToFederatedEmailAttribute,omitempty"`
+	SendOTPToFederatedEmailAttribute bool `json:"sendOTPToFederatedEmailAttribute,omitempty" toml:"sendOTPToFederatedEmailAttribute,omitempty"`
 	// +kubebuilder:default:="email"
-	FederatedEmailAttributeKey string `toml:"federatedEmailAttributeKey,omitempty" json:"federatedEmailAttributeKey,omitempty"`
+	FederatedEmailAttributeKey string `json:"federatedEmailAttributeKey,omitempty" toml:"federatedEmailAttributeKey,omitempty"`
 	// +kubebuilder:default:=true
-	EmailOTPEnableByUserClaim bool `toml:"EmailOTPEnableByUserClaim,omitempty" json:"EmailOTPEnableByUserClaim,omitempty"`
+	EmailOTPEnableByUserClaim bool `json:"EmailOTPEnableByUserClaim,omitempty" toml:"EmailOTPEnableByUserClaim,omitempty"`
 	// +kubebuilder:default:=true
-	CaptureAndUpdateEmailAddress bool `toml:"CaptureAndUpdateEmailAddress,omitempty" json:"CaptureAndUpdateEmailAddress,omitempty"`
+	CaptureAndUpdateEmailAddress bool `json:"CaptureAndUpdateEmailAddress,omitempty" toml:"CaptureAndUpdateEmailAddress,omitempty"`
 	// +kubebuilder:default:=true
-	ShowEmailAddressInUI bool `toml:"showEmailAddressInUI,omitempty" json:"showEmailAddressInUI,omitempty"`
+	ShowEmailAddressInUI bool `json:"showEmailAddressInUI,omitempty" toml:"showEmailAddressInUI,omitempty"`
 	// +kubebuilder:default:=true
-	UseEventHandlerBasedEmailSender bool `toml:"useEventHandlerBasedEmailSender,omitempty" json:"useEventHandlerBasedEmailSender,omitempty"`
+	UseEventHandlerBasedEmailSender bool `json:"useEventHandlerBasedEmailSender,omitempty" toml:"useEventHandlerBasedEmailSender,omitempty"`
 }
 
 /* Enable email authentication */
 type EmailOtp struct {
 	// +kubebuilder:default:="EmailOTP"
-	Name string `toml:"name,omitempty" json:"name,omitempty"`
+	Name string `json:"name,omitempty" toml:"name,omitempty"`
 	// +kubebuilder:default:=false
-	Enable bool `toml:"enable,omitempty" json:"enable,omitempty"`
+	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 	// +kubebuilder:default:={"CaptureAndUpdateEmailAddress":true,"EMAILOTPAuthenticationEndpointURL":"/emailotpauthenticationendpoint/emailotp.jsp","EMAILOTPMandatory":false,"EmailAddressRequestPage":"/emailotpauthenticationendpoint/emailAddress.jsp","EmailOTPAuthenticationEndpointErrorPage":"/emailotpauthenticationendpoint/emailotpError.jsp","EmailOTPEnableByUserClaim":true,"federatedEmailAttributeKey":"email","secondaryUserstore":"primary","sendOTPToFederatedEmailAttribute":false,"showEmailAddressInUI":true,"useEventHandlerBasedEmailSender":true,"usecase":"local"}
-	Parameters EmailOtpParameters `toml:"parameters,omitempty" json:"parameters,omitempty"`
+	Parameters EmailOtpParameters `json:"parameters,omitempty" toml:"parameters,omitempty"`
 }
 
 /* SMS OTP parameters */
 type SmsOtpParameters struct {
 	// +kubebuilder:default:="/smsotpauthenticationendpoint/smsotp.jsp"
-	SMSOTPAuthenticationEndpointURL string `toml:"SMSOTPAuthenticationEndpointURL,omitempty" json:"SMSOTPAuthenticationEndpointURL,omitempty"`
+	SMSOTPAuthenticationEndpointURL string `json:"SMSOTPAuthenticationEndpointURL,omitempty" toml:"SMSOTPAuthenticationEndpointURL,omitempty"`
 	// +kubebuilder:default:="/smsotpauthenticationendpoint/smsotpError.jsp"
-	SMSOTPAuthenticationEndpointErrorPage string `toml:"SMSOTPAuthenticationEndpointErrorPage,omitempty" json:"SMSOTPAuthenticationEndpointErrorPage,omitempty"`
+	SMSOTPAuthenticationEndpointErrorPage string `json:"SMSOTPAuthenticationEndpointErrorPage,omitempty" toml:"SMSOTPAuthenticationEndpointErrorPage,omitempty"`
 	// +kubebuilder:default:="/smsotpauthenticationendpoint/mobile.jsp"
-	MobileNumberRegPage string `toml:"MobileNumberRegPage,omitempty" json:"MobileNumberRegPage,omitempty"`
+	MobileNumberRegPage string `json:"MobileNumberRegPage,omitempty" toml:"MobileNumberRegPage,omitempty"`
 	// +kubebuilder:default:=true
-	RetryEnable bool `toml:"RetryEnable,omitempty" json:"RetryEnable,omitempty"`
+	RetryEnable bool `json:"RetryEnable,omitempty" toml:"RetryEnable,omitempty"`
 	// +kubebuilder:default:=true
-	ResendEnable bool `toml:"ResendEnable,omitempty" json:"ResendEnable,omitempty"`
+	ResendEnable bool `json:"ResendEnable,omitempty" toml:"ResendEnable,omitempty"`
 	// +kubebuilder:default:=true
-	BackupCode bool `toml:"BackupCode,omitempty" json:"BackupCode,omitempty"`
+	BackupCode bool `json:"BackupCode,omitempty" toml:"BackupCode,omitempty"`
 	// +kubebuilder:default:=true
-	SMSOTPEnableByUserClaim bool `toml:"SMSOTPEnableByUserClaim,omitempty" json:"SMSOTPEnableByUserClaim,omitempty"`
+	SMSOTPEnableByUserClaim bool `json:"SMSOTPEnableByUserClaim,omitempty" toml:"SMSOTPEnableByUserClaim,omitempty"`
 	// +kubebuilder:default:=false
-	SMSOTPMandatory bool `toml:"SMSOTPMandatory,omitempty" json:"SMSOTPMandatory,omitempty"`
+	SMSOTPMandatory bool `json:"SMSOTPMandatory,omitempty" toml:"SMSOTPMandatory,omitempty"`
 	// +kubebuilder:default:=true
-	CaptureAndUpdateMobileNumber bool `toml:"CaptureAndUpdateMobileNumber,omitempty" json:"CaptureAndUpdateMobileNumber,omitempty"`
+	CaptureAndUpdateMobileNumber bool `json:"CaptureAndUpdateMobileNumber,omitempty" toml:"CaptureAndUpdateMobileNumber,omitempty"`
 	// +kubebuilder:default:=false
-	SendOTPDirectlyToMobile bool `toml:"SendOTPDirectlyToMobile,omitempty" json:"SendOTPDirectlyToMobile,omitempty"`
+	SendOTPDirectlyToMobile bool `json:"SendOTPDirectlyToMobile,omitempty" toml:"SendOTPDirectlyToMobile,omitempty"`
 	// +kubebuilder:default:=false
-	RedirectToMultiOptionPageOnFailure bool `toml:"redirectToMultiOptionPageOnFailure,omitempty" json:"redirectToMultiOptionPageOnFailure,omitempty"`
+	RedirectToMultiOptionPageOnFailure bool `json:"redirectToMultiOptionPageOnFailure,omitempty" toml:"redirectToMultiOptionPageOnFailure,omitempty"`
 }
 
 /* SMS OTP configurations */
 type SmsOtp struct {
 	// +kubebuilder:default:="SmsOTP"
-	Name string `toml:"name,omitempty" json:"name,omitempty"`
+	Name string `json:"name,omitempty" toml:"name,omitempty"`
 	// +kubebuilder:default:={"BackupCode":true,"CaptureAndUpdateMobileNumber":true,"MobileNumberRegPage":"/smsotpauthenticationendpoint/mobile.jsp","ResendEnable":true,"RetryEnable":true,"SMSOTPAuthenticationEndpointErrorPage":"/smsotpauthenticationendpoint/smsotpError.jsp","SMSOTPAuthenticationEndpointURL":"/smsotpauthenticationendpoint/smsotp.jsp","SMSOTPEnableByUserClaim":true,"SMSOTPMandatory":false,"SendOTPDirectlyToMobile":false,"redirectToMultiOptionPageOnFailure":false}
-	Parameters SmsOtpParameters `toml:"parameters,omitempty" json:"parameters,omitempty"`
+	Parameters SmsOtpParameters `json:"parameters,omitempty" toml:"parameters,omitempty"`
 	// +kubebuilder:default:=false
-	Enable bool `toml:"enable,omitempty" json:"enable,omitempty"`
+	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 }
 
 /* Multi factor authenticators */
 type Authenticator struct {
-	Totp     Totp     `toml:"totp,omitempty" json:"totp,omitempty"`
-	EmailOtp EmailOtp `toml:"email_otp,omitempty" json:"email_otp,omitempty"`
-	SmsOtp   SmsOtp   `toml:"sms_otp,omitempty" json:"sms_otp,omitempty"`
+	Totp     Totp     `json:"totp,omitempty" toml:"totp,omitempty"`
+	EmailOtp EmailOtp `json:"email_otp,omitempty" toml:"email_otp,omitempty"`
+	SmsOtp   SmsOtp   `json:"sms_otp,omitempty" toml:"sms_otp,omitempty"`
 }
 
 /* Second step authentication configurations */
 type StepAuthentication struct {
-	Authenticator Authenticator `toml:"authenticator,omitempty" json:"authenticator,omitempty"`
+	Authenticator Authenticator `json:"authenticator,omitempty" toml:"authenticator,omitempty"`
 }
 
 /* Recaptcha configurations */
 type Recaptcha struct {
 	// +kubebuilder:default:=false
-	Enabled bool `toml:"enabled,omitempty" json:"enabled,omitempty"`
+	Enabled bool `json:"enabled,omitempty" toml:"enabled,omitempty"`
 	// +kubebuilder:default:="https://www.google.com/recaptcha/api.js"
-	APIURL string `toml:"api_url,omitempty" json:"api_url,omitempty"`
+	APIURL string `json:"api_url,omitempty" toml:"api_url,omitempty"`
 	// +kubebuilder:default:="https://www.google.com/recaptcha/api/siteverify"
-	VerifyURL string `toml:"verify_url,omitempty" json:"verify_url,omitempty"`
+	VerifyURL string `json:"verify_url,omitempty" toml:"verify_url,omitempty"`
 	// +kubebuilder:validation:Required
-	SiteKey string `toml:"site_key,omitempty" json:"site_key,omitempty"`
+	SiteKey string `json:"site_key,omitempty" toml:"site_key,omitempty"`
 	// +kubebuilder:validation:Required
-	SecretKey string `toml:"secret_key,omitempty" json:"secret_key,omitempty"`
+	SecretKey string `json:"secret_key,omitempty" toml:"secret_key,omitempty"`
 }
 
 /* SMTP email configurations */
 type Email struct {
 	// +kubebuilder:validation:Required
-	FromAddress string `toml:"from_address,omitempty" json:"from_address,omitempty"`
+	FromAddress string `json:"from_address,omitempty" toml:"from_address,omitempty"`
 	// +kubebuilder:validation:Required
-	Username string `toml:"username,omitempty" json:"username,omitempty"`
+	Username string `json:"username,omitempty" toml:"username,omitempty"`
 	// +kubebuilder:validation:Required
-	Password string `toml:"password,omitempty" json:"password,omitempty"`
+	Password string `json:"password,omitempty" toml:"password,omitempty"`
 	// +kubebuilder:validation:Required
-	Hostname string `toml:"hostname,omitempty" json:"hostname,omitempty"`
+	Hostname string `json:"hostname,omitempty" toml:"hostname,omitempty"`
 	// +kubebuilder:default:="587"
-	Port string `toml:"port,omitempty" json:"port,omitempty"`
+	Port string `json:"port,omitempty" toml:"port,omitempty"`
 	// +kubebuilder:default:=true
-	EnableStartTLS bool `toml:"enable_start_tls,omitempty" json:"enable_start_tls,omitempty"`
+	EnableStartTLS bool `json:"enable_start_tls,omitempty" toml:"enable_start_tls,omitempty"`
 	// +kubebuilder:default:=true
-	EnableAuthentication bool `toml:"enable_authentication,omitempty" json:"enable_authentication,omitempty"`
+	EnableAuthentication bool `json:"enable_authentication,omitempty" toml:"enable_authentication,omitempty"`
 }
 type OutputAdapter struct {
-	Email Email `toml:"email,omitempty" json:"email,omitempty"`
+	Email Email `json:"email,omitempty" toml:"email,omitempty"`
 }
 type TenantMgt struct {
 	// +kubebuilder:default:=false
-	EnableEmailDomain bool `toml:"enable_email_domain,omitempty" json:"enable_email_domain,omitempty"`
+	EnableEmailDomain bool `json:"enable_email_domain,omitempty" toml:"enable_email_domain,omitempty"`
 }
 type TenantCtx struct {
-	EnableQualifiedUrls bool `toml:"enable_tenant_qualified_urls,omitempty" json:"enableTenantQualifiedUrls,omitempty"`
+	EnableQualifiedUrls bool `json:"enableTenantQualifiedUrls,omitempty" toml:"enable_tenant_qualified_urls,omitempty"`
 }
 type Wsdl struct {
 	// +kubebuilder:default:=false
-	Enable bool `toml:"enable,omitempty" json:"enable,omitempty"`
+	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 }
 type AdminService struct {
-	Wsdl Wsdl `toml:"wsdl,omitempty" json:"wsdl,omitempty"`
+	Wsdl Wsdl `json:"wsdl,omitempty" toml:"wsdl,omitempty"`
 }
 
 // Wso2IsStatus defines the observed state of Wso2Is

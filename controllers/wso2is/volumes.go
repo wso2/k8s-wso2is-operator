@@ -27,3 +27,36 @@ func reconcileVolume(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.
 
 	return ctrl.Result{}, err
 }
+
+func MakeVolumes() []corev1.Volume {
+	volumes := []corev1.Volume{
+		{
+			Name: variables.PersistenVolumeName,
+			VolumeSource: corev1.VolumeSource{
+				PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+					ClaimName: variables.UserstorePVCName,
+				},
+			},
+		},
+		{
+			Name: variables.ConfigMapName,
+			VolumeSource: corev1.VolumeSource{
+				ConfigMap: &corev1.ConfigMapVolumeSource{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: variables.ConfigMapName,
+					},
+				},
+			},
+		},
+		{
+			Name: variables.SecretName,
+			VolumeSource: corev1.VolumeSource{
+				Secret: &corev1.SecretVolumeSource{
+					SecretName: variables.SecretName,
+				},
+			},
+		},
+	}
+
+	return volumes
+}

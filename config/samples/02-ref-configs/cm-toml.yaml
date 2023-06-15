@@ -26,8 +26,8 @@ data:
     base_path = "https://$ref{server.hostname}"
 
     [super_admin]
-    username = "rukis"
-    password = "rukis"
+    username = "admin,"
+    password = "admin"
     create_admin_account = true
 
     [user_store]
