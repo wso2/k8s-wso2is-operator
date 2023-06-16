@@ -1,25 +1,22 @@
-apiVersion: iam.wso2.com/v1beta1
-kind: Wso2Is
-metadata:
-  name: wso2is
-  namespace: wso2-iam-system
-spec:
-  template:
-    annotations:
-      configmapHash: ''
-  replicas: 1
-  configurations:
-    host: identityserver
-    serviceType: ClusterIP
-  tomlConfig: |
+- op: replace
+  path: /metadata/name
+  value: prod-wso2is
+
+- op: replace
+  path: /spec/replicas
+  value: 2
+
+- op: replace
+  path: /spec/tomlConfig
+  value: |
     [server]  
-    hostname = "identityserver"
+    hostname = "prod.wso2is.com"
     node_ip = "$env{NODE_IP}"
     base_path = "https://$ref{server.hostname}"
 
     [super_admin]
-    username = "testing"
-    password = "testing"
+    username = "pass2"
+    password = "pass2"
     create_admin_account = true
 
     [user_store]
@@ -67,7 +64,7 @@ spec:
     membership_scheme = "kubernetes"
     properties.membershipSchemeClassName = "org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
     properties.KUBERNETES_NAMESPACE = "wso2-iam-system"
-    properties.KUBERNETES_SERVICES = "wso2is-service"
+    properties.KUBERNETES_SERVICES = "prod-wso2is-service"
     properties.KUBERNETES_MASTER_SKIP_SSL_VERIFICATION = "true"
     properties.USE_DNS = "false"
 

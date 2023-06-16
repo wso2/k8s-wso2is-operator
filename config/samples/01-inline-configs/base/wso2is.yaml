@@ -1,5 +1,3 @@
-# This pattern assumes that the ConfigMap is created in the same namespace as the WSO2 product deployment.
-
 apiVersion: iam.wso2.com/v1beta1
 kind: Wso2Is
 metadata:
@@ -9,8 +7,8 @@ spec:
   template:
     annotations:
       configmapHash: ''
-  replicas: 2
+  replicas: 1
   configurations:
-    host: identityserver
+    host: wso2is.com
     serviceType: ClusterIP
-  tomlConfigFile: myis-config
+  tomlConfig: <replaced-by-kustomize>

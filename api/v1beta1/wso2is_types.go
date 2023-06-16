@@ -224,10 +224,8 @@ type Keystore struct {
 /* Clustering configurations */
 type Clustering struct {
 	// +kubebuilder:default:="kubernetes"
-	MembershipScheme string `json:"membership_scheme,omitempty" toml:"membership_scheme,omitempty"`
-	// +kubebuilder:default:="wso2.is.domain"
-	//Domain     string               `json:"domain,omitempty" toml:"domain,omitempty"`
-	Properties ClusteringProperties `json:"properties" toml:"properties,omitempty"`
+	MembershipScheme string               `json:"membership_scheme,omitempty" toml:"membership_scheme,omitempty"`
+	Properties       ClusteringProperties `json:"properties" toml:"properties,omitempty"`
 }
 
 /* Clustering Properties*/

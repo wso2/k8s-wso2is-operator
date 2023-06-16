@@ -28,7 +28,7 @@ func reconcileVolume(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.
 	return ctrl.Result{}, err
 }
 
-func MakeVolumes() []corev1.Volume {
+func MakeVolumes(instance wso2v1beta1.Wso2Is) []corev1.Volume {
 	volumes := []corev1.Volume{
 		{
 			Name: variables.PersistenVolumeName,
@@ -39,11 +39,12 @@ func MakeVolumes() []corev1.Volume {
 			},
 		},
 		{
-			Name: variables.ConfigMapName,
+			Name: instance.Name + "-config",
 			VolumeSource: corev1.VolumeSource{
 				ConfigMap: &corev1.ConfigMapVolumeSource{
 					LocalObjectReference: corev1.LocalObjectReference{
-						Name: variables.ConfigMapName,
+						//Name: variables.ConfigMapName,
+						Name: instance.Name + "-config",
 					},
 				},
 			},
@@ -52,6 +53,7 @@ func MakeVolumes() []corev1.Volume {
 			Name: variables.SecretName,
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
+					//TODO:
 					SecretName: variables.SecretName,
 				},
 			},

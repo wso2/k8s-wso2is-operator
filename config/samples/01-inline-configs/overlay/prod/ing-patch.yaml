@@ -1,0 +1,17 @@
+- op: replace
+  path: /spec/rules/0/host
+  value: prod.wso2is.com
+
+- op: add
+  path: /spec/tls
+  value:
+    - hosts:
+        - prod.wso2is.com
+
+- op: replace
+  path: /spec/rules/0/http/paths/0/backend/service/name
+  value: prod-wso2is-service
+
+- op: replace
+  path: /metadata/name
+  value: prod-wso2is-ingress

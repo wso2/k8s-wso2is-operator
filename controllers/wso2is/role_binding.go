@@ -22,7 +22,7 @@ func (r *Wso2IsReconciler) defineRoleBinding(m wso2v1beta1.Wso2Is) *rbacv1.RoleB
 		Subjects: []rbacv1.Subject{
 			{
 				Kind:      "ServiceAccount",
-				Name:      variables.ServiceAccountName,
+				Name:      m.Name + "-serviceaccount",
 				Namespace: m.Namespace,
 			},
 		},

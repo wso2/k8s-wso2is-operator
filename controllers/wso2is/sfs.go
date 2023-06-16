@@ -26,7 +26,7 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 		},
 		Spec: appsv1.StatefulSetSpec{
 			Replicas:    &replicas,
-			ServiceName: variables.ServiceName,
+			ServiceName: m.Name + "-service",
 			Selector: &metav1.LabelSelector{
 				MatchLabels: ls,
 			},
@@ -36,14 +36,14 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 					Annotations: m.Spec.Template.Annotations,
 				},
 				Spec: corev1.PodSpec{
-					Volumes: MakeVolumes(),
+					Volumes: MakeVolumes(m),
 					Containers: []corev1.Container{{
-						Name:            variables.DeploymentName,
-						Image:           variables.ContainerImage,
-						Ports:           MakeContainerPorts(),
-						Env:             MakeEnvVars(),
-						Resources:       MakeResourceRequirements(),
-						VolumeMounts:    MakeVolumeMounts(m.Spec.Version),
+						Name:  m.Name,
+						Image: variables.ContainerImage,
+						Ports: MakeContainerPorts(),
+						Env:   MakeEnvVars(),
+						//Resources:       MakeResourceRequirements(),
+						VolumeMounts:    MakeVolumeMounts(m.Spec.Version, m),
 						StartupProbe:    MakeStartupProbe(),
 						LivenessProbe:   MakeLivenessProbe(),
 						ReadinessProbe:  MakeReadinessProbe(),
@@ -53,7 +53,7 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 							RunAsUser: &runasuser,
 						},
 					}},
-					ServiceAccountName: variables.ServiceAccountName,
+					ServiceAccountName: m.Name + "-serviceaccount",
 					//HostAliases: []corev1.HostAlias{{
 					//	IP:        "127.0.0.1",
 					//	Hostnames: []string{m.Spec.Configurations.Host},

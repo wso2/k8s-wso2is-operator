@@ -30,7 +30,7 @@ func (r *Wso2IsReconciler) defineService(m wso2v1beta1.Wso2Is) *corev1.Service {
 
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      variables.ServiceName,
+			Name:      m.Name + "-service",
 			Namespace: m.Namespace,
 			Labels:    ls,
 		},
@@ -61,17 +61,17 @@ func (r *Wso2IsReconciler) defineService(m wso2v1beta1.Wso2Is) *corev1.Service {
 func reconcileSvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
 	svcDefinition := r.defineService(instance)
 	svc := &corev1.Service{}
-	err = r.Get(ctx, types.NamespacedName{Name: variables.ServiceName, Namespace: instance.Namespace}, svc)
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name + "-service", Namespace: instance.Namespace}, svc)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			log.Info("Service resource " + variables.ServiceName + " not found. Creating or re-creating service")
+			log.Info("Service resource " + instance.Name + "-service" + " not found. Creating or re-creating service")
 			err = r.Create(ctx, svcDefinition)
 			if err != nil {
 				log.Error(err, "Failed to create new Service", "Service.Namespace", svcDefinition.Namespace, "Service.Name", svcDefinition.Name)
 				return ctrl.Result{}, err
 			}
 		} else {
-			log.Info("Failed to get service resource " + variables.ServiceName + ". Re-running reconcile.")
+			log.Info("Failed to get service resource " + instance.Name + "-service" + ". Re-running reconcile.")
 			return ctrl.Result{}, err
 		}
 	} else {
