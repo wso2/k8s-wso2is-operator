@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: identity-server-shared-userstores-volume-claim
+  name: wso2is-userstore-pvc
   namespace : wso2-iam-system
 spec:
   accessModes:

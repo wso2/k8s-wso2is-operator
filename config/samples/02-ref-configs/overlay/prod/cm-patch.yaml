@@ -1,10 +1,10 @@
 - op: replace
   path: /metadata/name
-  value: theis-external-dev-config
+  value: theis-external-prod-config
 
 - op: add
   path: /metadata/labels/instance
-  value: dev-wso2is
+  value: prod-wso2is
 
 - op: replace
   path: /data/deployment.toml
@@ -15,7 +15,7 @@
     base_path = "https://$ref{server.hostname}"
 
     [super_admin]
-    username = "ad11jmin21"
+    username = "admi21hh2n"
     password = "admin8"
     create_admin_account = true
 
@@ -64,7 +64,7 @@
     membership_scheme = "kubernetes"
     properties.membershipSchemeClassName = "org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
     properties.KUBERNETES_NAMESPACE = "wso2-iam-system"
-    properties.KUBERNETES_SERVICES = "dev-wso2is-service"
+    properties.KUBERNETES_SERVICES = "prod-wso2is-service"
     properties.KUBERNETES_MASTER_SKIP_SSL_VERIFICATION = "true"
     properties.USE_DNS = "false"
 

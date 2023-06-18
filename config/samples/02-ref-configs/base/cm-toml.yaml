@@ -21,7 +21,6 @@ metadata:
   namespace: wso2-iam-system
   labels:
     app: wso2is
-
 data:
   deployment.toml: ''
 

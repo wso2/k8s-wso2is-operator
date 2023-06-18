@@ -12,6 +12,12 @@ patches:
       name: wso2is-ingress
     path: ing-patch.yaml
   - target:
+      group: ""
+      version: v1
+      kind: PersistentVolumeClaim
+      name: wso2is-userstore-pvc
+    path: pvc-patch.yaml
+  - target:
       group: iam.wso2.com
       version: v1beta1
       kind: Wso2Is

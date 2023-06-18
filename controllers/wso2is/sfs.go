@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
-	"github.com/wso2/k8s-wso2is-operator/variables"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -16,6 +15,7 @@ import (
 )
 
 func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.StatefulSet {
+	containerImage := "rukshanjs/wso2is:v6.1.0"
 	ls := labelsForWso2IS(m.Name, m.Spec.Version)
 	replicas := m.Spec.Size
 	runasuser := int64(802)
@@ -41,7 +41,7 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 					Volumes: MakeVolumes(m),
 					Containers: []corev1.Container{{
 						Name:  m.Name,
-						Image: variables.ContainerImage,
+						Image: containerImage,
 						Ports: MakeContainerPorts(),
 						Env:   MakeEnvVars(),
 						//Resources:       MakeResourceRequirements(),

@@ -1,6 +1,6 @@
 - op: replace
   path: /metadata/name
-  value: dev-wso2is
+  value: prod-wso2is
 
 - op: replace
   path: /spec/replicas
@@ -8,8 +8,8 @@
   
 - op: replace
   path: /spec/tomlConfigFile
-  value: theis-external-dev-config
+  value: theis-external-prod-config
 
 - op: add
   path: /metadata/labels/instance
-  value: dev-wso2is
+  value: prod-wso2is

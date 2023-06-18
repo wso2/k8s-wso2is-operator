@@ -18,7 +18,7 @@ package wso2is
 
 import (
 	"context"
-	"github.com/wso2/k8s-wso2is-operator/variables"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
@@ -38,21 +38,43 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	logger.Info("\n-----------------------\nTriggered Reconcile Method\n-----------------------\n")
 	logger.Info("Triggered resource : ", "NamespacedName", req.NamespacedName)
 
-	labelSelector := client.MatchingLabels{
-		"app": "wso2is",
-	}
-	instanceList := &wso2v1beta1.Wso2IsList{}
-	err := r.List(ctx, instanceList, labelSelector)
-	if err != nil {
-		logger.Error(err, "Failed to list YourResource objects")
-		return ctrl.Result{}, err
-	}
 	instance := wso2v1beta1.Wso2Is{}
-	if len(instanceList.Items) != 0 {
-		instance = instanceList.Items[0]
-	} else {
-		logger.Info("WSO2IS resource not found. Ignoring since object must be deleted")
-		return ctrl.Result{}, err
+
+	err := r.Get(ctx, req.NamespacedName, &instance)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			// Check whether this err occured because the instance not found because the reconcile is triggered by a resource other than Wso2Is.
+			// This is the case if the reconcile is triggered by the watched external ConfigMap.
+			// Therefore, try to get the Wso2Is instance within the cluster using labels.
+			configMap := &corev1.ConfigMap{}
+			err := r.Get(ctx, req.NamespacedName, configMap)
+			if err != nil {
+				logger.Error(err, "Failed to retrieve ConfigMap")
+				return ctrl.Result{}, err
+			}
+
+			labelSelector := client.MatchingLabels{
+				"app": "wso2is",
+			}
+			instanceList := &wso2v1beta1.Wso2IsList{}
+			err = r.List(ctx, instanceList, labelSelector)
+			if err != nil {
+				logger.Error(err, "Failed to list YourResource objects")
+				return ctrl.Result{}, err
+			}
+
+			for _, item := range instanceList.Items {
+				if item.ObjectMeta.Labels["instance"] == configMap.ObjectMeta.Labels["instance"] {
+					instance = item
+					break
+				}
+			}
+
+			if instance.Name == "" {
+				logger.Info("WSO2IS resource not found. Ignoring since object must be deleted")
+				return ctrl.Result{}, err
+			}
+		}
 	}
 
 	_, err = reconcileSva(r, instance, logger, err, ctx)
@@ -108,12 +130,13 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 }
 
 func (r *Wso2IsReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	namespace := "wso2-iam-system"
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&wso2v1beta1.Wso2Is{}).
 		Watches(
 			&source.Kind{Type: &corev1.ConfigMap{}},
 			handler.EnqueueRequestsFromMapFunc(func(a client.Object) []reconcile.Request {
-				if a.GetNamespace() == variables.Wso2IsNamespace {
+				if a.GetNamespace() == namespace {
 					// Check if the ConfigMap has the required label
 					// This prevents unnecessary reconcile triggers.
 					labels := a.GetLabels()

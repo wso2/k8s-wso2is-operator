@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
-	"github.com/wso2/k8s-wso2is-operator/variables"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,6 +14,9 @@ import (
 )
 
 func (r *Wso2IsReconciler) defineService(m wso2v1beta1.Wso2Is) *corev1.Service {
+	servicePortHttp := int32(9763)
+	servicePortHttps := int32(9443)
+
 	ls := labelsForWso2IS(m.Name, m.Spec.Version)
 
 	// Make Service type configurable
@@ -38,16 +40,16 @@ func (r *Wso2IsReconciler) defineService(m wso2v1beta1.Wso2Is) *corev1.Service {
 			Ports: []corev1.ServicePort{{
 				Name:     "servlet-http",
 				Protocol: "TCP",
-				Port:     variables.ServicePortHttp,
+				Port:     servicePortHttp,
 				TargetPort: intstr.IntOrString{
-					IntVal: variables.ServicePortHttp,
+					IntVal: servicePortHttp,
 				},
 			}, {
 				Name:     "servlet-https",
 				Protocol: "TCP",
-				Port:     variables.ServicePortHttps,
+				Port:     servicePortHttps,
 				TargetPort: intstr.IntOrString{
-					IntVal: variables.ServicePortHttps,
+					IntVal: servicePortHttps,
 				},
 			}},
 			Selector: labelsForWso2IS(m.Name, m.Spec.Version),

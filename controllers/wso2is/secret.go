@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
-	"github.com/wso2/k8s-wso2is-operator/variables"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -23,7 +22,7 @@ func (r *Wso2IsReconciler) defineSecret(m wso2v1beta1.Wso2Is) *corev1.Secret {
 	secret := &corev1.Secret{
 		TypeMeta: metav1.TypeMeta{},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      variables.SecretName,
+			Name:      m.Name + "-secret",
 			Namespace: m.Namespace,
 		},
 		Data: secretsMap,
@@ -34,17 +33,17 @@ func (r *Wso2IsReconciler) defineSecret(m wso2v1beta1.Wso2Is) *corev1.Secret {
 func reconcileSecret(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
 	secretDefinition := r.defineSecret(instance)
 	secret := &corev1.Secret{}
-	err = r.Get(ctx, types.NamespacedName{Name: variables.SecretName, Namespace: instance.Namespace}, secret)
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name + "-secret", Namespace: instance.Namespace}, secret)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			log.Info("Secret resource " + variables.SecretName + " not found. Creating or re-creating secret")
+			log.Info("Secret resource " + instance.Name + "-secret" + " not found. Creating or re-creating secret")
 			err = r.Create(ctx, secretDefinition)
 			if err != nil {
 				log.Error(err, "Failed to create new Secret", "Secret.Namespace", secretDefinition.Namespace, "Secret.Name", secretDefinition.Name)
 				return ctrl.Result{}, err
 			}
 		} else {
-			log.Info("Failed to get secret resource " + variables.SecretName + ". Re-running reconcile.")
+			log.Info("Failed to get secret resource " + instance.Name + "-secret" + ". Re-running reconcile.")
 			return ctrl.Result{}, err
 		}
 	} else {

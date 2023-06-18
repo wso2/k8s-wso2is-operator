@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
-	"github.com/wso2/k8s-wso2is-operator/variables"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,7 +15,7 @@ import (
 func (r *Wso2IsReconciler) defineRole(m wso2v1beta1.Wso2Is) *rbacv1.Role {
 	role := &rbacv1.Role{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      variables.RoleName,
+			Name:      m.Name + "-role",
 			Namespace: m.Namespace,
 		},
 		Rules: []rbacv1.PolicyRule{
@@ -34,17 +33,17 @@ func (r *Wso2IsReconciler) defineRole(m wso2v1beta1.Wso2Is) *rbacv1.Role {
 func reconcileRole(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Logger, err error, ctx context.Context) (ctrl.Result, error) {
 	roleDefinition := r.defineRole(instance)
 	role := &rbacv1.Role{}
-	err = r.Get(ctx, types.NamespacedName{Name: variables.RoleName, Namespace: instance.Namespace}, role)
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name + "-role", Namespace: instance.Namespace}, role)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			log.Info("Role resource " + variables.RoleName + " not found. Creating or re-creating role")
+			log.Info("Role resource " + instance.Name + "-role" + " not found. Creating or re-creating role")
 			err = r.Create(ctx, roleDefinition)
 			if err != nil {
 				log.Error(err, "Failed to create new Role", "Role.Namespace", roleDefinition.Namespace, "Role.Name", roleDefinition.Name)
 				return ctrl.Result{}, err
 			}
 		} else {
-			log.Info("Failed to get role resource " + variables.RoleName + ". Re-running reconcile.")
+			log.Info("Failed to get role resource " + instance.Name + "-role" + ". Re-running reconcile.")
 			return ctrl.Result{}, err
 		}
 	} else {
