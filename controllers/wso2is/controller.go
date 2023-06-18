@@ -18,6 +18,7 @@ package wso2is
 
 import (
 	"context"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 
@@ -49,8 +50,8 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 			configMap := &corev1.ConfigMap{}
 			err := r.Get(ctx, req.NamespacedName, configMap)
 			if err != nil {
-				logger.Error(err, "Failed to retrieve ConfigMap")
-				return ctrl.Result{}, err
+				logger.Info("Failed to retrieve ConfigMap. May have been just now deleted.")
+				return ctrl.Result{}, nil
 			}
 
 			labelSelector := client.MatchingLabels{
