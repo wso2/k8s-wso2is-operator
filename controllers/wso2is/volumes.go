@@ -44,7 +44,7 @@ func MakeVolumes(instance wso2v1beta1.Wso2Is) []corev1.Volume {
 				ConfigMap: &corev1.ConfigMapVolumeSource{
 					LocalObjectReference: corev1.LocalObjectReference{
 						//Name: variables.ConfigMapName,
-						Name: instance.Name + "-config",
+						Name: getConfigMapName(instance),
 					},
 				},
 			},

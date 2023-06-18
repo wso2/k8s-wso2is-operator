@@ -18,6 +18,15 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
+func getConfigMapName(instance wso2v1beta1.Wso2Is) string {
+	var configMapName string
+	if instance.Spec.TomlConfigFile != "" {
+		configMapName = instance.Spec.TomlConfigFile
+	} else {
+		configMapName = instance.Name + "-config"
+	}
+	return configMapName
+}
 func calculateConfigMapHash(configMap *corev1.ConfigMap) (string, error) {
 	// Serialize the data in the ConfigMap
 	dataBytes, err := json.Marshal(configMap.Data)
@@ -71,22 +80,27 @@ func remountConfigMap(r *Wso2IsReconciler, ctx context.Context, log logr.Logger,
 		log.Info(currentHash)
 		if err != nil {
 			log.Error(err, "Failed to calculate ConfigMap hash")
-		} else if sfs.Spec.Template.Annotations["configmapHash"] != currentHash {
+			return ctrl.Result{}, err
+		}
+
+		if sfs.Spec.Template.Annotations["configmapHash"] != currentHash {
 			log.Info("A change is observed in the content of ConfigMap")
-
-			// Update StatefulSet with new hash of ConfigMap.
-			sfs.Spec.Template.SetAnnotations(map[string]string{
-				"configmapHash": currentHash,
-			})
-			if err := r.Update(ctx, sfs); err != nil {
-				return ctrl.Result{}, err
-			}
-
 			// Update the ConfigMap with the new configs given by user.
 			if err := r.Update(ctx, configMap); err != nil {
 				return ctrl.Result{}, err
 			}
 
+			// Update StatefulSet with new hash of ConfigMap.
+			sfs.Spec.Template.SetAnnotations(map[string]string{
+				"configmapHash": currentHash,
+			})
+
+			if err := r.Update(ctx, sfs); err != nil {
+				return ctrl.Result{}, err
+			}
+
+			log.Info("Successfully updated the ConfigMap")
+			return ctrl.Result{}, nil
 		}
 	}
 
@@ -133,6 +147,7 @@ func reconcileConfigMap(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log lo
 		err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, sfs)
 		if err != nil {
 			log.Info("Couldn't obtain StatefulSet. It'll be found in next reconcile loop if this is the first run.")
+			return ctrl.Result{Requeue: true}, nil
 		} else {
 			remountConfigMap(r, ctx, log, instance, configMap, instance.Spec.TomlConfigFile)
 		}
@@ -151,6 +166,12 @@ func reconcileConfigMap(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log lo
 			if errors.IsNotFound(err) {
 				//	If ConfigMap not found, create a new one with the toml configs.
 				err = r.Create(ctx, configMapDefinition)
+				if err != nil {
+					log.Error(err, "Failed to create new ConfigMap")
+					return ctrl.Result{}, err
+				}
+				log.Info("Successfully created new ConfigMap")
+				return ctrl.Result{Requeue: true}, nil
 			}
 			return ctrl.Result{}, err
 		}

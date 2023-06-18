@@ -3,6 +3,7 @@ package wso2is
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
 	"github.com/wso2/k8s-wso2is-operator/variables"
@@ -23,6 +24,7 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
 			Namespace: m.Namespace,
+			Labels:    ls,
 		},
 		Spec: appsv1.StatefulSetSpec{
 			Replicas:    &replicas,
@@ -60,7 +62,7 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 					//}},
 				},
 			},
-			MinReadySeconds: 30,
+			//MinReadySeconds: 30,
 		},
 	}
 	// Set WSO2IS instance as the owner and controller

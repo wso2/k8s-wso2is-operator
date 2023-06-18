@@ -16,22 +16,25 @@ func MakeStartupProbe() *corev1.Probe {
 				},
 			},
 		},
-		InitialDelaySeconds: 60,
-		PeriodSeconds:       5,
-		FailureThreshold:    30,
+		InitialDelaySeconds: 120,
+		PeriodSeconds:       10,
+		FailureThreshold:    10,
 	}
 }
 
 func MakeLivenessProbe() *corev1.Probe {
 	return &corev1.Probe{
 		ProbeHandler: corev1.ProbeHandler{
-			HTTPGet: &corev1.HTTPGetAction{
-				Path:   "/carbon/admin/login.jsp",
-				Port:   intstr.FromInt(9443),
-				Scheme: corev1.URISchemeHTTPS,
+			Exec: &corev1.ExecAction{
+				Command: []string{
+					"/bin/sh",
+					"-c",
+					"nc -z localhost 9443",
+				},
 			},
 		},
-		PeriodSeconds: 10,
+		InitialDelaySeconds: 120,
+		PeriodSeconds:       10,
 	}
 }
 
@@ -44,7 +47,7 @@ func MakeReadinessProbe() *corev1.Probe {
 				Scheme: corev1.URISchemeHTTPS,
 			},
 		},
-		InitialDelaySeconds: 60,
+		InitialDelaySeconds: 120,
 		PeriodSeconds:       10,
 	}
 }

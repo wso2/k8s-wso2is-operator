@@ -12,7 +12,7 @@ var RoleBindingName = "endpoints-reader-role-wso2-binding"
 //var ConfigMapName = "wso2is-configmap"
 
 // var ConfigMapName = "identity-server-conf"
-var IngressName = "wso2is-ingress"
+// var IngressName = "wso2is-ingress"
 var PersistenVolumeName = "wso2is-persistent-volume"
 var UserstorePVCName string = "identity-server-shared-userstores-volume-claim"
 

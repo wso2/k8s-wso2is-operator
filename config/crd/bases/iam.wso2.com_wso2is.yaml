@@ -260,9 +260,7 @@ spec:
                         default: kubernetes
                         type: string
                       properties:
-                        default: wso2.is.domain
-                        description: Domain     string               `json:"domain,omitempty"
-                          toml:"domain,omitempty"`
+                        description: ' Clustering Properties'
                         properties:
                           KUBERNETES_MASTER_SKIP_SSL_VERIFICATION:
                             default: true
@@ -452,7 +450,6 @@ spec:
                     default:
                       hostname: $env{HOST_NAME}
                       nodeIp: $env{NODE_IP}
-                    description: ' Primary server configs'
                     properties:
                       hostname:
                         default: $env{HOST_NAME}

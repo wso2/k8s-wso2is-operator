@@ -3,6 +3,8 @@ kind: Wso2Is
 metadata:
   name: wso2is
   namespace: wso2-iam-system
+  labels:
+    app: wso2is
 spec:
   template:
     annotations:

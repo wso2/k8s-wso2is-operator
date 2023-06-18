@@ -8,6 +8,7 @@ import (
 )
 
 func MakeVolumeMounts(version string, instance wso2v1beta1.Wso2Is) []corev1.VolumeMount {
+
 	volumeMounts := []corev1.VolumeMount{
 		{
 			Name:      variables.PersistenVolumeName,

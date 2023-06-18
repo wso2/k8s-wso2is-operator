@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
-	"github.com/wso2/k8s-wso2is-operator/variables"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -18,7 +17,7 @@ func reconcileIngress(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr
 	// Check for ingress
 	ingressFound := networkingv1.Ingress{}
 	//logger.Info("ingress name: " + ingName + "namespace: " + instance.Namespace)
-	err = r.Get(ctx, types.NamespacedName{Name: variables.IngressName, Namespace: instance.Namespace}, &ingressFound)
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name + "-ingress", Namespace: instance.Namespace}, &ingressFound)
 	if err != nil && errors.IsNotFound(err) {
 		log.Info("Unable to detect Ingress in your cluster. You may configure your own")
 		return ctrl.Result{}, nil
