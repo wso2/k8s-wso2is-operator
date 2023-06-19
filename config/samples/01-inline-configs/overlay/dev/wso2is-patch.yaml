@@ -15,7 +15,7 @@
     base_path = "https://$ref{server.hostname}"
 
     [super_admin]
-    username = "test"
+    username = "2test"
     password = "admin6"
     create_admin_account = true
 
