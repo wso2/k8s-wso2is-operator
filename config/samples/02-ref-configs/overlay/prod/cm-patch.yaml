@@ -24,7 +24,7 @@
 
     [database.identity_db]
     type = "mysql"
-    url = "jdbc:mysql://mysql:3306/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false"
+    url = "jdbc:mysql://prod-mysql:3308/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false"
     username = "wso2carbon"
     password = "wso2carbon"
     driver = "com.mysql.cj.jdbc.Driver"
@@ -34,7 +34,7 @@
 
     [database.shared_db]
     type = "mysql"
-    url = "jdbc:mysql://mysql:3306/WSO2IS_SHARED_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false"
+    url = "jdbc:mysql://prod-mysql:3308/WSO2IS_SHARED_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false"
     username = "wso2carbon"
     password = "wso2carbon"
     driver = "com.mysql.cj.jdbc.Driver"

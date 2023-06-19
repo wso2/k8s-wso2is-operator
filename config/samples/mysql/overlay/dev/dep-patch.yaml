@@ -1,0 +1,35 @@
+- op: replace
+  path: /metadata/name
+  value: dev-mysql
+
+- op: replace
+  path: /spec/template/spec/volumes/0/persistentVolumeClaim/claimName
+  value: dev-mysql-pv-claim
+
+- op: replace
+  path: /spec/template/spec/containers/0/volumeMounts/0/name
+  value: dev-mysql-persistent-storage
+
+- op: replace
+  path: /spec/template/spec/containers/0/volumeMounts/1/name
+  value: dev-init-sql
+
+- op: replace
+  path: /spec/template/spec/volumes/0/name
+  value: dev-mysql-persistent-storage
+
+- op: replace
+  path: /spec/template/spec/volumes/1/name
+  value: dev-init-sql
+
+- op: replace
+  path: /spec/template/spec/volumes/1/configMap/name
+  value: dev-init-sql
+
+- op: replace
+  path: /spec/selector/matchLabels/app
+  value: dev-mysql
+
+- op: replace
+  path: /spec/template/metadata/labels/app
+  value: dev-mysql

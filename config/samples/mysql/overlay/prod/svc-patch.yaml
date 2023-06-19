@@ -1,0 +1,12 @@
+
+- op: replace
+  path: /metadata/name
+  value: prod-mysql
+
+- op: replace
+  path: /spec/ports/0/port
+  value: 3308
+
+- op: replace
+  path: /spec/selector/app
+  value: prod-mysql
