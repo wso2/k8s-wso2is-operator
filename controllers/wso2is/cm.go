@@ -50,7 +50,9 @@ func calculateConfigMapHash(configMap *corev1.ConfigMap) (string, error) {
 
 func getTomlConfig(spec wso2v1beta1.Wso2IsSpec) string {
 	if len(spec.TomlConfig) == 0 {
-		// If toml configs not specified inline, get defaults.
+		// If toml configs not specified inline, assume custom fields approach used.
+		// This assumption is ok here because this method is called if the TomlConfigFile is also not set.
+		// TODO: check if a proper refactoring possible for this.
 		buf := new(bytes.Buffer)
 		if err := toml.NewEncoder(buf).Encode(spec.Configurations); err != nil {
 			log.Println(err)

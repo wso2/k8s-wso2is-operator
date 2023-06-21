@@ -4,9 +4,11 @@ metadata:
   name: wso2is
   namespace: wso2-iam-system
 spec:
-  replicas: 2
+  replicas: 1
   configurations:
-    host: identityserver
+    host: wso2is.com
+    server:
+      hostname: wso2is.com
     serviceType: ClusterIP
     superAdmin:
       username: admin
@@ -16,15 +18,15 @@ spec:
       type: database_unique_id
     database:
       identityDb:
-        driver: com.mysql.jdbc.Driver
+        driver: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://mysql:3306/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
-        username: admin
-        password: 'admin'
+        username: wso2carbon
+        password: 'wso2carbon'
       sharedDb:
-        driver: com.mysql.jdbc.Driver
+        driver: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://mysql:3306/WSO2IS_SHARED_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
-        username: admin
-        password: 'admin'
+        username: wso2carbon
+        password: 'wso2carbon'
     keystore:
       primary:
         name: wso2carbon.jks

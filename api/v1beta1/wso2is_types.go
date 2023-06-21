@@ -48,6 +48,7 @@ type Configurations struct {
 	Host string `json:"host"`
 	// +kubebuilder:default:="NodePort"
 	ServiceType string `json:"serviceType,omitempty"`
+
 	// +kubebuilder:default:={ "hostname" : "$env{HOST_NAME}", "nodeIp": "$env{NODE_IP}" }
 	Server Server `json:"server,omitempty" toml:"server"`
 	// +kubebuilder:default:={ "username" : "admin", "password": "admin", "createAdminAccount": true }
@@ -77,10 +78,12 @@ type Configurations struct {
 /* Primary server configs */
 
 type Server struct {
-	// +kubebuilder:default:="$env{HOST_NAME}"
+	// +kubebuilder:default:="wso2is.com"
 	Hostname string `json:"hostname,omitempty" toml:"hostname"`
 	// +kubebuilder:default:="$env{NODE_IP}"
 	NodeIP string `json:"nodeIp,omitempty" toml:"node_ip"`
+	// +kubebuilder:default:="https://$ref{server.hostname}"
+	BasePath string `json:"basePath,omitempty" toml:"base_path"`
 }
 
 /* Create admin accounts */
