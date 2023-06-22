@@ -15,6 +15,18 @@
   value: prod.wso2is.com
 
 - op: replace
+  path: /spec/configurations/database/userDb/url
+  value: jdbc:mysql://prod-mysql:3307/UM_USER?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+
+- op: replace
+  path: /spec/configurations/database/userDb/username
+  value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/database/userDb/password
+  value: wso2carbon
+
+- op: replace
   path: /spec/configurations/database/identityDb/url
   value: jdbc:mysql://prod-mysql:3308/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
 
@@ -37,3 +49,7 @@
 - op: replace
   path: /spec/configurations/database/sharedDb/password
   value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/clustering/properties/kubernetesServices
+  value: prod-wso2is-service

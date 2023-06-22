@@ -77,7 +77,6 @@ func reconcileStatefulSet(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log 
 	if err != nil {
 		if errors.IsNotFound(err) {
 			log.Info("StatefulSet resource " + instance.Name + " not found. Creating or re-creating statefulset")
-			
 			configMap := &corev1.ConfigMap{}
 			err = r.Get(ctx, types.NamespacedName{Name: getConfigMapName(instance), Namespace: instance.Namespace}, configMap)
 			if err != nil {

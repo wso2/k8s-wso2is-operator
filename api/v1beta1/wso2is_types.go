@@ -46,32 +46,49 @@ type KeystoreMount struct {
 
 type Configurations struct {
 	Host string `json:"host"`
+
 	// +kubebuilder:default:="NodePort"
 	ServiceType string `json:"serviceType,omitempty"`
 
-	// +kubebuilder:default:={ "hostname" : "$env{HOST_NAME}", "nodeIp": "$env{NODE_IP}" }
+	// +kubebuilder:default:={ "hostname" : "$env{HOST_NAME}", "nodeIp": "$env{NODE_IP}","basePath":"https://$ref{server.hostname}" }
 	Server Server `json:"server,omitempty" toml:"server"`
+
 	// +kubebuilder:default:={ "username" : "admin", "password": "admin", "createAdminAccount": true }
 	SuperAdmin SuperAdmin `json:"superAdmin,omitempty" toml:"super_admin"`
+
 	// +kubebuilder:default:={ "type" : "database_unique_id"}
 	UserStore UserStore `json:"userStore,omitempty" toml:"user_store"`
-	// +kubebuilder:default:={ "identityDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"},"sharedDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"} }
+
+	// +kubebuilder:default:={ "identityDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"},"sharedDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"},"userDb": {"password": "wso2carbon","type": "h2","url": "jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username": "wso2carbon"} }
 	Database Database `json:"database,omitempty" toml:"database"`
+
 	// +kubebuilder:default:={ "https" : { "properties" : { "proxyPort" : 443 } } }
 	Transport Transport `json:"transport,omitempty" toml:"transport,omitempty"`
+
 	// +kubebuilder:default:= { "primary":{"name":"wso2carbon.jks","password":"wso2carbon"} }
-	Keystore Keystore `json:"keystore,omitempty" toml:"keystore,omitempty"`
-	// +kubebuilder:default:={ "jmx" : { "rmi_server_start" : true } }
+	KeyStore KeyStore `json:"keyStore,omitempty" toml:"keystore,omitempty"`
+
+	TrustStore TrustStore `json:"trustStore,omitempty" toml:"truststore,omitempty"`
+
 	Monitoring Monitoring `json:"monitoring,omitempty" toml:"monitoring,omitempty"`
-	// +kubebuilder:default:={ "hazelcastShutdownhookEnabled" : false, "hazelcastLoggingType" : "log4j"  }
-	Hazelcast      Hazelcast          `json:"hazelcast,omitempty" toml:"hazelcast,omitempty"`
+
+	// +kubebuilder:default:={ "hazelcastShutdownHookEnabled" : false, "hazelcastLoggingType" : "log4j2"  }
+	Hazelcast Hazelcast `json:"hazelcast,omitempty" toml:"hazelcast,omitempty"`
+
 	Authentication StepAuthentication `json:"authentication,omitempty" toml:"authentication,omitempty"`
-	Recaptcha      Recaptcha          `json:"recaptcha,omitempty" toml:"recaptcha,omitempty"`
-	OutputAdapter  OutputAdapter      `json:"output_adapter,omitempty" toml:"output_adapter,omitempty"`
-	Clustering     Clustering         `json:"clustering,omitempty" toml:"clustering,omitempty"`
-	TenantMgt      TenantMgt          `json:"tenant_mgt,omitempty" toml:"tenant_mgt,omitempty"`
+
+	Recaptcha Recaptcha `json:"recaptcha,omitempty" toml:"recaptcha,omitempty"`
+
+	OutputAdapter OutputAdapter `json:"output_adapter,omitempty" toml:"output_adapter,omitempty"`
+
+	// +kubebuilder:default:={"membershipScheme":"kubernetes","properties":{"membershipSchemeClassName":"org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme","kubernetesNamespace":"wso2-iam-system","kubernetesServices":"wso2is-service","kubernetesMasterSkipSslVerification":true,"useDns":false} }
+	Clustering Clustering `json:"clustering,omitempty" toml:"clustering,omitempty"`
+
+	TenantMgt TenantMgt `json:"tenant_mgt,omitempty" toml:"tenant_mgt,omitempty"`
+
 	// +kubebuilder:default:={ "enableTenantQualifiedUrls":true }
-	TenantCtx    TenantCtx    `json:"tenant_context,omitempty" toml:"tenant_context,omitempty"`
+	TenantCtx TenantCtx `json:"tenant_context,omitempty" toml:"tenant_context,omitempty"`
+
 	AdminService AdminService `json:"admin_service,omitempty" toml:"admin_service,omitempty"`
 }
 
@@ -99,25 +116,32 @@ type SuperAdmin struct {
 /* UserStore configs */
 type UserStore struct {
 	Type               string `json:"type" toml:"type"`
-	ConnectionURL      string `json:"connection_url,omitempty" toml:"connection_url,omitempty"`
-	ConnectionName     string `json:"connection_name,omitempty" toml:"connection_name,omitempty"`
-	ConnectionPassword string `json:"connection_password,omitempty" toml:"connection_password,omitempty"`
-	BaseDN             string `json:"base_dn,omitempty" toml:"base_dn,omitempty"`
-	UsernameAttrib     string `json:"user_name_attribute,omitempty" toml:"user_name_attribute,omitempty"`
+	ConnectionURL      string `json:"connectionUrl,omitempty" toml:"connection_url,omitempty"`
+	ConnectionName     string `json:"connectionName,omitempty" toml:"connection_name,omitempty"`
+	ConnectionPassword string `json:"connectionPassword,omitempty" toml:"connection_password,omitempty"`
+	BaseDN             string `json:"baseDn,omitempty" toml:"base_dn,omitempty"`
+	UsernameAttrib     string `json:"userNameAttribute,omitempty" toml:"user_name_attribute,omitempty"`
 }
 
 /* Hazelcast clustering configs */
 type Hazelcast struct {
 	// +kubebuilder:default:=false
-	ShutdownHookEnabled bool `json:"hazelcastShutdownhookEnabled,omitempty" toml:"hazelcast.shutdownhook.enabled"`
+	ShutdownHookEnabled bool `json:"hazelcastShutdownHookEnabled,omitempty" toml:"hazelcast.shutdownhook.enabled"`
 	// +kubebuilder:default:="log4j"
 	LoggingType string `json:"hazelcastLoggingType,omitempty" toml:"hazelcast.logging.type"`
 }
 
 /* MySQL pool options */
 type PoolOptions struct {
+	MaxActive    string `json:"maxActive,omitempty" toml:"maxActive"`
+	MaxWait      string `json:"maxWait,omitempty" toml:"maxWait"`
+	MinIdle      string `json:"minIdle,omitempty" toml:"minIdle"`
+	TestOnBorrow bool   `json:"testOnBorrow,omitempty" toml:"testOnBorrow"`
 	// +kubebuilder:default:="SELECT 1"
-	ValidationQuery string `json:"validationQuery,omitempty" toml:"validationQuery"`
+	ValidationQuery    string `json:"validationQuery,omitempty" toml:"validationQuery"`
+	ValidationInterval string `json:"validationInterval,omitempty" toml:"validationInterval"`
+	DefaultAutoCommit  bool   `json:"defaultAutoCommit,omitempty" toml:"defaultAutoCommit"`
+	CommitOnReturn     bool   `json:"commitOnReturn,omitempty" toml:"commitOnReturn"`
 }
 
 /* User database */
@@ -132,6 +156,18 @@ type User struct {
 	PoolOptions PoolOptions `json:"pool_options,omitempty" toml:"pool_options,omitempty"`
 }
 
+/* User database */
+type UserDb struct {
+	Type     string `json:"type,omitempty" toml:"type,omitempty"`
+	URL      string `json:"url,omitempty" toml:"url,omitempty"`
+	Hostname string `json:"hostname,omitempty" toml:"hostname,omitempty"`
+	Username string `json:"username" toml:"username"`
+	Password string `json:"password" toml:"password"`
+	Driver   string `json:"driver,omitempty" toml:"driver,omitempty"`
+	// +kubebuilder:default:={ "validationQuery" : "SELECT 1" }
+	PoolOptions PoolOptions `json:"poolOptions,omitempty" toml:"pool_options,omitempty"`
+}
+
 /* Identity database */
 type IdentityDb struct {
 	Type     string `json:"type,omitempty" toml:"type,omitempty"`
@@ -141,7 +177,7 @@ type IdentityDb struct {
 	Password string `json:"password" toml:"password"`
 	Driver   string `json:"driver,omitempty" toml:"driver,omitempty"`
 	// +kubebuilder:default:={ "validationQuery" : "SELECT 1" }
-	PoolOptions PoolOptions `json:"pool_options,omitempty" toml:"pool_options,omitempty"`
+	PoolOptions PoolOptions `json:"poolOptions,omitempty" toml:"pool_options,omitempty"`
 }
 
 /* Shared database */
@@ -153,7 +189,7 @@ type SharedDb struct {
 	Password string `json:"password" toml:"password"`
 	Driver   string `json:"driver,omitempty" toml:"driver,omitempty"`
 	// +kubebuilder:default:={ "validationQuery" : "SELECT 1" }
-	PoolOptions PoolOptions `json:"pool_options,omitempty" toml:"pool_options,omitempty"`
+	PoolOptions PoolOptions `json:"poolOptions,omitempty" toml:"pool_options,omitempty"`
 }
 
 /* BPS database */
@@ -170,6 +206,7 @@ type BpsDatabase struct {
 
 /* Database connections and configs */
 type Database struct {
+	UserDb     UserDb     `json:"userDb" toml:"user"`
 	IdentityDb IdentityDb `json:"identityDb" toml:"identity_db"`
 	SharedDb   SharedDb   `json:"sharedDb" toml:"shared_db"`
 }
@@ -218,16 +255,38 @@ type Primary struct {
 	Name     string `json:"name" toml:"name"`
 	Password string `json:"password" toml:"password"`
 }
+type Internal struct {
+	FileName    string `json:"fileName" toml:"file_name"`
+	Type        string `json:"type" toml:"type"`
+	Password    string `json:"password" toml:"password"`
+	Alias       string `json:"alias" toml:"alias"`
+	KeyPassword string `json:"keyPassword" toml:"key_password"`
+}
+type TLS struct {
+	FileName    string `json:"fileName" toml:"file_name"`
+	Type        string `json:"type" toml:"type"`
+	Password    string `json:"password" toml:"password"`
+	Alias       string `json:"alias" toml:"alias"`
+	KeyPassword string `json:"keyPassword" toml:"key_password"`
+}
 
 /* Keystore configurations */
-type Keystore struct {
-	Primary Primary `json:"primary" toml:"primary"`
+type KeyStore struct {
+	Primary  Primary  `json:"primary,omitempty" toml:"primary,omitempty"`
+	Internal Internal `json:"internal,omitempty" toml:"internal,omitempty"`
+	TLS      TLS      `json:"tls,omitempty" toml:"tls,omitempty"`
+}
+
+type TrustStore struct {
+	FileName string `json:"fileName" toml:"file_name"`
+	Password string `json:"password" toml:"password"`
+	Type     string `json:"type" toml:"type"`
 }
 
 /* Clustering configurations */
 type Clustering struct {
 	// +kubebuilder:default:="kubernetes"
-	MembershipScheme string               `json:"membership_scheme,omitempty" toml:"membership_scheme,omitempty"`
+	MembershipScheme string               `json:"membershipScheme,omitempty" toml:"membership_scheme,omitempty"`
 	Properties       ClusteringProperties `json:"properties" toml:"properties,omitempty"`
 }
 
@@ -236,20 +295,20 @@ type ClusteringProperties struct {
 	// +kubebuilder:default:="org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
 	PropertiesMembershipSchemeClassName string `json:"membershipSchemeClassName,omitempty" toml:"membershipSchemeClassName,omitempty"`
 	// +kubebuilder:default:="wso2-iam-system"
-	PropertiesKUBERNETESNAMESPACE string `json:"KUBERNETES_NAMESPACE,omitempty" toml:"KUBERNETES_NAMESPACE,omitempty"`
+	PropertiesKubernetesNamespace string `json:"kubernetesNamespace,omitempty" toml:"KUBERNETES_NAMESPACE,omitempty"`
 	// +kubebuilder:default:="wso2is-service"
-	PropertiesKUBERNETESSERVICES string `json:"KUBERNETES_SERVICES,omitempty" toml:"KUBERNETES_SERVICES,omitempty"`
+	PropertiesKubernetesServices string `json:"kubernetesServices,omitempty" toml:"KUBERNETES_SERVICES,omitempty"`
 	// +kubebuilder:default:=true
-	PropertiesKUBERNETESMASTERSKIPSSLVERIFICATION bool `json:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty" toml:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty"`
+	PropertiesKubernetesMasterSkipSslVerification bool `json:"kubernetesMasterSkipSslVerification,omitempty" toml:"KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,omitempty"`
 	// +kubebuilder:default:=false
-	PropertiesUSEDNS bool `json:"USE_DNS,omitempty" toml:"USE_DNS,omitempty"`
-	//PropertiesKUBERNETES_API_SERVER string `json:"KUBERNETES_API_SERVER" toml:"KUBERNETES_API_SERVER,omitempty"`
+	PropertiesUseDns bool `json:"useDns,omitempty" toml:"USE_DNS,omitempty"`
+	//PropertiesKubernetesApiServer string `json:"kubernetesApiServer" toml:"KUBERNETES_API_SERVER,omitempty"`
 }
 
 /* Jmx monitoring configurations */
 type Jmx struct {
 	// +kubebuilder:default:=true
-	RmiServerStart bool `json:"rmi_server_start,omitempty" toml:"rmi_server_start"`
+	RmiServerStart bool `json:"rmiServerStart,omitempty" toml:"rmi_server_start"`
 }
 
 /* Monitoring configurations */

@@ -254,29 +254,37 @@ spec:
                         type: object
                     type: object
                   clustering:
+                    default:
+                      membershipScheme: kubernetes
+                      properties:
+                        kubernetesMasterSkipSslVerification: true
+                        kubernetesNamespace: wso2-iam-system
+                        kubernetesServices: wso2is-service
+                        membershipSchemeClassName: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
+                        useDns: false
                     description: ' Clustering configurations'
                     properties:
-                      membership_scheme:
+                      membershipScheme:
                         default: kubernetes
                         type: string
                       properties:
                         description: ' Clustering Properties'
                         properties:
-                          KUBERNETES_MASTER_SKIP_SSL_VERIFICATION:
+                          kubernetesMasterSkipSslVerification:
                             default: true
                             type: boolean
-                          KUBERNETES_NAMESPACE:
+                          kubernetesNamespace:
                             default: wso2-iam-system
                             type: string
-                          KUBERNETES_SERVICES:
+                          kubernetesServices:
                             default: wso2is-service
                             type: string
-                          USE_DNS:
-                            default: false
-                            type: boolean
                           membershipSchemeClassName:
                             default: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
                             type: string
+                          useDns:
+                            default: false
+                            type: boolean
                         type: object
                     required:
                     - properties
@@ -286,12 +294,17 @@ spec:
                       identityDb:
                         password: wso2carbon
                         type: h2
-                        url: jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                        url: jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
                         username: wso2carbon
                       sharedDb:
                         password: wso2carbon
                         type: h2
-                        url: jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                        url: jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                        username: wso2carbon
+                      userDb:
+                        password: wso2carbon
+                        type: h2
+                        url: jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
                         username: wso2carbon
                     description: ' Database connections and configs'
                     properties:
@@ -304,11 +317,25 @@ spec:
                             type: string
                           password:
                             type: string
-                          pool_options:
+                          poolOptions:
                             default:
                               validationQuery: SELECT 1
                             description: ' MySQL pool options'
                             properties:
+                              commitOnReturn:
+                                type: boolean
+                              defaultAutoCommit:
+                                type: boolean
+                              maxActive:
+                                type: string
+                              maxWait:
+                                type: string
+                              minIdle:
+                                type: string
+                              testOnBorrow:
+                                type: boolean
+                              validationInterval:
+                                type: string
                               validationQuery:
                                 default: SELECT 1
                                 type: string
@@ -332,11 +359,67 @@ spec:
                             type: string
                           password:
                             type: string
-                          pool_options:
+                          poolOptions:
                             default:
                               validationQuery: SELECT 1
                             description: ' MySQL pool options'
                             properties:
+                              commitOnReturn:
+                                type: boolean
+                              defaultAutoCommit:
+                                type: boolean
+                              maxActive:
+                                type: string
+                              maxWait:
+                                type: string
+                              minIdle:
+                                type: string
+                              testOnBorrow:
+                                type: boolean
+                              validationInterval:
+                                type: string
+                              validationQuery:
+                                default: SELECT 1
+                                type: string
+                            type: object
+                          type:
+                            type: string
+                          url:
+                            type: string
+                          username:
+                            type: string
+                        required:
+                        - password
+                        - username
+                        type: object
+                      userDb:
+                        description: ' User database'
+                        properties:
+                          driver:
+                            type: string
+                          hostname:
+                            type: string
+                          password:
+                            type: string
+                          poolOptions:
+                            default:
+                              validationQuery: SELECT 1
+                            description: ' MySQL pool options'
+                            properties:
+                              commitOnReturn:
+                                type: boolean
+                              defaultAutoCommit:
+                                type: boolean
+                              maxActive:
+                                type: string
+                              maxWait:
+                                type: string
+                              minIdle:
+                                type: string
+                              testOnBorrow:
+                                type: boolean
+                              validationInterval:
+                                type: string
                               validationQuery:
                                 default: SELECT 1
                                 type: string
@@ -354,29 +437,49 @@ spec:
                     required:
                     - identityDb
                     - sharedDb
+                    - userDb
                     type: object
                   hazelcast:
                     default:
-                      hazelcastLoggingType: log4j
-                      hazelcastShutdownhookEnabled: false
+                      hazelcastLoggingType: log4j2
+                      hazelcastShutdownHookEnabled: false
                     description: ' Hazelcast clustering configs'
                     properties:
                       hazelcastLoggingType:
                         default: log4j
                         type: string
-                      hazelcastShutdownhookEnabled:
+                      hazelcastShutdownHookEnabled:
                         default: false
                         type: boolean
                     type: object
                   host:
                     type: string
-                  keystore:
+                  keyStore:
                     default:
                       primary:
                         name: wso2carbon.jks
                         password: wso2carbon
                     description: ' Keystore configurations'
                     properties:
+                      internal:
+                        properties:
+                          alias:
+                            type: string
+                          fileName:
+                            type: string
+                          keyPassword:
+                            type: string
+                          password:
+                            type: string
+                          type:
+                            type: string
+                        required:
+                        - alias
+                        - fileName
+                        - keyPassword
+                        - password
+                        - type
+                        type: object
                       primary:
                         description: ' Primary Keystore configurations'
                         properties:
@@ -388,19 +491,33 @@ spec:
                         - name
                         - password
                         type: object
-                    required:
-                    - primary
+                      tls:
+                        properties:
+                          alias:
+                            type: string
+                          fileName:
+                            type: string
+                          keyPassword:
+                            type: string
+                          password:
+                            type: string
+                          type:
+                            type: string
+                        required:
+                        - alias
+                        - fileName
+                        - keyPassword
+                        - password
+                        - type
+                        type: object
                     type: object
                   monitoring:
-                    default:
-                      jmx:
-                        rmi_server_start: true
                     description: ' Monitoring configurations'
                     properties:
                       jmx:
                         description: ' Jmx monitoring configurations'
                         properties:
-                          rmi_server_start:
+                          rmiServerStart:
                             default: true
                             type: boolean
                         type: object
@@ -448,11 +565,15 @@ spec:
                     type: object
                   server:
                     default:
+                      basePath: https://$ref{server.hostname}
                       hostname: $env{HOST_NAME}
                       nodeIp: $env{NODE_IP}
                     properties:
+                      basePath:
+                        default: https://$ref{server.hostname}
+                        type: string
                       hostname:
-                        default: $env{HOST_NAME}
+                        default: wso2is.com
                         type: string
                       nodeIp:
                         default: $env{NODE_IP}
@@ -515,22 +636,35 @@ spec:
                     required:
                     - https
                     type: object
+                  trustStore:
+                    properties:
+                      fileName:
+                        type: string
+                      password:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                    - fileName
+                    - password
+                    - type
+                    type: object
                   userStore:
                     default:
                       type: database_unique_id
                     description: ' UserStore configs'
                     properties:
-                      base_dn:
+                      baseDn:
                         type: string
-                      connection_name:
+                      connectionName:
                         type: string
-                      connection_password:
+                      connectionPassword:
                         type: string
-                      connection_url:
+                      connectionUrl:
                         type: string
                       type:
                         type: string
-                      user_name_attribute:
+                      userNameAttribute:
                         type: string
                     required:
                     - type
