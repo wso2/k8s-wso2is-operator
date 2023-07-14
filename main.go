@@ -18,10 +18,11 @@ package main
 
 import (
 	"flag"
-	"github.com/wso2/k8s-wso2is-operator/controllers/userstore"
-	"github.com/wso2/k8s-wso2is-operator/controllers/wso2is"
 	"os"
 	"time"
+
+	"github.com/wso2/k8s-wso2is-operator/controllers/userstore"
+	"github.com/wso2/k8s-wso2is-operator/controllers/wso2is"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
