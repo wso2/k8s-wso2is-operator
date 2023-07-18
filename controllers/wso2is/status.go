@@ -35,5 +35,5 @@ func updateStatus(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Log
 		}
 	}
 
-	return ctrl.Result{}, nil
+	return ctrl.Result{}, err
 }

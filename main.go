@@ -18,6 +18,7 @@ package main
 
 import (
 	"flag"
+	"github.com/wso2/k8s-wso2is-operator/pkg/globallog"
 	"os"
 	"time"
 
@@ -44,6 +45,9 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(wso2v1beta1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
+
+	//	Init logger
+	globallog.InitLogger()
 }
 
 func main() {
