@@ -15,5 +15,3 @@
 - op: replace
   path: /metadata/name
   value: prod-wso2is-ingress
-
-

@@ -202,9 +202,9 @@ spec:
                                     encodingMethod: Base32
                                     enrolUserInAuthenticationFlow: true
                                     secondaryUserstore: primary
-                                    timeStepSize: "30"
+                                    timeStepSize: '30'
                                     usecase: local
-                                    windowSize: "3"
+                                    windowSize: '3'
                                   description: ' TOTP parameters'
                                   properties:
                                     Issuer:
@@ -235,13 +235,13 @@ spec:
                                       default: primary
                                       type: string
                                     timeStepSize:
-                                      default: "30"
+                                      default: '30'
                                       type: string
                                     usecase:
                                       default: local
                                       type: string
                                     windowSize:
-                                      default: "3"
+                                      default: '3'
                                       type: string
                                   type: object
                               type: object
@@ -420,7 +420,7 @@ spec:
                             password:
                               type: string
                             port:
-                              default: "587"
+                              default: '587'
                               type: string
                             username:
                               type: string
@@ -598,7 +598,7 @@ spec:
         status: {}
 status:
   acceptedNames:
-    kind: ""
-    plural: ""
+    kind: ''
+    plural: ''
   conditions: []
   storedVersions: []

@@ -35,12 +35,12 @@ spec:
         username: wso2carbon
         password: wso2carbon
     clustering:
-      membershipScheme: "kubernetes"
+      membershipScheme: 'kubernetes'
       properties:
-        membershipSchemeClassName:  "org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
-        kubernetesNamespace:  "wso2-iam-system"
-        kubernetesServices: "wso2is-service"
-        kubernetesMasterSkipSslVerification:  true
+        membershipSchemeClassName: 'org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme'
+        kubernetesNamespace: 'wso2-iam-system'
+        kubernetesServices: 'wso2is-service'
+        kubernetesMasterSkipSslVerification: true
         useDns: false
     keyStore:
       primary:

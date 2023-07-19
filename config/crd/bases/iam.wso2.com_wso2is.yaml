@@ -15,723 +15,723 @@ spec:
     singular: wso2is
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - jsonPath: .status.serviceName
-      name: Service Name
-      type: string
-    - jsonPath: .status.ingressHostname
-      name: Ingress Hostname
-      type: string
-    - jsonPath: .spec.replicas
-      name: Desired Replicas
-      type: string
-    - jsonPath: .status.replicas
-      name: Current Replicas
-      type: string
-    - jsonPath: .spec.configurations.host
-      name: Host Name
-      type: string
-    name: v1beta1
-    schema:
-      openAPIV3Schema:
-        description: Wso2Is is the Schema for the wso2is API
-        properties:
-          apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-            type: string
-          kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-            type: string
-          metadata:
-            type: object
-          spec:
-            description: Wso2IsSpec defines the desired state of Wso2Is
-            properties:
-              configurations:
-                properties:
-                  accountRecovery:
-                    properties:
-                      endpoint:
-                        properties:
-                          auth:
-                            properties:
-                              hash:
-                                type: string
-                            type: object
-                        type: object
-                    type: object
-                  adminService:
-                    properties:
-                      wsdl:
-                        properties:
-                          enable:
-                            default: "FALSE"
-                            type: boolean
-                        type: object
-                    type: object
-                  authentication:
-                    properties:
-                      adaptive:
-                        properties:
-                          allowLoops:
-                            type: boolean
-                          executionSupervisor:
-                            properties:
-                              timeout:
-                                format: int32
-                                type: integer
-                            type: object
-                        type: object
-                      authenticator:
-                        properties:
-                          basic:
-                            properties:
-                              parameters:
-                                properties:
-                                  showAuthFailureReason:
-                                    type: boolean
-                                  showAuthFailureReasonOnLoginPage:
-                                    type: boolean
-                                type: object
-                            type: object
-                          emailOtp:
-                            properties:
-                              enable:
-                                default: "FALSE"
-                                type: boolean
-                              name:
-                                default: EmailOTP
-                                type: string
-                              parameters:
-                                default:
-                                  CaptureAndUpdateEmailAddress: true
-                                  EMAILOTPAuthenticationEndpointURL: /emailotpauthenticationendpoint/emailotp.jsp
-                                  EMAILOTPMandatory: false
-                                  EmailAddressRequestPage: /emailotpauthenticationendpoint/emailAddress.jsp
-                                  EmailOTPAuthenticationEndpointErrorPage: /emailotpauthenticationendpoint/emailotpError.jsp
-                                  EmailOTPEnableByUserClaim: true
-                                  federatedEmailAttributeKey: email
-                                  secondaryUserstore: primary
-                                  sendOTPToFederatedEmailAttribute: false
-                                  showEmailAddressInUI: true
-                                  useEventHandlerBasedEmailSender: true
-                                  usecase: local
-                                properties:
-                                  captureAndUpdateEmailAddress:
-                                    type: boolean
-                                  emailAddressRequestPage:
-                                    type: string
-                                  emailOtpAuthenticationEndpointErrorPage:
-                                    type: string
-                                  emailOtpAuthenticationEndpointUrl:
-                                    type: string
-                                  emailOtpEnableByUserClaim:
-                                    type: boolean
-                                  emailOtpMandatory:
-                                    type: boolean
-                                  federatedEmailAttributeKey:
-                                    type: string
-                                  secondaryUserstore:
-                                    type: string
-                                  sendOtpToFederatedEmailAttribute:
-                                    type: boolean
-                                  showAuthFailureReason:
-                                    type: boolean
-                                  showAuthFailureReasonOnLoginPage:
-                                    type: boolean
-                                  showEmailAddressInUi:
-                                    type: boolean
-                                  useEventHandlerBasedEmailSender:
-                                    type: string
-                                  usecase:
-                                    type: string
-                                type: object
-                            type: object
-                          fido:
-                            properties:
-                              parameters:
-                                properties:
-                                  tags:
-                                    type: string
-                                type: object
-                            type: object
-                          magiclink:
-                            properties:
-                              enable:
-                                default: "FALSE"
-                                type: boolean
-                              name:
-                                type: string
-                              parameters:
-                                properties:
-                                  blockedUserStoreDomains:
-                                    type: string
-                                  expiryTime:
-                                    type: string
-                                  tags:
-                                    type: string
-                                type: object
-                            type: object
-                          smsOtp:
-                            properties:
-                              enable:
-                                default: "FALSE"
-                                type: string
-                              name:
-                                default: SmsOTP
-                                type: string
-                              parameters:
-                                default:
-                                  BackupCode: true
-                                  CaptureAndUpdateMobileNumber: true
-                                  MobileNumberRegPage: /smsotpauthenticationendpoint/mobile.jsp
-                                  ResendEnable: true
-                                  RetryEnable: true
-                                  SMSOTPAuthenticationEndpointErrorPage: /smsotpauthenticationendpoint/smsotpError.jsp
-                                  SMSOTPAuthenticationEndpointURL: /smsotpauthenticationendpoint/smsotp.jsp
-                                  SMSOTPEnableByUserClaim: true
-                                  SMSOTPMandatory: false
-                                  SendOTPDirectlyToMobile: false
-                                  redirectToMultiOptionPageOnFailure: false
-                                properties:
-                                  backupCode:
-                                    type: string
-                                  captureAndUpdateMobileNumber:
-                                    type: boolean
-                                  mobileNumberRegPage:
-                                    type: string
-                                  redirectToMultiOptionPageOnFailure:
-                                    type: boolean
-                                  resendEnable:
-                                    type: boolean
-                                  retryEnable:
-                                    type: boolean
-                                  sendOtpDirectlyToMobile:
-                                    type: boolean
-                                  smsOtpAuthenticationEndpointErrorPage:
-                                    type: string
-                                  smsOtpAuthenticationEndpointUrl:
-                                    type: string
-                                  smsOtpEnableByUserClaim:
-                                    type: boolean
-                                  smsOtpMandatory:
-                                    type: boolean
-                                type: object
-                            type: object
-                          totp:
-                            properties:
-                              enable:
-                                default: "FALSE"
-                                type: boolean
-                              parameters:
-                                default:
-                                  Issuer: WSO2
-                                  TOTPAuthenticationEndpointEnableTOTPPage: /totpauthenticationendpoint/enableTOTP.jsp
-                                  TOTPAuthenticationEndpointErrorPage: /totpauthenticationendpoint/totpError.jsp
-                                  TOTPAuthenticationEndpointURL: /totpauthenticationendpoint/totp.jsp
-                                  UseCommonIssuer: true
-                                  authenticationMandatory: true
-                                  encodingMethod: Base32
-                                  enrolUserInAuthenticationFlow: true
-                                  secondaryUserstore: primary
-                                  timeStepSize: "30"
-                                  usecase: local
-                                  windowSize: "3"
-                                properties:
-                                  Issuer:
-                                    type: string
-                                  authenticationMandatory:
-                                    type: string
-                                  encodingMethod:
-                                    type: string
-                                  enrolUserInAuthenticationFlow:
-                                    type: string
-                                  secondaryUserstore:
-                                    type: string
-                                  showAuthFailureReason:
-                                    type: boolean
-                                  showAuthFailureReasonOnLoginPage:
-                                    type: boolean
-                                  timeStepSize:
-                                    type: string
-                                  totpAuthenticationEndpointEnableTotpPage:
-                                    type: string
-                                  totpAuthenticationEndpointErrorPage:
-                                    type: string
-                                  totpAuthenticationEndpointUrl:
-                                    type: string
-                                  useCommonIssuer:
-                                    type: string
-                                  usecase:
-                                    type: string
-                                  windowSize:
-                                    type: string
-                                type: object
-                            type: object
-                        type: object
-                      consent:
-                        properties:
-                          dataSource:
-                            type: string
-                        type: object
-                      customAuthenticator:
-                        type: string
-                      endpoint:
-                        properties:
-                          enableCustomClaimMappings:
-                            type: boolean
-                          enableMergingCustomClaimMappingsWithDefault:
-                            type: boolean
-                        type: object
-                      jitProvisioning:
-                        properties:
-                          enableEnhancedFeature:
-                            type: boolean
-                        type: object
-                    type: object
-                  carbonHealthCheck:
-                    properties:
-                      enable:
-                        type: boolean
-                      healthChecker:
-                        properties:
-                          dataSourceHealthChecker:
-                            properties:
+    - additionalPrinterColumns:
+        - jsonPath: .status.serviceName
+          name: Service Name
+          type: string
+        - jsonPath: .status.ingressHostname
+          name: Ingress Hostname
+          type: string
+        - jsonPath: .spec.replicas
+          name: Desired Replicas
+          type: string
+        - jsonPath: .status.replicas
+          name: Current Replicas
+          type: string
+        - jsonPath: .spec.configurations.host
+          name: Host Name
+          type: string
+      name: v1beta1
+      schema:
+        openAPIV3Schema:
+          description: Wso2Is is the Schema for the wso2is API
+          properties:
+            apiVersion:
+              description: 'APIVersion defines the versioned schema of this representation
+                of an object. Servers should convert recognized schemas to the latest
+                internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              type: string
+            kind:
+              description: 'Kind is a string value representing the REST resource this
+                object represents. Servers may infer this from the endpoint the client
+                submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: Wso2IsSpec defines the desired state of Wso2Is
+              properties:
+                configurations:
+                  properties:
+                    accountRecovery:
+                      properties:
+                        endpoint:
+                          properties:
+                            auth:
+                              properties:
+                                hash:
+                                  type: string
+                              type: object
+                          type: object
+                      type: object
+                    adminService:
+                      properties:
+                        wsdl:
+                          properties:
+                            enable:
+                              default: 'FALSE'
+                              type: boolean
+                          type: object
+                      type: object
+                    authentication:
+                      properties:
+                        adaptive:
+                          properties:
+                            allowLoops:
+                              type: boolean
+                            executionSupervisor:
+                              properties:
+                                timeout:
+                                  format: int32
+                                  type: integer
+                              type: object
+                          type: object
+                        authenticator:
+                          properties:
+                            basic:
+                              properties:
+                                parameters:
+                                  properties:
+                                    showAuthFailureReason:
+                                      type: boolean
+                                    showAuthFailureReasonOnLoginPage:
+                                      type: boolean
+                                  type: object
+                              type: object
+                            emailOtp:
+                              properties:
+                                enable:
+                                  default: 'FALSE'
+                                  type: boolean
+                                name:
+                                  default: EmailOTP
+                                  type: string
+                                parameters:
+                                  default:
+                                    CaptureAndUpdateEmailAddress: true
+                                    EMAILOTPAuthenticationEndpointURL: /emailotpauthenticationendpoint/emailotp.jsp
+                                    EMAILOTPMandatory: false
+                                    EmailAddressRequestPage: /emailotpauthenticationendpoint/emailAddress.jsp
+                                    EmailOTPAuthenticationEndpointErrorPage: /emailotpauthenticationendpoint/emailotpError.jsp
+                                    EmailOTPEnableByUserClaim: true
+                                    federatedEmailAttributeKey: email
+                                    secondaryUserstore: primary
+                                    sendOTPToFederatedEmailAttribute: false
+                                    showEmailAddressInUI: true
+                                    useEventHandlerBasedEmailSender: true
+                                    usecase: local
+                                  properties:
+                                    captureAndUpdateEmailAddress:
+                                      type: boolean
+                                    emailAddressRequestPage:
+                                      type: string
+                                    emailOtpAuthenticationEndpointErrorPage:
+                                      type: string
+                                    emailOtpAuthenticationEndpointUrl:
+                                      type: string
+                                    emailOtpEnableByUserClaim:
+                                      type: boolean
+                                    emailOtpMandatory:
+                                      type: boolean
+                                    federatedEmailAttributeKey:
+                                      type: string
+                                    secondaryUserstore:
+                                      type: string
+                                    sendOtpToFederatedEmailAttribute:
+                                      type: boolean
+                                    showAuthFailureReason:
+                                      type: boolean
+                                    showAuthFailureReasonOnLoginPage:
+                                      type: boolean
+                                    showEmailAddressInUi:
+                                      type: boolean
+                                    useEventHandlerBasedEmailSender:
+                                      type: string
+                                    usecase:
+                                      type: string
+                                  type: object
+                              type: object
+                            fido:
+                              properties:
+                                parameters:
+                                  properties:
+                                    tags:
+                                      type: string
+                                  type: object
+                              type: object
+                            magiclink:
+                              properties:
+                                enable:
+                                  default: 'FALSE'
+                                  type: boolean
+                                name:
+                                  type: string
+                                parameters:
+                                  properties:
+                                    blockedUserStoreDomains:
+                                      type: string
+                                    expiryTime:
+                                      type: string
+                                    tags:
+                                      type: string
+                                  type: object
+                              type: object
+                            smsOtp:
+                              properties:
+                                enable:
+                                  default: 'FALSE'
+                                  type: string
+                                name:
+                                  default: SmsOTP
+                                  type: string
+                                parameters:
+                                  default:
+                                    BackupCode: true
+                                    CaptureAndUpdateMobileNumber: true
+                                    MobileNumberRegPage: /smsotpauthenticationendpoint/mobile.jsp
+                                    ResendEnable: true
+                                    RetryEnable: true
+                                    SMSOTPAuthenticationEndpointErrorPage: /smsotpauthenticationendpoint/smsotpError.jsp
+                                    SMSOTPAuthenticationEndpointURL: /smsotpauthenticationendpoint/smsotp.jsp
+                                    SMSOTPEnableByUserClaim: true
+                                    SMSOTPMandatory: false
+                                    SendOTPDirectlyToMobile: false
+                                    redirectToMultiOptionPageOnFailure: false
+                                  properties:
+                                    backupCode:
+                                      type: string
+                                    captureAndUpdateMobileNumber:
+                                      type: boolean
+                                    mobileNumberRegPage:
+                                      type: string
+                                    redirectToMultiOptionPageOnFailure:
+                                      type: boolean
+                                    resendEnable:
+                                      type: boolean
+                                    retryEnable:
+                                      type: boolean
+                                    sendOtpDirectlyToMobile:
+                                      type: boolean
+                                    smsOtpAuthenticationEndpointErrorPage:
+                                      type: string
+                                    smsOtpAuthenticationEndpointUrl:
+                                      type: string
+                                    smsOtpEnableByUserClaim:
+                                      type: boolean
+                                    smsOtpMandatory:
+                                      type: boolean
+                                  type: object
+                              type: object
+                            totp:
+                              properties:
+                                enable:
+                                  default: 'FALSE'
+                                  type: boolean
+                                parameters:
+                                  default:
+                                    Issuer: WSO2
+                                    TOTPAuthenticationEndpointEnableTOTPPage: /totpauthenticationendpoint/enableTOTP.jsp
+                                    TOTPAuthenticationEndpointErrorPage: /totpauthenticationendpoint/totpError.jsp
+                                    TOTPAuthenticationEndpointURL: /totpauthenticationendpoint/totp.jsp
+                                    UseCommonIssuer: true
+                                    authenticationMandatory: true
+                                    encodingMethod: Base32
+                                    enrolUserInAuthenticationFlow: true
+                                    secondaryUserstore: primary
+                                    timeStepSize: '30'
+                                    usecase: local
+                                    windowSize: '3'
+                                  properties:
+                                    Issuer:
+                                      type: string
+                                    authenticationMandatory:
+                                      type: string
+                                    encodingMethod:
+                                      type: string
+                                    enrolUserInAuthenticationFlow:
+                                      type: string
+                                    secondaryUserstore:
+                                      type: string
+                                    showAuthFailureReason:
+                                      type: boolean
+                                    showAuthFailureReasonOnLoginPage:
+                                      type: boolean
+                                    timeStepSize:
+                                      type: string
+                                    totpAuthenticationEndpointEnableTotpPage:
+                                      type: string
+                                    totpAuthenticationEndpointErrorPage:
+                                      type: string
+                                    totpAuthenticationEndpointUrl:
+                                      type: string
+                                    useCommonIssuer:
+                                      type: string
+                                    usecase:
+                                      type: string
+                                    windowSize:
+                                      type: string
+                                  type: object
+                              type: object
+                          type: object
+                        consent:
+                          properties:
+                            dataSource:
+                              type: string
+                          type: object
+                        customAuthenticator:
+                          type: string
+                        endpoint:
+                          properties:
+                            enableCustomClaimMappings:
+                              type: boolean
+                            enableMergingCustomClaimMappingsWithDefault:
+                              type: boolean
+                          type: object
+                        jitProvisioning:
+                          properties:
+                            enableEnhancedFeature:
+                              type: boolean
+                          type: object
+                      type: object
+                    carbonHealthCheck:
+                      properties:
+                        enable:
+                          type: boolean
+                        healthChecker:
+                          properties:
+                            dataSourceHealthChecker:
                               properties:
                                 properties:
-                                  monitored:
-                                    properties:
-                                      datasources:
-                                        type: string
-                                    type: object
-                                type: object
-                            type: object
-                        type: object
-                    type: object
-                  catalina:
-                    properties:
-                      valves:
-                        properties:
-                          valve:
-                            properties:
+                                  properties:
+                                    monitored:
+                                      properties:
+                                        datasources:
+                                          type: string
+                                      type: object
+                                  type: object
+                              type: object
+                          type: object
+                      type: object
+                    catalina:
+                      properties:
+                        valves:
+                          properties:
+                            valve:
                               properties:
                                 properties:
-                                  className:
-                                    type: string
-                                type: object
-                            type: object
-                        type: object
-                    type: object
-                  clustering:
-                    default:
-                      membershipScheme: kubernetes
+                                  properties:
+                                    className:
+                                      type: string
+                                  type: object
+                              type: object
+                          type: object
+                      type: object
+                    clustering:
+                      default:
+                        membershipScheme: kubernetes
+                        properties:
+                          kubernetesMasterSkipSslVerification: true
+                          kubernetesNamespace: wso2-iam-system
+                          kubernetesServices: wso2is-service
+                          membershipSchemeClassName: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
+                          useDns: false
                       properties:
-                        kubernetesMasterSkipSslVerification: true
-                        kubernetesNamespace: wso2-iam-system
-                        kubernetesServices: wso2is-service
-                        membershipSchemeClassName: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
-                        useDns: false
-                    properties:
-                      membershipScheme:
-                        type: string
-                      properties:
-                        properties:
-                          kubernetesMasterSkipSslVerification:
-                            type: boolean
-                          kubernetesNamespace:
-                            type: string
-                          kubernetesServices:
-                            type: string
-                          membershipSchemeClassName:
-                            type: string
-                          useDns:
-                            type: boolean
-                        type: object
-                    type: object
-                  database:
-                    default:
-                      identityDb:
-                        password: wso2carbon
-                        type: h2
-                        url: jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
-                        username: wso2carbon
-                      sharedDb:
-                        password: wso2carbon
-                        type: h2
-                        url: jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
-                        username: wso2carbon
-                      userDb:
-                        password: wso2carbon
-                        type: h2
-                        url: jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
-                        username: wso2carbon
-                    properties:
-                      identityDb:
-                        properties:
-                          driver:
-                            type: string
-                          hostname:
-                            type: string
-                          password:
-                            type: string
-                          poolOptions:
-                            properties:
-                              commitOnReturn:
-                                type: string
-                              defaultAutoCommit:
-                                type: string
-                              maxActive:
-                                type: string
-                              maxWait:
-                                type: string
-                              minIdle:
-                                type: string
-                              testOnBorrow:
-                                type: string
-                              validationInterval:
-                                type: string
-                              validationQuery:
-                                type: string
-                            type: object
-                          type:
-                            type: string
-                          url:
-                            type: string
-                          username:
-                            type: string
-                        type: object
-                      sharedDb:
-                        properties:
-                          driver:
-                            type: string
-                          hostname:
-                            type: string
-                          password:
-                            type: string
-                          poolOptions:
-                            properties:
-                              validationQuery:
-                                default: SELECT 1
-                                type: string
-                            type: object
-                          type:
-                            type: string
-                          url:
-                            type: string
-                          username:
-                            type: string
-                        type: object
-                      user:
-                        properties:
-                          driver:
-                            type: string
-                          hostname:
-                            type: string
-                          password:
-                            type: string
-                          poolOptions:
-                            properties:
-                              validationQuery:
-                                type: string
-                            type: object
-                          type:
-                            type: string
-                          url:
-                            type: string
-                          username:
-                            type: string
-                        type: object
-                    type: object
-                  hazelcast:
-                    default:
-                      hazelcastLoggingType: log4j2
-                      hazelcastShutdownHookEnabled: false
-                    properties:
-                      logging:
-                        properties:
-                          type:
-                            type: string
-                        type: object
-                      shutdownhook:
-                        properties:
-                          enabled:
-                            type: boolean
-                        type: object
-                    type: object
-                  identity:
-                    properties:
-                      authFramework:
-                        properties:
-                          endpoint:
-                            properties:
-                              appPassword:
-                                type: string
-                            type: object
-                        type: object
-                    type: object
-                  keystore:
-                    default:
-                      primary:
-                        name: wso2carbon.jks
-                        password: wso2carbon
-                    properties:
-                      internal:
-                        properties:
-                          alias:
-                            type: string
-                          fileName:
-                            type: string
-                          keyPassword:
-                            type: string
-                          password:
-                            type: string
-                          type:
-                            type: string
-                        type: object
-                      primary:
-                        properties:
-                          name:
-                            type: string
-                          password:
-                            type: string
-                        type: object
-                      tls:
-                        properties:
-                          alias:
-                            type: string
-                          fileName:
-                            type: string
-                          keyPassword:
-                            type: string
-                          password:
-                            type: string
-                          type:
-                            type: string
-                        type: object
-                    type: object
-                  monitoring:
-                    properties:
-                      jmx:
-                        default: "TRUE"
-                        properties:
-                          rmiServerStart:
-                            type: boolean
-                        type: object
-                    type: object
-                  outputAdapter:
-                    properties:
-                      email:
-                        properties:
-                          enableAuthentication:
-                            type: string
-                          enableStartTls:
-                            type: string
-                          fromAddress:
-                            type: string
-                          hostname:
-                            type: string
-                          password:
-                            type: string
-                          port:
-                            type: string
-                          username:
-                            type: string
-                        type: object
-                    type: object
-                  recaptcha:
-                    properties:
-                      apiUrl:
-                        default: https://www.google.com/recaptcha/api.js
-                        type: string
-                      enabled:
-                        default: "FALSE"
-                        type: boolean
-                      requestWrapUrls:
-                        type: string
-                      secretKey:
-                        type: string
-                      siteKey:
-                        type: string
-                      verifyUrl:
-                        default: https://www.google.com/recaptcha/api/siteverify
-                        type: string
-                    type: object
-                  server:
-                    default:
-                      basePath: https://$ref{server.hostname}
-                      hostname: wso2is.com
-                      nodeIp: $env{NODE_IP}
-                    properties:
-                      basePath:
-                        type: string
-                      hostname:
-                        type: string
-                      nodeIp:
-                        type: string
-                    type: object
-                  serviceType:
-                    default: NodePort
-                    type: string
-                  superAdmin:
-                    default:
-                      createAdminAccount: true
-                      password: admin
-                      username: admin
-                    properties:
-                      adminRole:
-                        type: string
-                      createAdminAccount:
-                        type: boolean
-                      password:
-                        type: string
-                      username:
-                        type: string
-                    type: object
-                  systemApplications:
-                    properties:
-                      fidpRoleBasedAuthzEnabledApps:
-                        type: string
-                      readOnlyRoles:
-                        type: boolean
-                    type: object
-                  systemRoles:
-                    properties:
-                      enable:
-                        type: boolean
-                      readOnlyRoles:
-                        type: boolean
-                    type: object
-                  tenantContext:
-                    default:
-                      enableTenantQualifiedUrls: true
-                    properties:
-                      enableTenantQualifiedUrls:
-                        type: boolean
-                      enableTenantedSessions:
-                        type: boolean
-                      rewrite:
-                        properties:
-                          customWebapps:
-                            type: boolean
-                        type: object
-                    type: object
-                  tenantMgt:
-                    properties:
-                      enableEmailDomain:
-                        default: "FALSE"
-                        type: boolean
-                    type: object
-                  transport:
-                    default:
-                      https:
-                        properties:
-                          proxyPort: 443
-                    properties:
-                      https:
+                        membershipScheme:
+                          type: string
                         properties:
                           properties:
-                            properties:
-                              proxyPort:
-                                format: int32
-                                type: integer
-                            type: object
-                        type: object
-                    type: object
-                  truststore:
-                    properties:
-                      fileName:
-                        type: string
-                      password:
-                        type: string
-                      type:
-                        type: string
-                    type: object
-                  userStore:
-                    default:
-                      type: database_unique_id
-                    properties:
-                      baseDn:
-                        type: string
-                      connectionName:
-                        type: string
-                      connectionPassword:
-                        type: string
-                      connectionUrl:
-                        type: string
+                            kubernetesMasterSkipSslVerification:
+                              type: boolean
+                            kubernetesNamespace:
+                              type: string
+                            kubernetesServices:
+                              type: string
+                            membershipSchemeClassName:
+                              type: string
+                            useDns:
+                              type: boolean
+                          type: object
+                      type: object
+                    database:
+                      default:
+                        identityDb:
+                          password: wso2carbon
+                          type: h2
+                          url: jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          username: wso2carbon
+                        sharedDb:
+                          password: wso2carbon
+                          type: h2
+                          url: jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          username: wso2carbon
+                        userDb:
+                          password: wso2carbon
+                          type: h2
+                          url: jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          username: wso2carbon
                       properties:
+                        identityDb:
+                          properties:
+                            driver:
+                              type: string
+                            hostname:
+                              type: string
+                            password:
+                              type: string
+                            poolOptions:
+                              properties:
+                                commitOnReturn:
+                                  type: string
+                                defaultAutoCommit:
+                                  type: string
+                                maxActive:
+                                  type: string
+                                maxWait:
+                                  type: string
+                                minIdle:
+                                  type: string
+                                testOnBorrow:
+                                  type: string
+                                validationInterval:
+                                  type: string
+                                validationQuery:
+                                  type: string
+                              type: object
+                            type:
+                              type: string
+                            url:
+                              type: string
+                            username:
+                              type: string
+                          type: object
+                        sharedDb:
+                          properties:
+                            driver:
+                              type: string
+                            hostname:
+                              type: string
+                            password:
+                              type: string
+                            poolOptions:
+                              properties:
+                                validationQuery:
+                                  default: SELECT 1
+                                  type: string
+                              type: object
+                            type:
+                              type: string
+                            url:
+                              type: string
+                            username:
+                              type: string
+                          type: object
+                        user:
+                          properties:
+                            driver:
+                              type: string
+                            hostname:
+                              type: string
+                            password:
+                              type: string
+                            poolOptions:
+                              properties:
+                                validationQuery:
+                                  type: string
+                              type: object
+                            type:
+                              type: string
+                            url:
+                              type: string
+                            username:
+                              type: string
+                          type: object
+                      type: object
+                    hazelcast:
+                      default:
+                        hazelcastLoggingType: log4j2
+                        hazelcastShutdownHookEnabled: false
+                      properties:
+                        logging:
+                          properties:
+                            type:
+                              type: string
+                          type: object
+                        shutdownhook:
+                          properties:
+                            enabled:
+                              type: boolean
+                          type: object
+                      type: object
+                    identity:
+                      properties:
+                        authFramework:
+                          properties:
+                            endpoint:
+                              properties:
+                                appPassword:
+                                  type: string
+                              type: object
+                          type: object
+                      type: object
+                    keystore:
+                      default:
+                        primary:
+                          name: wso2carbon.jks
+                          password: wso2carbon
+                      properties:
+                        internal:
+                          properties:
+                            alias:
+                              type: string
+                            fileName:
+                              type: string
+                            keyPassword:
+                              type: string
+                            password:
+                              type: string
+                            type:
+                              type: string
+                          type: object
+                        primary:
+                          properties:
+                            name:
+                              type: string
+                            password:
+                              type: string
+                          type: object
+                        tls:
+                          properties:
+                            alias:
+                              type: string
+                            fileName:
+                              type: string
+                            keyPassword:
+                              type: string
+                            password:
+                              type: string
+                            type:
+                              type: string
+                          type: object
+                      type: object
+                    monitoring:
+                      properties:
+                        jmx:
+                          default: 'TRUE'
+                          properties:
+                            rmiServerStart:
+                              type: boolean
+                          type: object
+                      type: object
+                    outputAdapter:
+                      properties:
+                        email:
+                          properties:
+                            enableAuthentication:
+                              type: string
+                            enableStartTls:
+                              type: string
+                            fromAddress:
+                              type: string
+                            hostname:
+                              type: string
+                            password:
+                              type: string
+                            port:
+                              type: string
+                            username:
+                              type: string
+                          type: object
+                      type: object
+                    recaptcha:
+                      properties:
+                        apiUrl:
+                          default: https://www.google.com/recaptcha/api.js
+                          type: string
+                        enabled:
+                          default: 'FALSE'
+                          type: boolean
+                        requestWrapUrls:
+                          type: string
+                        secretKey:
+                          type: string
+                        siteKey:
+                          type: string
+                        verifyUrl:
+                          default: https://www.google.com/recaptcha/api/siteverify
+                          type: string
+                      type: object
+                    server:
+                      default:
+                        basePath: https://$ref{server.hostname}
+                        hostname: wso2is.com
+                        nodeIp: $env{NODE_IP}
+                      properties:
+                        basePath:
+                          type: string
+                        hostname:
+                          type: string
+                        nodeIp:
+                          type: string
+                      type: object
+                    serviceType:
+                      default: NodePort
+                      type: string
+                    superAdmin:
+                      default:
+                        createAdminAccount: true
+                        password: admin
+                        username: admin
+                      properties:
+                        adminRole:
+                          type: string
+                        createAdminAccount:
+                          type: boolean
+                        password:
+                          type: string
+                        username:
+                          type: string
+                      type: object
+                    systemApplications:
+                      properties:
+                        fidpRoleBasedAuthzEnabledApps:
+                          type: string
+                        readOnlyRoles:
+                          type: boolean
+                      type: object
+                    systemRoles:
+                      properties:
+                        enable:
+                          type: boolean
+                        readOnlyRoles:
+                          type: boolean
+                      type: object
+                    tenantContext:
+                      default:
+                        enableTenantQualifiedUrls: true
+                      properties:
+                        enableTenantQualifiedUrls:
+                          type: boolean
+                        enableTenantedSessions:
+                          type: boolean
+                        rewrite:
+                          properties:
+                            customWebapps:
+                              type: boolean
+                          type: object
+                      type: object
+                    tenantMgt:
+                      properties:
+                        enableEmailDomain:
+                          default: 'FALSE'
+                          type: boolean
+                      type: object
+                    transport:
+                      default:
+                        https:
+                          properties:
+                            proxyPort: 443
+                      properties:
+                        https:
+                          properties:
+                            properties:
+                              properties:
+                                proxyPort:
+                                  format: int32
+                                  type: integer
+                              type: object
+                          type: object
+                      type: object
+                    truststore:
+                      properties:
+                        fileName:
+                          type: string
+                        password:
+                          type: string
+                        type:
+                          type: string
+                      type: object
+                    userStore:
+                      default:
+                        type: database_unique_id
+                      properties:
+                        baseDn:
+                          type: string
+                        connectionName:
+                          type: string
+                        connectionPassword:
+                          type: string
+                        connectionUrl:
+                          type: string
                         properties:
-                          caseInsensitiveUsername:
-                            type: boolean
-                        type: object
-                      type:
-                        type: string
-                      usernameAttribute:
-                        type: string
-                      usernameJavaRegex:
-                        type: string
-                    type: object
-                type: object
-              keystoreMounts:
-                items:
-                  properties:
-                    data:
-                      type: string
-                    name:
-                      type: string
-                  required:
-                  - data
-                  - name
+                          properties:
+                            caseInsensitiveUsername:
+                              type: boolean
+                          type: object
+                        type:
+                          type: string
+                        usernameAttribute:
+                          type: string
+                        usernameJavaRegex:
+                          type: string
+                      type: object
                   type: object
-                type: array
-              replicas:
-                format: int32
-                type: integer
-              template:
-                properties:
-                  annotations:
-                    additionalProperties:
-                      type: string
+                keystoreMounts:
+                  items:
+                    properties:
+                      data:
+                        type: string
+                      name:
+                        type: string
+                    required:
+                      - data
+                      - name
                     type: object
-                type: object
-              tomlConfig:
-                type: string
-              tomlConfigFile:
-                type: string
-              version:
-                default: 6.1.0
-                type: string
-            required:
-            - configurations
-            - replicas
-            type: object
-          status:
-            description: Wso2IsStatus defines the observed state of Wso2Is
-            properties:
-              ingressHostname:
-                type: string
-              nodes:
-                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
-                items:
+                  type: array
+                replicas:
+                  format: int32
+                  type: integer
+                template:
+                  properties:
+                    annotations:
+                      additionalProperties:
+                        type: string
+                      type: object
+                  type: object
+                tomlConfig:
                   type: string
-                type: array
-              replicas:
-                type: string
-              serviceName:
-                type: string
-            required:
-            - ingressHostname
-            - nodes
-            - replicas
-            - serviceName
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
+                tomlConfigFile:
+                  type: string
+                version:
+                  default: 6.1.0
+                  type: string
+              required:
+                - configurations
+                - replicas
+              type: object
+            status:
+              description: Wso2IsStatus defines the observed state of Wso2Is
+              properties:
+                ingressHostname:
+                  type: string
+                nodes:
+                  description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                    of cluster Important: Run "make" to regenerate code after modifying
+                    this file'
+                  items:
+                    type: string
+                  type: array
+                replicas:
+                  type: string
+                serviceName:
+                  type: string
+              required:
+                - ingressHostname
+                - nodes
+                - replicas
+                - serviceName
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

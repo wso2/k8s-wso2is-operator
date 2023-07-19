@@ -23,4 +23,3 @@ metadata:
     app: wso2is
 data:
   deployment.toml: ''
-

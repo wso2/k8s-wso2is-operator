@@ -15,77 +15,77 @@ spec:
     singular: userstore
   scope: Namespaced
   versions:
-  - name: v1beta1
-    schema:
-      openAPIV3Schema:
-        description: Userstore is the Schema for the userstores API
-        properties:
-          apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
-            type: string
-          kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-            type: string
-          metadata:
-            type: object
-          spec:
-            description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN! NOTE:
-              json tags are required.  Any new fields you add must have json tags
-              for the fields to be serialized. UserstoreSpec defines the desired state
-              of Userstore'
-            properties:
-              auth:
-                properties:
-                  host:
-                    type: string
-                  password:
-                    type: string
-                  username:
-                    type: string
-                required:
-                - host
-                - password
-                - username
-                type: object
-              description:
-                type: string
-              insecureSkipVerify:
-                default: false
-                type: boolean
-              name:
-                type: string
+    - name: v1beta1
+      schema:
+        openAPIV3Schema:
+          description: Userstore is the Schema for the userstores API
+          properties:
+            apiVersion:
+              description: 'APIVersion defines the versioned schema of this representation
+                of an object. Servers should convert recognized schemas to the latest
+                internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              type: string
+            kind:
+              description: 'Kind is a string value representing the REST resource this
+                object represents. Servers may infer this from the endpoint the client
+                submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN! NOTE:
+                json tags are required.  Any new fields you add must have json tags
+                for the fields to be serialized. UserstoreSpec defines the desired state
+                of Userstore'
               properties:
-                items:
+                auth:
                   properties:
-                    name:
+                    host:
                       type: string
-                    value:
+                    password:
+                      type: string
+                    username:
                       type: string
                   required:
-                  - name
-                  - value
+                    - host
+                    - password
+                    - username
                   type: object
-                type: array
-              typeId:
-                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                  Important: Run "make" to regenerate code after modifying this file'
-                type: string
-            required:
-            - auth
-            - description
-            - name
-            - properties
-            - typeId
-            type: object
-          status:
-            description: UserstoreStatus defines the observed state of Userstore
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
+                description:
+                  type: string
+                insecureSkipVerify:
+                  default: false
+                  type: boolean
+                name:
+                  type: string
+                properties:
+                  items:
+                    properties:
+                      name:
+                        type: string
+                      value:
+                        type: string
+                    required:
+                      - name
+                      - value
+                    type: object
+                  type: array
+                typeId:
+                  description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                    Important: Run "make" to regenerate code after modifying this file'
+                  type: string
+              required:
+                - auth
+                - description
+                - name
+                - properties
+                - typeId
+              type: object
+            status:
+              description: UserstoreStatus defines the observed state of Userstore
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

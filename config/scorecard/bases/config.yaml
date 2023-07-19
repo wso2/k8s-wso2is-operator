@@ -4,4 +4,4 @@ metadata:
   name: config
 stages:
   - parallel: true
-    tests: [ ]
+    tests: []

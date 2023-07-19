@@ -1,5 +1,3 @@
 - op: replace
   path: /metadata/name
   value: dev-wso2is-userstore-pvc
-
-

@@ -6,19 +6,19 @@ resources:
 
 patches:
   - target:
-      group: ""
+      group: ''
       version: v1
       kind: PersistentVolume
       name: mysql-pv
     path: pv-patch.yaml
   - target:
-      group: ""
+      group: ''
       version: v1
       kind: PersistentVolumeClaim
       name: mysql-pv-claim
     path: pvc-patch.yaml
   - target:
-      group: ""
+      group: ''
       version: v1
       kind: ConfigMap
       name: init-sql
@@ -30,7 +30,7 @@ patches:
       name: mysql
     path: dep-patch.yaml
   - target:
-      group: ""
+      group: ''
       version: v1
       kind: Service
       name: mysql

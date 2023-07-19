@@ -1,4 +1,3 @@
 - op: replace
   path: /metadata/name
   value: dev-init-sql
-
