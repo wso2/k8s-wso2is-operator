@@ -15,7 +15,7 @@ import (
 )
 
 func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.StatefulSet {
-	containerImage := "rukshanjs/wso2is:v6.1.0"
+	containerImage := wso2isImage
 	ls := labelsForWso2IS(m.Name, m.Spec.Version)
 	replicas := m.Spec.Size
 	runasuser := int64(802)
@@ -94,7 +94,7 @@ func reconcileStatefulSet(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log 
 			}
 		} else {
 			log.Info("Failed to get statefulset resource " + instance.Name + ". Re-running reconcile.")
-			return ctrl.Result{}, err
+			return ctrl.Result{Requeue: true}, err
 		}
 	} else {
 		log.Info("Found StatefulSet")

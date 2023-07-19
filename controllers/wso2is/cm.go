@@ -5,6 +5,8 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"log"
+
 	"github.com/BurntSushi/toml"
 	"github.com/go-logr/logr"
 	wso2v1beta1 "github.com/wso2/k8s-wso2is-operator/api/v1beta1"
@@ -14,7 +16,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
-	"log"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -78,8 +79,6 @@ func remountConfigMap(r *Wso2IsReconciler, ctx context.Context, log logr.Logger,
 		}
 		currentHash, err := calculateConfigMapHash(configMap)
 
-		log.Info(sfs.Spec.Template.Annotations["configmapHash"])
-		log.Info(currentHash)
 		if err != nil {
 			log.Error(err, "Failed to calculate ConfigMap hash")
 			return ctrl.Result{}, err
@@ -101,7 +100,7 @@ func remountConfigMap(r *Wso2IsReconciler, ctx context.Context, log logr.Logger,
 				return ctrl.Result{}, err
 			}
 
-			log.Info("Successfully updated the ConfigMap")
+			log.Info("Successfully updated the ConfigMap because of a change in the content of ConfigMap")
 			return ctrl.Result{}, nil
 		}
 	}
@@ -143,12 +142,13 @@ func reconcileConfigMap(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log lo
 		err = r.Get(ctx, types.NamespacedName{Name: instance.Spec.TomlConfigFile, Namespace: instance.Namespace}, configMap)
 		if err != nil {
 			log.Error(err, "Failed to get ConfigMap with the given name in CRD yaml")
-			return ctrl.Result{}, err
+			return ctrl.Result{Requeue: true}, err
 		}
 		sfs := &appsv1.StatefulSet{}
 		err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, sfs)
 		if err != nil {
-			log.Info("Couldn't obtain StatefulSet. It'll be found in next reconcile loop if this is the first run.")
+			// log.Info("Couldn't obtain StatefulSet. It'll be found in next reconcile loop if this is the first run.")
+			log.Error(err, "Couldn't obtain StatefulSet. It'll be found in next reconcile loop if this is the first run.")
 			return ctrl.Result{Requeue: true}, nil
 		} else {
 			remountConfigMap(r, ctx, log, instance, configMap, instance.Spec.TomlConfigFile)

@@ -49,7 +49,7 @@ func reconcileRoleBinding(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log 
 			}
 		} else {
 			log.Info("Failed to get roleBinding resource " + instance.Name + "-rolebinding" + ". Re-running reconcile.")
-			return ctrl.Result{}, err
+			return ctrl.Result{Requeue: true}, err
 		}
 	} else {
 		// Note: For simplication purposes RoleBindings are not updated - see deployment section

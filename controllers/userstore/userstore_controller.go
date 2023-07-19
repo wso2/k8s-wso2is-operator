@@ -62,7 +62,7 @@ func (r *UserstoreReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		}
 		// Error reading the object - requeue the request.
 		log.Error(err, "Failed to get UserStore Instance")
-		return ctrl.Result{}, err
+		return ctrl.Result{Requeue: true}, err
 	}
 
 	GenerateUserstore(usInstance, log)

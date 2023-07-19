@@ -23,7 +23,7 @@ func reconcileIngress(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr
 		return ctrl.Result{}, nil
 	} else if err != nil {
 		log.Error(err, "Failed to get Ingress")
-		return ctrl.Result{}, err
+		return ctrl.Result{Requeue: true}, err
 	} else {
 		log.Info("Found Ingress")
 	}

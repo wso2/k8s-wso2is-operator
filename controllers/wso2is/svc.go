@@ -74,7 +74,7 @@ func reconcileSvc(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Log
 			}
 		} else {
 			log.Info("Failed to get service resource " + instance.Name + "-service" + ". Re-running reconcile.")
-			return ctrl.Result{}, err
+			return ctrl.Result{Requeue: true}, err
 		}
 	} else {
 		// Note: For simplication purposes Services are not updated - see deployment section

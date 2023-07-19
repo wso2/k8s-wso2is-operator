@@ -44,7 +44,7 @@ func reconcileSecret(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.
 			}
 		} else {
 			log.Info("Failed to get secret resource " + instance.Name + "-secret" + ". Re-running reconcile.")
-			return ctrl.Result{}, err
+			return ctrl.Result{Requeue: true}, err
 		}
 	} else {
 		// Note: For simplication purposes Secrets are not updated - see deployment section

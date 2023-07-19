@@ -44,7 +44,7 @@ func reconcileRole(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.Lo
 			}
 		} else {
 			log.Info("Failed to get role resource " + instance.Name + "-role" + ". Re-running reconcile.")
-			return ctrl.Result{}, err
+			return ctrl.Result{Requeue: true}, err
 		}
 	} else {
 		// Note: For simplication purposes Roles are not updated - see deployment section

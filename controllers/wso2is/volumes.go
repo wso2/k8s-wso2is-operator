@@ -19,6 +19,7 @@ func reconcileVolume(r *Wso2IsReconciler, instance wso2v1beta1.Wso2Is, log logr.
 		log.Info("Unable to detect PVC claim in your cluster. You may configure your own")
 	} else if err != nil {
 		log.Error(err, "Failed to get PersistentVolumeClaim")
+		return ctrl.Result{Requeue: true}, err
 
 	} else {
 		log.Info("Found PVC")
