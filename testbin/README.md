@@ -28,7 +28,7 @@ For example:
 ./testbin/temp/run_scenario_tests.sh --is-https-url "https://dev.wso2is.com" --input-dir $PWD --output-dir $PWD
 ```
 
-## Manually Scenario Tests
+## Manually Run Scenario Tests
 
 ### 1. Setting Up
 
