@@ -22,13 +22,13 @@ The steps are,
 ### 1. Run the script from the root folder
 
 ```
-./testbin/temp/run_wso2is_scenario_tests.sh --is-https-url <ISHttpsURL> --input-dir <INPUT_DIR> --output-dir <OUTPUT_DIR>
+./testbin/run_wso2is_scenario_tests.sh --is-https-url <ISHttpsURL> --input-dir <INPUT_DIR> --output-dir <OUTPUT_DIR>
 ```
 
 For example:
 
 ```
-./testbin/temp/run_wso2is_scenario_tests.sh --is-https-url "https://dev.wso2is.com" --input-dir $PWD --output-dir $PWD
+./testbin/run_wso2is_scenario_tests.sh --is-https-url "https://dev.wso2is.com" --input-dir $PWD --output-dir $PWD
 ```
 
 ## Manually Run Scenario Tests
