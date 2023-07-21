@@ -4,6 +4,20 @@
 ISHttpsUrl="https://localhost:9443"
 input_dir=""
 output_dir=""
+hostname="localhost"
+
+# KeyStore
+keystore_name="wso2carbon.jks"
+keystore_path="scenarios-commons/src/main/resources/keystores/products/$keystore_name"
+keystore_password="wso2carbon"
+key_password="wso2carbon"
+
+# Function to extract hostname from URL without https:// prefix
+extract_hostname() {
+  local url="$1"
+  local hostname=$(echo "$url" | awk -F[/:] '{print $4}')
+  echo "$hostname"
+}
 
 # Parse named arguments
 while [[ $# -gt 0 ]]; do
@@ -11,6 +25,7 @@ while [[ $# -gt 0 ]]; do
   case $key in
     --is-https-url)
       ISHttpsUrl="$2"
+      hostname=$(extract_hostname "$ISHttpsUrl")
       shift
       shift
       ;;
@@ -71,9 +86,50 @@ else
   exit 1
 fi
 
+# Disable ingress addon
+echo -e "\n🌑 Disabling the 'ingress' addon...\n"
+minikube addons disable ingress
+
+# Check if 'mkcert' secret exists and delete it if it does
+echo -e "\n🔒 Checking for existing 'mkcert' secret...\n"
+if kubectl -n kube-system get secret mkcert &>/dev/null; then
+  echo -e "Deleting existing 'mkcert' secret...\n"
+  kubectl -n kube-system delete secret mkcert
+fi
+
+# Generate and install the certificate
+echo -e "\n🔒 Generating and installing the certificate...\n"
+mkcert $hostname
+kubectl -n kube-system create secret tls mkcert --key ./$hostname-key.pem --cert ./$hostname.pem
+
+# Configure ingress addon
+echo -e "\n✅ Configuring the 'ingress' addon...\n"
+echo "kube-system/mkcert" | minikube addons configure ingress
+minikube addons enable ingress
+
+# Install local CA certificates
+echo -e "\n⚡️ Installing local CA certificates...\n"
+sudo mkdir -p /usr/local/share/ca-certificates
+sudo cp "$(mkcert -CAROOT)"/rootCA.pem /usr/local/share/ca-certificates/mkcert.crt
+sudo update-ca-certificates
+
+# Convert the certificate and key to DER format
+echo -e "\n🔐 Converting the certificate and key to DER format...\n"
+openssl x509 -outform der -in ./$hostname.pem -out ./$hostname.der
+
+cd ..
+
+# Add the certificate to the JKS store
+echo -e "\n⚙️ Adding the certificate to the JKS store...\n"
+keytool -importcert -alias $hostname -file ./test-resources/$hostname.der -keystore "$keystore_path" -storepass "$keystore_password" -noprompt
+
+# Clean up temporary files
+rm ./test-resources/$hostname.der
+rm ./test-resources/$hostname-key.pem
+rm ./test-resources/$hostname.pem
+
 # Running the test script
 echo -e "\n🔬 Running the test script...\n"
-cd ..
 
 # Check if input directory and output directory are provided
 if [[ -z "$input_dir" ]] || [[ -z "$output_dir" ]]; then
@@ -86,5 +142,5 @@ yes "A" | ./test.sh --input-dir "$input_dir" --output-dir "$output_dir"
 
 # Removing the cloned repository
 echo -e "\n🗑️ Removing the cloned repository...\n"
-cd ../..
-rm -rf testbin/temp/product-is
+cd ../../../../
+rm -rf testbin/temp
