@@ -6,7 +6,7 @@ The scenario tests help validate the functionality and performance of the produc
 
 ## Automatically Run Scenario Tests
 
-This automatic method is only for testing the operator within a minikube k8s cluster, because the TLS certificate handling is done for only minikube.
+This automatic method is only for testing the operator within a minikube k8s cluster, because the TLS certificate handling is done for only minikube using mkcert.
 
 The whole process of running the WSO2 IS scenario tests could be automatically run by following the instructions in this section. This script will handle,
 
