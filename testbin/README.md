@@ -6,11 +6,14 @@ The scenario tests help validate the functionality and performance of the produc
 
 ## Automatically Run Scenario Tests
 
+This automatic method is only for testing the operator within a minikube k8s cluster, because the TLS certificate handling is done for only minikube.
+
 The whole process of running the WSO2 IS scenario tests could be automatically run by following the instructions in this section. This script will handle,
 
 - Cloning the `product-is` repo
 - Creating/Updating the `infrastructure.properties` file
 - Deploying the sample tests via tomcat
+- Create an mkcert certificate for enabling TLS for the hostname of the ingress
 - Running the tests
 - Cleanup
 
@@ -19,13 +22,13 @@ The steps are,
 ### 1. Run the script from the root folder
 
 ```
-./testbin/temp/run_scenario_tests.sh --is-https-url <ISHttpsURL> --input-dir <INPUT_DIR> --output-dir <OUTPUT_DIR>
+./testbin/temp/run_wso2is_scenario_tests.sh --is-https-url <ISHttpsURL> --input-dir <INPUT_DIR> --output-dir <OUTPUT_DIR>
 ```
 
 For example:
 
 ```
-./testbin/temp/run_scenario_tests.sh --is-https-url "https://dev.wso2is.com" --input-dir $PWD --output-dir $PWD
+./testbin/temp/run_wso2is_scenario_tests.sh --is-https-url "https://dev.wso2is.com" --input-dir $PWD --output-dir $PWD
 ```
 
 ## Manually Run Scenario Tests
