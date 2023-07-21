@@ -48,18 +48,20 @@ done
 # Creating the testbin directory if it doesn't exist
 mkdir -p testbin
 
-# Cloning the repository into the testbin/temp/product-is directory
-echo -e "🔍 Cloning the repository into testbin/temp/product-is...\n"
-git clone https://github.com/wso2/product-is.git testbin/temp/product-is
-
-# Checking out the necessary branch/tag
-echo -e "\n🌱 Checking out the necessary branch/tag...\n"
-cd testbin/temp/product-is
-git checkout master
+if [ ! -d "testbin/temp/product-is/product-scenarios" ]; then
+  echo -e "\n🔍 Downloading the 'product-scenarios'...\n"
+  mkdir -p testbin/temp/product-is
+  cd testbin/temp/product-is
+  curl --progress-bar -L -o product-scenarios.zip -# https://github.com/wso2/product-is/archive/master.zip
+  unzip -q product-scenarios.zip
+  mv product-is-master/product-scenarios ./
+  rm -rf product-is-master product-scenarios.zip
+  cd ../../../
+fi
 
 # Navigating to the product-scenarios directory
 echo -e "\n📂 Navigating to the product-scenarios directory...\n"
-cd product-scenarios
+cd testbin/temp/product-is/product-scenarios
 
 # Creating the infrastructure.properties file if it doesn't exist
 echo -e "\n🛠️ Creating the infrastructure.properties file...\n"
