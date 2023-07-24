@@ -17,6 +17,11 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: operators
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   labels:
     istio-injection: disabled
   name: wso2-iam-system
@@ -199,12 +204,25 @@ rules:
       - delete
       - patch
       - watch
+#  - apiGroups:
+#      - iam.wso2.com
+#    resources:
+#      - userstores
+#      - wso2is
+#    verbs:
+#      - get
+#      - list
+#      - create
+#      - update
+#      - delete
+#      - patch
+#      - watch
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: wso2is-operator-sa
-  namespace: wso2-iam-system
+  namespace: operators
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -217,7 +235,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: wso2is-operator-sa
-    namespace: wso2-iam-system
+    namespace: operators
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -1054,7 +1072,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wso2is-operator
-  namespace: wso2-iam-system
+  namespace: operators
 spec:
   replicas: 1
   selector:
