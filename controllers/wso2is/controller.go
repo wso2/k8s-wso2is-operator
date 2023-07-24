@@ -19,7 +19,6 @@ package wso2is
 import (
 	"context"
 	"github.com/go-logr/logr"
-	"github.com/wso2/k8s-wso2is-operator/pkg/globallog"
 	"k8s.io/apimachinery/pkg/runtime"
 
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -45,10 +44,8 @@ type Wso2IsReconciler struct {
 
 func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := r.Log
-	//logger.Info("\n-----------------------\nTriggered Reconcile Method\n-----------------------\n")
-	globallog.GetLogger().Info("\n-----------------------\nTriggered Reconcile Method\n-----------------------\n")
-	//logger.Info("Triggered resource : ", "NamespacedName", req.NamespacedName)
-	globallog.GetLogger().Info("Triggered resource : ", "NamespacedName", req.NamespacedName)
+	logger.Info("\n-----------------------\nTriggered Reconcile Method\n-----------------------\n")
+	logger.Info("Triggered resource : ", "NamespacedName", req.NamespacedName)
 
 	instance := wso2v1beta1.Wso2Is{}
 	err := r.Get(ctx, req.NamespacedName, &instance)

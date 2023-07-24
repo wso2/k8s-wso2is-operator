@@ -5,43 +5,43 @@ metadata:
   creationTimestamp: null
   name: manager-role
 rules:
-  - apiGroups:
-      - iam.wso2.com
-    resources:
-      - userstores
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - iam.wso2.com
-    resources:
-      - userstores/status
-    verbs:
-      - get
-      - patch
-      - update
-  - apiGroups:
-      - iam.wso2.com
-    resources:
-      - wso2is
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - iam.wso2.com
-    resources:
-      - wso2is/status
-    verbs:
-      - get
-      - patch
-      - update
+- apiGroups:
+  - iam.wso2.com
+  resources:
+  - userstores
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - iam.wso2.com
+  resources:
+  - userstores/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - iam.wso2.com
+  resources:
+  - wso2is
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - iam.wso2.com
+  resources:
+  - wso2is/status
+  verbs:
+  - get
+  - patch
+  - update
