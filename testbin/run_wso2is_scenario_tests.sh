@@ -52,10 +52,14 @@ if [ ! -d "testbin/temp/product-is/product-scenarios" ]; then
   echo -e "\n🔍 Downloading the 'product-scenarios'...\n"
   mkdir -p testbin/temp/product-is
   cd testbin/temp/product-is
-  curl --progress-bar -L -o product-scenarios.zip -# https://github.com/wso2/product-is/archive/master.zip
+
+  wget --progress=bar:force -O product-scenarios.zip https://github.com/wso2/product-is/archive/master.zip
+  echo -e "\n📥 Downloading finished'...\n"
+
   unzip -q product-scenarios.zip
   mv product-is-master/product-scenarios ./
   rm -rf product-is-master product-scenarios.zip
+
   cd ../../../
 fi
 
