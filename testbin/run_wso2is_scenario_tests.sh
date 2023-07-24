@@ -105,6 +105,20 @@ fi
 
 # Generate and install the certificate
 echo -e "\n🔒 Generating and installing the certificate...\n"
+# Check if mkcert is installed
+if ! command -v mkcert &>/dev/null; then
+    echo "🔍 mkcert not found. Installing mkcert..."
+
+    # Check if Homebrew (Linuxbrew) is installed, if not, install it
+    if ! command -v brew &>/dev/null; then
+        echo "🍺 Homebrew not found. Installing Homebrew..."
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+    fi
+
+    # Install mkcert using Homebrew (Linuxbrew)
+    brew install mkcert
+fi
 mkcert $hostname
 kubectl -n kube-system create secret tls mkcert --key ./$hostname-key.pem --cert ./$hostname.pem
 
