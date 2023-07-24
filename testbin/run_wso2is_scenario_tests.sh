@@ -54,7 +54,7 @@ if [ ! -d "testbin/temp/product-is/product-scenarios" ]; then
   cd testbin/temp/product-is
 
   wget --progress=bar:force -O product-scenarios.zip https://github.com/wso2/product-is/archive/master.zip
-  echo -e "\n📥 Downloading finished'...\n"
+  echo -e "\n📥 Downloading finished\n"
 
   unzip -q product-scenarios.zip
   mv product-is-master/product-scenarios ./
