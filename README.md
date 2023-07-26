@@ -117,11 +117,25 @@ Refer https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli f
 kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main/artifacts/k8s-wso2is-operator.yaml
 ```
 
+Applying this will,
+- Create the namespaces required
+- Create the `ClusterRole` required for the operator
+- Create the `ServiceAccount` required for the operator
+- Create the `ClusterRoleBinding` required for connecting the `ServiceAccount` and `ClusterRole`
+- Create the `CustomResourceDefinition` required for the WSO2 IS deployment
+- Create the `CustomResourceDefinition` required for the Userstores
+- Create a `Deployment` using the operator image
+
+
 2. Apply the Wso2Is .yaml
 
 ```
 kubectl apply -k config/samples/04-azure-basic/overlay/dev
 ```
+Applying this will,
+- Create the `Ingress` resource
+- Create the `PersistentVolumeClaim` resource
+- Create the `Wso2Is` custom resource (using the ealier created CRD)
 
 3. Run the scenario tests by following instrutions within `/testbin/` directory
 4. Visit the specified hostname

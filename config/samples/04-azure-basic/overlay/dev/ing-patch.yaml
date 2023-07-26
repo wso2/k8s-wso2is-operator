@@ -10,7 +10,7 @@
 
 - op: replace
   path: /spec/tls/0/secretName
-  value: mkcert
+  value: quickstart-example-tls
 
 - op: replace
   path: /spec/rules/0/http/paths/0/backend/service/name
