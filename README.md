@@ -125,7 +125,6 @@ kubectl apply -k config/samples/04-azure-basic/overlay/dev
 
 3. Run the scenario tests by following instrutions within `/testbin/` directory
 4. Visit the specified hostname
-5. Visit the specified hostname
 
 ## System Architecture
 
