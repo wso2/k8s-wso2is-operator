@@ -8,12 +8,12 @@ import (
 func MakeResourceRequirements() corev1.ResourceRequirements {
 	resourceReqs := corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("4Gi"),
-			corev1.ResourceMemory: resource.MustParse("4096m"),
+			corev1.ResourceCPU:    resource.MustParse("1"),
+			corev1.ResourceMemory: resource.MustParse("4096Mi"),
 		},
 		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("4Gi"),
-			corev1.ResourceMemory: resource.MustParse("4096m"),
+			corev1.ResourceCPU:    resource.MustParse("2"),
+			corev1.ResourceMemory: resource.MustParse("8000Mi"),
 		},
 	}
 

@@ -133,6 +133,11 @@ func (r *Wso2IsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		return ctrl.Result{}, err
 	}
 
+	_, err = reconcileHpa(r, instance, logger, err, ctx)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
 	//updateStatus(r, instance, logger, err, ctx)
 
 	return ctrl.Result{}, nil

@@ -40,11 +40,11 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 				Spec: corev1.PodSpec{
 					Volumes: MakeVolumes(m),
 					Containers: []corev1.Container{{
-						Name:  m.Name,
-						Image: containerImage,
-						Ports: MakeContainerPorts(),
-						Env:   MakeEnvVars(),
-						//Resources:       MakeResourceRequirements(),
+						Name:            m.Name,
+						Image:           containerImage,
+						Ports:           MakeContainerPorts(),
+						Env:             MakeEnvVars(),
+						Resources:       MakeResourceRequirements(),
 						VolumeMounts:    MakeVolumeMounts(m.Spec.Version, m),
 						StartupProbe:    MakeStartupProbe(),
 						LivenessProbe:   MakeLivenessProbe(),
