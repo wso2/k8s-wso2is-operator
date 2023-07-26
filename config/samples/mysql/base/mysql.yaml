@@ -7,7 +7,7 @@ metadata:
     type: local
 spec:
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: manual
+  storageClassName: nfs
   capacity:
     storage: 5Gi
   accessModes:
@@ -21,7 +21,7 @@ metadata:
   name: mysql-pv-claim
   namespace: wso2-iam-system
 spec:
-  storageClassName: manual
+  storageClassName: nfs
   accessModes:
     - ReadWriteOnce
   resources:

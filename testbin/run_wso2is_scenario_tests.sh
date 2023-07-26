@@ -5,6 +5,8 @@ ISHttpsUrl="https://localhost:9443"
 input_dir=""
 output_dir=""
 hostname="localhost"
+namespace="wso2-iam-system"
+certname="mkcert"
 
 # KeyStore
 keystore_name="wso2carbon.jks"
@@ -36,6 +38,21 @@ while [[ $# -gt 0 ]]; do
       ;;
     --output-dir)
       output_dir="$2"
+      shift
+      shift
+      ;;
+    --namespace)
+      namespace="$2"
+      shift
+      shift
+      ;;
+    --cert-name)
+      cert_name="$2"
+      shift
+      shift
+      ;;
+    --ingress-name)
+      ingress_name="$2"
       shift
       shift
       ;;
@@ -92,15 +109,11 @@ else
   exit 1
 fi
 
-# Disable ingress addon
-echo -e "\n🌑 Disabling the 'ingress' addon...\n"
-minikube addons disable ingress
-
 # Check if 'mkcert' secret exists and delete it if it does
 echo -e "\n🔒 Checking for existing 'mkcert' secret...\n"
-if kubectl -n kube-system get secret mkcert &>/dev/null; then
-  echo -e "Deleting existing 'mkcert' secret...\n"
-  kubectl -n kube-system delete secret mkcert
+if kubectl -n $namespace get secret $cert_name &>/dev/null; then
+  echo -e "Deleting existing '$cert_name' secret...\n"
+  kubectl -n $namespace delete secret $cert_name
 fi
 
 # Generate and install the certificate
@@ -120,17 +133,16 @@ if ! command -v mkcert &>/dev/null; then
     brew install mkcert
 fi
 mkcert $hostname
-kubectl -n kube-system create secret tls mkcert --key ./$hostname-key.pem --cert ./$hostname.pem
+kubectl -n $namespace create secret tls $cert_name --key ./$hostname-key.pem --cert ./$hostname.pem
 
 # Configure ingress addon
 echo -e "\n✅ Configuring the 'ingress' addon...\n"
-echo "kube-system/mkcert" | minikube addons configure ingress
-minikube addons enable ingress
+kubectl patch ingress "$ingress_name" -n "$namespace" -p "{\"spec\":{\"tls\":[{\"secretName\":\"$cert_name\"}]}}"
 
 # Install local CA certificates
-echo -e "\n⚡️ Installing local CA certificates...\n"
+echo -e "\n⚡️ Installing local CA certimkcertficates...\n"
 sudo mkdir -p /usr/local/share/ca-certificates
-sudo cp "$(mkcert -CAROOT)"/rootCA.pem /usr/local/share/ca-certificates/mkcert.crt
+sudo cp "$(mkcert -CAROOT)"/rootCA.pem /usr/local/share/ca-certificates/$cert_name.crt
 sudo update-ca-certificates
 
 # Convert the certificate and key to DER format
