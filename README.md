@@ -26,11 +26,11 @@ If you want to easily do the deployment, read along!
 
 1. [A working k8s cluster](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
 2. kubectl CLI
-3.  Databases configured. (optional, these configurations are recommended outside the k8s cluster) Required databases configured, and it should be accessible by all pods
-    1.   Please read the documentation at: [https://is.docs.wso2.com/en/latest/setup/working-with-databases/](https://is.docs.wso2.com/en/latest/setup/working-with-databases/)
-    2.   The following two databases are required for a standard WSO2 IS deployment
-         1.   WSO2_IDENTITY_DB
-         2.   WSO2_SHARED_DB
+3. Databases configured. (optional, these configurations are recommended outside the k8s cluster) Required databases configured, and it should be accessible by all pods
+   1. Please read the documentation at: [https://is.docs.wso2.com/en/latest/setup/working-with-databases/](https://is.docs.wso2.com/en/latest/setup/working-with-databases/)
+   2. The following two databases are required for a standard WSO2 IS deployment
+      1. WSO2_IDENTITY_DB
+      2. WSO2_SHARED_DB
 4. A [persistence volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) has be configured with ReadWriteMany permission
    1. The easiest way is to use the NFS server using the NFS provisioner
    2. For AWS users, you can refer to Elastic File System (EFS) docs and learn about the configurations: [https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html)
@@ -38,10 +38,10 @@ If you want to easily do the deployment, read along!
    4. Google Cloud users may use [GCEPersistentDisk](https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes)
 5. Also you will need to have an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) ready to route requests from your endpoint to service, your ingress can vary from cloud provider to provider.
 
-
 ### Example guide on setting up pre-requisites
 
 The following is one way to setup the pre-requisites mentioned above.
+
 #### 1. Setting up an AKS cluster
 
 https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal?tabs=azure-cli
@@ -51,6 +51,12 @@ https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-portal
 https://learn.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-install-cli
 
 #### 3. External Database Setup
+
+If you want to quickly view the operator functioning, you can deploy a MySQL database within the cluster itself, execute the following.
+
+```
+kubectl apply -k config/samples/mysql/overlay/dev
+```
 
 Please follow the instructions given in the documentation to setup the external MySQL databases
 
@@ -81,7 +87,6 @@ helm install nfs-server-provisioner wso2/nfs-server-provisioner -n wso2-iam-syst
 
 2. Then you can create a PVC using the default `nfs` storageClassName
 
-
 #### 5. Ingress setup
 
 The setting up of an ingress can vary from cloud provider to provider.
@@ -104,7 +109,6 @@ Refer https://learn.microsoft.com/en-us/azure/aks/ingress-basic?tabs=azure-cli f
 
 2. After this you can create your ingress resource within the cluster.
 
-
 ### Steps to deploy the WSO2 IS within the cluster
 
 1. Install the operator
@@ -116,10 +120,12 @@ kubectl apply -f https://raw.githubusercontent.com/wso2/k8s-wso2is-operator/main
 2. Apply the Wso2Is .yaml
 
 ```
-kubectl apply -k config/samples/03-custom-configs/overlay/dev
+kubectl apply -k config/samples/04-azure-basic/overlay/dev
 ```
 
-3. Visit the specified hostname
+3. Run the scenario tests by following instrutions within `/testbin/` directory
+4. Visit the specified hostname
+5. Visit the specified hostname
 
 ## System Architecture
 

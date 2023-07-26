@@ -108,13 +108,13 @@ cd ..
 2. Run the test script with the following command, replacing `<INPUT_DIR>` and `<OUTPUT_DIR>` with the desired file paths on your machine:
 
 ```
-./test.sh --input-dir <INPUT_DIR> --output-dir <OUTPUT_DIR>
+./test.sh --is-https-url <ISHttpsURL> --namespace <NAMESPACE> --cert-name <CERT_NAME> --ingress-name <INGRESS_NAME> --input-dir <INPUT_DIR> --output-dir <OUTPUT_DIR>
 ```
 
 For example:
 
 ```
-./test.sh --input-dir $PWD --output-dir $PWD
+./testbin/run_wso2is_scenario_tests.sh --is-https-url "https://dev.wso2is.com" --namespace "wso2-iam-system" --cert-name "dev-wso2is-cert" --ingress-name "dev-wso2is-ingress"
 ```
 
 Note: The above example assumes that you want to use the current directory as both the input and output directory.
