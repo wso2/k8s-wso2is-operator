@@ -6,7 +6,6 @@ metadata:
 spec:
   replicas: 1
   configurations:
-    host: wso2is.com
     server:
       hostname: wso2is.com
     serviceType: ClusterIP

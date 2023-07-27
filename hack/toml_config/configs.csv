@@ -1,9 +1,9 @@
 toml_key,yaml_key,go_var,go_type,default_val
 ,serviceType,ServiceType,string,"""NodePort"""
-server,server,Server,Server,"{ ""hostname"" : ""wso2is.com"", ""nodeIp"": ""$env{NODE_IP}"",""basePath"":""https://$ref{server.hostname}"" }"
-server.hostname,server.hostname,HostName,string,
-server.node_ip,server.nodeIp,NodeIp,string,
-server.base_path,server.basePath,BasePath,string,
+server,server,Server,Server,
+server.hostname,server.hostname,HostName,string," ""wso2is.com"""
+server.node_ip,server.nodeIp,NodeIp,string,"""$env{NODE_IP}"""
+server.base_path,server.basePath,BasePath,string,"""https://$ref{server.hostname}"" "
 super_admin,superAdmin,SuperAdmin,SuperAdmin,"{ ""username"" : ""admin"", ""password"": ""admin"", ""createAdminAccount"": true }"
 super_admin.username,superAdmin.username,Username,string,
 super_admin.password,superAdmin.password,Password,string,
@@ -19,16 +19,17 @@ user_store.properties,userStore.properties,Properties,UserStoreProperties,
 user_store.properties.CaseInsensitiveUsername,userStore.properties.caseInsensitiveUsername,CaseInsensitiveUsername,bool,
 user_store.base_dn,userStore.baseDn,BaseDn,string,
 user_store.user_name_attribute,userStore.usernameAttribute,UsernameAttribute,string,
-database,database,Database,Database,"{ ""identityDb"":{""password"":""wso2carbon"",""type"":""h2"",""url"":""jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"",""username"":""wso2carbon""},""sharedDb"":{""password"":""wso2carbon"",""type"":""h2"",""url"":""jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"",""username"":""wso2carbon""},""userDb"": {""password"": ""wso2carbon"",""type"": ""h2"",""url"": ""jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"",""username"": ""wso2carbon""} }"
-database.user,database.user,UserDb,UserDb,
-database.user.type,database.user.type,Type,string,
-database.user.url,database.user.url,Url,string,
-database.user.hostname,database.user.hostname,Hostname,string,
-database.user.username,database.user.username,Username,string,
-database.user.password,database.user.password,Password,string,
-database.user.driver,database.user.driver,Driver,string,
-database.user.pool_options,database.user.poolOptions,PoolOptions,UserPoolOptions,
-database.user.pool_options.validationQuery,database.user.poolOptions.validationQuery,ValidationQuery,string,
+database,database,Database,Database,"{   ""userDb"": {     ""type"": ""h2"",     ""url"": ""jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000"",     ""username"": ""wso2carbon"",     ""password"": ""wso2carbon""   },   ""identityDb"": {     ""type"": ""h2"",     ""url"": ""jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000"",     ""username"": ""wso2carbon"",     ""password"": ""wso2carbon""   },   ""sharedDb"": {     ""type"": ""h2"",     ""url"": ""jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000"",     ""username"": ""wso2carbon"",     ""password"": ""wso2carbon""   } } "
+database.user,database.userDb,UserDb,UserDb,
+database.user.type,database.userDb.type,Type,string,
+database.user.url,database.userDb.url,Url,string,
+database.user.hostname,database.userDb.hostname,Hostname,string,
+database.user.username,database.userDb.username,Username,string,
+database.user.password,database.userDb.password,Password,string,
+database.user.driver,database.userDb.driver,Driver,string,
+database.user.pool_options,database.userDb.poolOptions,PoolOptions,UserPoolOptions,
+database.user.pool_options.validationQuery,database.userDb.poolOptions.validationQuery,ValidationQuery,string,
+database.user.pool_options.maxActive,database.userDb.poolOptions.maxActive,MaxActive,string,
 database.identity_db,database.identityDb,IdentityDb,IdentityDb,
 database.identity_db.type,database.identityDb.type,Type,string,
 database.identity_db.url,database.identityDb.url,Url,string,
@@ -54,6 +55,7 @@ database.shared_db.password,database.sharedDb.password,Password,string,
 database.shared_db.driver,database.sharedDb.driver,Driver,string,
 database.shared_db.pool_options,database.sharedDb.poolOptions,PoolOptions,SharedDbPoolOptions,
 database.shared_db.pool_options.validationQuery,database.sharedDb.poolOptions.validationQuery,ValidationQuery,string,"""SELECT 1"""
+database.shared_db.pool_options.maxActive,database.sharedDb.poolOptions.maxActive,MaxActive,string,
 transport,transport,Transport,Transport,"{ ""https"" : { ""properties"" : { ""proxyPort"" : 443 } } }"
 transport.https,transport.https,Https,Https,
 transport.https.properties,transport.https.properties,Properties,HttpsProperties,
@@ -87,9 +89,9 @@ account_recovery.endpoint,accountRecovery.endpoint,Endpoint,AccoutnRecoveryEndpo
 account_recovery.endpoint.auth,accountRecovery.endpoint.auth,Auth,EndpointAuth,
 account_recovery.endpoint.auth.hash,accountRecovery.endpoint.auth.hash,Hash,string,
 monitoring,monitoring,Monitoring,Monitoring,
-monitoring.jmx,monitoring.jmx,Jmx,Jmx,TRUE
-monitoring.jmx.rmi_server_start,monitoring.jmx.rmiServerStart,RmiServerStart,bool,
-hazelcast,hazelcast,Hazelcast,Hazelcast,"{ ""hazelcastShutdownHookEnabled"" : false, ""hazelcastLoggingType"" : ""log4j2""  }"
+monitoring.jmx,monitoring.jmx,Jmx,Jmx,
+monitoring.jmx.rmi_server_start,monitoring.jmx.rmiServerStart,RmiServerStart,bool,true
+hazelcast,hazelcast,Hazelcast,Hazelcast,"{""shutdownhook"": {""enabled"": false},""logging"": {""type"": ""log4j2""}}"
 hazelcast.shutdownhook,hazelcast.shutdownhook,HazelcastShutdownHook,HazelcastShutdownHook,
 hazelcast.shutdownhook.enabled,hazelcast.shutdownhook.enabled,Enabled,bool,
 hazelcast.logging,hazelcast.logging,Logging,Logging,
@@ -103,26 +105,26 @@ authentication.authenticator.basic.parameters,authentication.authenticator.basic
 authentication.authenticator.basic.parameters.showAuthFailureReason,authentication.authenticator.basic.parameters.showAuthFailureReason,ShowAuthFailureReason,bool,
 authentication.authenticator.basic.parameters.showAuthFailureReasonOnLoginPage,authentication.authenticator.basic.parameters.showAuthFailureReasonOnLoginPage,ShowAuthFailureReasonOnLoginPage,bool,
 authentication.authenticator.totp,authentication.authenticator.totp,Totp,Totp,
-authentication.authenticator.totp.parameters,authentication.authenticator.totp.parameters,Parameters,TotpParameters,"{""Issuer"":""WSO2"",""TOTPAuthenticationEndpointEnableTOTPPage"":""/totpauthenticationendpoint/enableTOTP.jsp"",""TOTPAuthenticationEndpointErrorPage"":""/totpauthenticationendpoint/totpError.jsp"",""TOTPAuthenticationEndpointURL"":""/totpauthenticationendpoint/totp.jsp"",""UseCommonIssuer"":true,""authenticationMandatory"":true,""encodingMethod"":""Base32"",""enrolUserInAuthenticationFlow"":true,""secondaryUserstore"":""primary"",""timeStepSize"":""30"",""usecase"":""local"",""windowSize"":""3""}"
+authentication.authenticator.totp.parameters,authentication.authenticator.totp.parameters,Parameters,TotpParameters,"{""Issuer"":""WSO2"",""totpAuthenticationEndpointEnableTotpPage"":""/totpauthenticationendpoint/enableTOTP.jsp"",""totpAuthenticationEndpointErrorPage"":""/totpauthenticationendpoint/totpError.jsp"",""totpAuthenticationEndpointUrl"":""/totpauthenticationendpoint/totp.jsp"",""useCommonIssuer"":true,""authenticationMandatory"":true,""encodingMethod"":""Base32"",""enrolUserInAuthenticationFlow"":true,""secondaryUserstore"":""primary"",""timeStepSize"":""30"",""usecase"":""local"",""windowSize"":""3""}"
 authentication.authenticator.totp.parameters.showAuthFailureReason,authentication.authenticator.totp.parameters.showAuthFailureReason,ShowAuthFailureReason,bool,
 authentication.authenticator.totp.parameters.showAuthFailureReasonOnLoginPage,authentication.authenticator.totp.parameters.showAuthFailureReasonOnLoginPage,ShowAuthFailureReasonOnLoginPage,bool,
 authentication.authenticator.totp.parameters.encodingMethod,authentication.authenticator.totp.parameters.encodingMethod,EncodingMethod,string,
 authentication.authenticator.totp.parameters.timeStepSize,authentication.authenticator.totp.parameters.timeStepSize,TimeStepSize,string,
 authentication.authenticator.totp.parameters.windowSize,authentication.authenticator.totp.parameters.windowSize,WindowSize,string,
-authentication.authenticator.totp.parameters.authenticationMandatory,authentication.authenticator.totp.parameters.authenticationMandatory,AuthenticationMandatory,string,
-authentication.authenticator.totp.parameters.enrolUserInAuthenticationFlow,authentication.authenticator.totp.parameters.enrolUserInAuthenticationFlow,EnrolUserInAuthenticationFlow,string,
+authentication.authenticator.totp.parameters.authenticationMandatory,authentication.authenticator.totp.parameters.authenticationMandatory,AuthenticationMandatory,bool,
+authentication.authenticator.totp.parameters.enrolUserInAuthenticationFlow,authentication.authenticator.totp.parameters.enrolUserInAuthenticationFlow,EnrolUserInAuthenticationFlow,bool,
 authentication.authenticator.totp.parameters.usecase,authentication.authenticator.totp.parameters.usecase,UseCase,string,
 authentication.authenticator.totp.parameters.secondaryUserstore,authentication.authenticator.totp.parameters.secondaryUserstore,SecondaryUserstore,string,
 authentication.authenticator.totp.parameters.TOTPAuthenticationEndpointURL,authentication.authenticator.totp.parameters.totpAuthenticationEndpointUrl,TotpAuthenticationEndpointUrl,string,
 authentication.authenticator.totp.parameters.TOTPAuthenticationEndpointErrorPage,authentication.authenticator.totp.parameters.totpAuthenticationEndpointErrorPage,TotpAuthenticationEndpointErrorPage,string,
 authentication.authenticator.totp.parameters.TOTPAuthenticationEndpointEnableTOTPPage,authentication.authenticator.totp.parameters.totpAuthenticationEndpointEnableTotpPage,TotpAuthenticationEndpointEnableTotpPage,string,
 authentication.authenticator.totp.parameters.Issuer,authentication.authenticator.totp.parameters.Issuer,Issuer,string,
-authentication.authenticator.totp.parameters.UseCommonIssuer,authentication.authenticator.totp.parameters.useCommonIssuer,UserCommonIssuer,string,
-authentication.authenticator.totp.enable,authentication.authenticator.totp.enable,Enable,bool,FALSE
+authentication.authenticator.totp.parameters.UseCommonIssuer,authentication.authenticator.totp.parameters.useCommonIssuer,UseCommonIssuer,bool,
+authentication.authenticator.totp.enable,authentication.authenticator.totp.enable,Enable,bool,false
 authentication.authenticator.email_otp,authentication.authenticator.emailOtp,EmailOtp,EmailOtp,
 authentication.authenticator.email_otp.name,authentication.authenticator.emailOtp.name,Name,string,"""EmailOTP"""
-authentication.authenticator.email_otp.enable,authentication.authenticator.emailOtp.enable,Enable,bool,FALSE
-authentication.authenticator.email_otp.parameters,authentication.authenticator.emailOtp.parameters,Parameters,EmailOtpParameters,"{""CaptureAndUpdateEmailAddress"":true,""EMAILOTPAuthenticationEndpointURL"":""/emailotpauthenticationendpoint/emailotp.jsp"",""EMAILOTPMandatory"":false,""EmailAddressRequestPage"":""/emailotpauthenticationendpoint/emailAddress.jsp"",""EmailOTPAuthenticationEndpointErrorPage"":""/emailotpauthenticationendpoint/emailotpError.jsp"",""EmailOTPEnableByUserClaim"":true,""federatedEmailAttributeKey"":""email"",""secondaryUserstore"":""primary"",""sendOTPToFederatedEmailAttribute"":false,""showEmailAddressInUI"":true,""useEventHandlerBasedEmailSender"":true,""usecase"":""local""}"
+authentication.authenticator.email_otp.enable,authentication.authenticator.emailOtp.enable,Enable,bool,false
+authentication.authenticator.email_otp.parameters,authentication.authenticator.emailOtp.parameters,Parameters,EmailOtpParameters,"{""captureAndUpdateEmailAddress"":true,""emailOtpAuthenticationEndpointUrl"":""/emailotpauthenticationendpoint/emailotp.jsp"",""emailOtpMandatory"":false,""emailAddressRequestPage"":""/emailotpauthenticationendpoint/emailAddress.jsp"",""emailOtpAuthenticationEndpointErrorPage"":""/emailotpauthenticationendpoint/emailotpError.jsp"",""emailOtpEnableByUserClaim"":true,""federatedEmailAttributeKey"":""email"",""secondaryUserstore"":""primary"",""sendOtpToFederatedEmailAttribute"":false,""showEmailAddressInUi"":true,""useEventHandlerBasedEmailSender"":true,""usecase"":""local""}"
 authentication.authenticator.email_otp.parameters.showAuthFailureReason,authentication.authenticator.emailOtp.parameters.showAuthFailureReason,ShowAuthFailureReason,bool,
 authentication.authenticator.email_otp.parameters.showAuthFailureReasonOnLoginPage,authentication.authenticator.emailOtp.parameters.showAuthFailureReasonOnLoginPage,ShowAuthFailureReasonOnLoginPage,bool,
 authentication.authenticator.email_otp.parameters.EMAILOTPAuthenticationEndpointURL,authentication.authenticator.emailOtp.parameters.emailOtpAuthenticationEndpointUrl,EmailOtpAuthenticationEndpointUrl,string,
@@ -136,25 +138,25 @@ authentication.authenticator.email_otp.parameters.federatedEmailAttributeKey,aut
 authentication.authenticator.email_otp.parameters.EmailOTPEnableByUserClaim,authentication.authenticator.emailOtp.parameters.emailOtpEnableByUserClaim,EmailOtpEnableByUserClaim,bool,
 authentication.authenticator.email_otp.parameters.CaptureAndUpdateEmailAddress,authentication.authenticator.emailOtp.parameters.captureAndUpdateEmailAddress,CaptureAndUpdateEmailAddress,bool,
 authentication.authenticator.email_otp.parameters.showEmailAddressInUI,authentication.authenticator.emailOtp.parameters.showEmailAddressInUi,ShowEmailAddressInUi,bool,
-authentication.authenticator.email_otp.parameters.useEventHandlerBasedEmailSender,authentication.authenticator.emailOtp.parameters.useEventHandlerBasedEmailSender,UseEventHandlerBasedEmailSender,string,
+authentication.authenticator.email_otp.parameters.useEventHandlerBasedEmailSender,authentication.authenticator.emailOtp.parameters.useEventHandlerBasedEmailSender,UseEventHandlerBasedEmailSender,bool,
 authentication.authenticator.sms_otp,authentication.authenticator.smsOtp,SmsOtp,SmsOtp,
 authentication.authenticator.sms_otp.name,authentication.authenticator.smsOtp.name,Name,string,"""SmsOTP"""
-authentication.authenticator.sms_otp.parameters,authentication.authenticator.smsOtp.parameters,Parameters,SmsParameters,"{""BackupCode"":true,""CaptureAndUpdateMobileNumber"":true,""MobileNumberRegPage"":""/smsotpauthenticationendpoint/mobile.jsp"",""ResendEnable"":true,""RetryEnable"":true,""SMSOTPAuthenticationEndpointErrorPage"":""/smsotpauthenticationendpoint/smsotpError.jsp"",""SMSOTPAuthenticationEndpointURL"":""/smsotpauthenticationendpoint/smsotp.jsp"",""SMSOTPEnableByUserClaim"":true,""SMSOTPMandatory"":false,""SendOTPDirectlyToMobile"":false,""redirectToMultiOptionPageOnFailure"":false}"
+authentication.authenticator.sms_otp.parameters,authentication.authenticator.smsOtp.parameters,Parameters,SmsParameters,"{""backupCode"":true,""captureAndUpdateMobileNumber"":true,""mobileNumberRegPage"":""/smsotpauthenticationendpoint/mobile.jsp"",""resendEnable"":true,""retryEnable"":true,""smsOtpAuthenticationEndpointErrorPage"":""/smsotpauthenticationendpoint/smsotpError.jsp"",""smsOtpAuthenticationEndpointUrl"":""/smsotpauthenticationendpoint/smsotp.jsp"",""smsOtpEnableByUserClaim"":true,""smsOtpMandatory"":false,""sendOtpDirectlyToMobile"":false,""redirectToMultiOptionPageOnFailure"":false}"
 authentication.authenticator.sms_otp.parameters.SMSOTPAuthenticationEndpointURL,authentication.authenticator.smsOtp.parameters.smsOtpAuthenticationEndpointUrl,SmsOtpAuthenticationEndpointUrl,string,
 authentication.authenticator.sms_otp.parameters.SMSOTPAuthenticationEndpointErrorPage,authentication.authenticator.smsOtp.parameters.smsOtpAuthenticationEndpointErrorPage,SmsOtpAuthenticationEndpointErrorPage,string,
 authentication.authenticator.sms_otp.parameters.MobileNumberRegPage,authentication.authenticator.smsOtp.parameters.mobileNumberRegPage,MobileNumberRegPage,string,
 authentication.authenticator.sms_otp.parameters.RetryEnable,authentication.authenticator.smsOtp.parameters.retryEnable,RetryEnable,bool,
 authentication.authenticator.sms_otp.parameters.ResendEnable,authentication.authenticator.smsOtp.parameters.resendEnable,ResendEnable,bool,
-authentication.authenticator.sms_otp.parameters.BackupCode,authentication.authenticator.smsOtp.parameters.backupCode,BackupCode,string,
+authentication.authenticator.sms_otp.parameters.BackupCode,authentication.authenticator.smsOtp.parameters.backupCode,BackupCode,bool,
 authentication.authenticator.sms_otp.parameters.SMSOTPEnableByUserClaim,authentication.authenticator.smsOtp.parameters.smsOtpEnableByUserClaim,SmsOtpEnabledByUserClaim,bool,
 authentication.authenticator.sms_otp.parameters.SMSOTPMandatory,authentication.authenticator.smsOtp.parameters.smsOtpMandatory,SmsOtpMandatory,bool,
 authentication.authenticator.sms_otp.parameters.CaptureAndUpdateMobileNumber,authentication.authenticator.smsOtp.parameters.captureAndUpdateMobileNumber,CaptureAndUpdateMobileNumber,bool,
 authentication.authenticator.sms_otp.parameters.SendOTPDirectlyToMobile,authentication.authenticator.smsOtp.parameters.sendOtpDirectlyToMobile,SendOtpDirectlyToMobile,bool,
 authentication.authenticator.sms_otp.parameters.redirectToMultiOptionPageOnFailure,authentication.authenticator.smsOtp.parameters.redirectToMultiOptionPageOnFailure,RedirectToMultiOptionPageOnFailure,bool,
-authentication.authenticator.sms_otp.enable,authentication.authenticator.smsOtp.enable,Enable,string,FALSE
+authentication.authenticator.sms_otp.enable,authentication.authenticator.smsOtp.enable,Enable,bool,false
 authentication.authenticator.magiclink,authentication.authenticator.magiclink,MagicLink,MagicLink,
 authentication.authenticator.magiclink.name,authentication.authenticator.magiclink.name,Name,string,
-authentication.authenticator.magiclink.enable,authentication.authenticator.magiclink.enable,Enable,bool,FALSE
+authentication.authenticator.magiclink.enable,authentication.authenticator.magiclink.enable,Enable,bool,false
 authentication.authenticator.magiclink.parameters,authentication.authenticator.magiclink.parameters,Parameters,MagicLinkParameters,
 authentication.authenticator.magiclink.parameters.ExpiryTime,authentication.authenticator.magiclink.parameters.expiryTime,ExpiryTime,string,
 authentication.authenticator.magiclink.parameters.Tags,authentication.authenticator.magiclink.parameters.tags,Tags,string,
@@ -173,7 +175,7 @@ authentication.custom_authenticator,authentication.customAuthenticator,CustomAut
 authentication.jit_provisioning,authentication.jitProvisioning,JitProvisioning,JitProvisioning,
 authentication.jit_provisioning.enable_enhanced_feature,authentication.jitProvisioning.enableEnhancedFeature,EnableEnhancedFeature,bool,
 recaptcha,recaptcha,Recaptcha,Recaptcha,
-recaptcha.enabled,recaptcha.enabled,Enabled,bool,FALSE
+recaptcha.enabled,recaptcha.enabled,Enabled,bool,false
 recaptcha.api_url,recaptcha.apiUrl,ApiUrl,string,"""https://www.google.com/recaptcha/api.js"""
 recaptcha.verify_url,recaptcha.verifyUrl,VerifyUrl,string,"""https://www.google.com/recaptcha/api/siteverify"""
 recaptcha.request_wrap_urls,recaptcha.requestWrapUrls,RequestWrapUrls,string,
@@ -197,7 +199,7 @@ clustering.properties.KUBERNETES_SERVICES,clustering.properties.kubernetesServic
 clustering.properties.KUBERNETES_MASTER_SKIP_SSL_VERIFICATION,clustering.properties.kubernetesMasterSkipSslVerification,KubernetesMasterSkipSslVerification,bool,
 clustering.properties.USE_DNS,clustering.properties.useDns,UseDns,bool,
 tenant_mgt,tenantMgt,TenantMgt,TenantMgt,
-tenant_mgt.enable_email_domain,tenantMgt.enableEmailDomain,EnableEmailDomain,bool,FALSE
+tenant_mgt.enable_email_domain,tenantMgt.enableEmailDomain,EnableEmailDomain,bool,false
 tenant_context,tenantContext,TenantContext,TenantContext,"{ ""enableTenantQualifiedUrls"":true }"
 tenant_context.enable_tenant_qualified_urls,tenantContext.enableTenantQualifiedUrls,EnableTenantQualifiedUrls,bool,
 tenant_context.enable_tenanted_sessions,tenantContext.enableTenantedSessions,EnableTenantedSessions,bool,
@@ -205,7 +207,7 @@ tenant_context.rewrite,tenantContext.rewrite,Rewrite,Rewrite,
 tenant_context.rewrite.custom_webapps,tenantContext.rewrite.customWebapps,CustomWebapps,bool,
 admin_service,adminService,AdminService,AdminService,
 admin_service.wsdl,adminService.wsdl,Wsdl,Wsdl,
-admin_service.wsdl.enable,adminService.wsdl.enable,Enable,bool,FALSE
+admin_service.wsdl.enable,adminService.wsdl.enable,Enable,bool,false
 system_roles,systemRoles,SystemRoles,SystemRoles,
 system_roles.enable,systemRoles.enable,Enable,bool,
 system_roles.read_only_roles,systemRoles.readOnlyRoles,ReadOnlyRoles,bool,

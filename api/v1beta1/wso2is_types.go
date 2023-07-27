@@ -26,6 +26,10 @@ import (
 // Wso2IsSpec defines the desired state of Wso2Is
 type Wso2IsSpec struct {
 	Size int32 `json:"replicas"`
+
+	Resources Resources `json:"resources"`
+	Hpa       Hpa       `json:"hpa,omitempty"`
+
 	// +kubebuilder:default:="6.1.0"
 	Version        string              `json:"version,omitempty"`
 	Configurations Configurations      `json:"configurations"`
@@ -33,6 +37,27 @@ type Wso2IsSpec struct {
 	TomlConfigFile string              `json:"tomlConfigFile,omitempty"`
 	KeystoreMounts []KeystoreMount     `json:"keystoreMounts,omitempty"`
 	Template       TemplateAnnotations `json:"template,omitempty"`
+}
+
+type Resources struct {
+	Limits   ResourceLimits   `json:"limits"`
+	Requests ResourceRequests `json:"requests"`
+}
+
+type ResourceLimits struct {
+	Cpu    string `json:"cpu"`
+	Memory string `json:"memory"`
+}
+
+type ResourceRequests struct {
+	Cpu    string `json:"cpu"`
+	Memory string `json:"memory"`
+}
+
+type Hpa struct {
+	MinReplicas              int32 `json:"minReplicas"`
+	MaxReplicas              int32 `json:"maxReplicas"`
+	CpuUtilizationPercentage int32 `json:"cpuUtilizationPercentage"`
 }
 
 type TemplateAnnotations struct {

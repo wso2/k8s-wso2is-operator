@@ -7,10 +7,6 @@
   value: 1
 
 - op: replace
-  path: /spec/configurations/host
-  value: dev.wso2is.com
-
-- op: replace
   path: /spec/configurations/server/hostname
   value: dev.wso2is.com
 

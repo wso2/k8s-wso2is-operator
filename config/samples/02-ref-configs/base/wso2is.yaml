@@ -13,6 +13,5 @@ spec:
       configmapHash: ''
   replicas: 1
   configurations:
-    host: identityserver
     serviceType: ClusterIP
   tomlConfigFile: ''

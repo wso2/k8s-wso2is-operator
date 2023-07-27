@@ -3,6 +3,5 @@ kind: Kustomization
 
 resources:
   - ing.yaml
-  - sc.yaml
   - pvc.yaml
   - wso2is.yaml

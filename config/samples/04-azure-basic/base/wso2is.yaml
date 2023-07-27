@@ -5,8 +5,18 @@ metadata:
   namespace: wso2-iam-system
 spec:
   replicas: 1
+  resources:
+    requests:
+      cpu: "1"
+      memory: "4096Mi"
+    limits:
+      cpu: "2"
+      memory: "8000Mi"
+  hpa:
+    minReplicas: 1
+    maxReplicas: 2
+    cpuUtilizationPercentage: 50
   configurations:
-    host: wso2is.com
     server:
       hostname: wso2is.com
     serviceType: ClusterIP
@@ -42,7 +52,7 @@ spec:
         kubernetesServices: 'wso2is-service'
         kubernetesMasterSkipSslVerification: true
         useDns: false
-    keyStore:
+    keystore:
       primary:
         name: wso2carbon.jks
         password: wso2carbon

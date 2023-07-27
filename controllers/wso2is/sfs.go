@@ -44,7 +44,7 @@ func (r *Wso2IsReconciler) defineStatefulSet(m wso2v1beta1.Wso2Is) *appsv1.State
 						Image:           containerImage,
 						Ports:           MakeContainerPorts(),
 						Env:             MakeEnvVars(),
-						Resources:       MakeResourceRequirements(),
+						Resources:       MakeResourceRequirements(m),
 						VolumeMounts:    MakeVolumeMounts(m.Spec.Version, m),
 						StartupProbe:    MakeStartupProbe(),
 						LivenessProbe:   MakeLivenessProbe(),

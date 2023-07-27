@@ -11,6 +11,5 @@ spec:
       configmapHash: ''
   replicas: 1
   configurations:
-    host: wso2is.com
     serviceType: ClusterIP
   tomlConfig: <replaced-by-kustomize>

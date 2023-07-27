@@ -4,7 +4,6 @@ type Configurations struct {
 	// +kubebuilder:default:="NodePort"
 	ServiceType string `json:"serviceType,omitempty"`
 
-	// +kubebuilder:default:={ "hostname" : "wso2is.com", "nodeIp": "$env{NODE_IP}","basePath":"https://$ref{server.hostname}" }
 	Server Server `json:"server,omitempty" toml:"server,omitempty"`
 
 	// +kubebuilder:default:={ "username" : "admin", "password": "admin", "createAdminAccount": true }
@@ -13,7 +12,7 @@ type Configurations struct {
 	// +kubebuilder:default:={ "type" : "database_unique_id"}
 	UserStore UserStore `json:"userStore,omitempty" toml:"user_store,omitempty"`
 
-	// +kubebuilder:default:={ "identityDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"},"sharedDb":{"password":"wso2carbon","type":"h2","url":"jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username":"wso2carbon"},"userDb": {"password": "wso2carbon","type": "h2","url": "jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000","username": "wso2carbon"} }
+	// +kubebuilder:default:={   "userDb": {     "type": "h2",     "url": "jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000",     "username": "wso2carbon",     "password": "wso2carbon"   },   "identityDb": {     "type": "h2",     "url": "jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000",     "username": "wso2carbon",     "password": "wso2carbon"   },   "sharedDb": {     "type": "h2",     "url": "jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000",     "username": "wso2carbon",     "password": "wso2carbon"   } }
 	Database Database `json:"database,omitempty" toml:"database,omitempty"`
 
 	// +kubebuilder:default:={ "https" : { "properties" : { "proxyPort" : 443 } } }
@@ -30,7 +29,7 @@ type Configurations struct {
 
 	Monitoring Monitoring `json:"monitoring,omitempty" toml:"monitoring,omitempty"`
 
-	// +kubebuilder:default:={ "hazelcastShutdownHookEnabled" : false, "hazelcastLoggingType" : "log4j2"  }
+	// +kubebuilder:default:={"shutdownhook": {"enabled": false},"logging": {"type": "log4j2"}}
 	Hazelcast Hazelcast `json:"hazelcast,omitempty" toml:"hazelcast,omitempty"`
 
 	Authentication Authentication `json:"authentication,omitempty" toml:"authentication,omitempty"`
@@ -59,10 +58,13 @@ type Configurations struct {
 }
 
 type Server struct {
+	// +kubebuilder:default:= "wso2is.com"
 	HostName string `json:"hostname,omitempty" toml:"hostname,omitempty"`
 
+	// +kubebuilder:default:="$env{NODE_IP}"
 	NodeIp string `json:"nodeIp,omitempty" toml:"node_ip,omitempty"`
 
+	// +kubebuilder:default:="https://$ref{server.hostname}"
 	BasePath string `json:"basePath,omitempty" toml:"base_path,omitempty"`
 }
 
@@ -95,7 +97,7 @@ type UserStore struct {
 }
 
 type Database struct {
-	UserDb UserDb `json:"user,omitempty" toml:"user,omitempty"`
+	UserDb UserDb `json:"userDb,omitempty" toml:"user,omitempty"`
 
 	IdentityDb IdentityDb `json:"identityDb,omitempty" toml:"identity_db,omitempty"`
 
@@ -131,7 +133,6 @@ type AccountRecovery struct {
 }
 
 type Monitoring struct {
-	// +kubebuilder:default:=TRUE
 	Jmx Jmx `json:"jmx,omitempty" toml:"jmx,omitempty"`
 }
 
@@ -156,7 +157,7 @@ type Authentication struct {
 }
 
 type Recaptcha struct {
-	// +kubebuilder:default:=FALSE
+	// +kubebuilder:default:=false
 	Enabled bool `json:"enabled,omitempty" toml:"enabled,omitempty"`
 
 	// +kubebuilder:default:="https://www.google.com/recaptcha/api.js"
@@ -183,7 +184,7 @@ type Clustering struct {
 }
 
 type TenantMgt struct {
-	// +kubebuilder:default:=FALSE
+	// +kubebuilder:default:=false
 	EnableEmailDomain bool `json:"enableEmailDomain,omitempty" toml:"enable_email_domain,omitempty"`
 }
 
@@ -316,6 +317,7 @@ type AccoutnRecoveryEndpoint struct {
 }
 
 type Jmx struct {
+	// +kubebuilder:default:=true
 	RmiServerStart bool `json:"rmiServerStart,omitempty" toml:"rmi_server_start,omitempty"`
 }
 
@@ -394,7 +396,7 @@ type Rewrite struct {
 }
 
 type Wsdl struct {
-	// +kubebuilder:default:=FALSE
+	// +kubebuilder:default:=false
 	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 }
 
@@ -408,6 +410,8 @@ type Valves struct {
 
 type UserPoolOptions struct {
 	ValidationQuery string `json:"validationQuery,omitempty" toml:"validationQuery,omitempty"`
+
+	MaxActive string `json:"maxActive,omitempty" toml:"maxActive,omitempty"`
 }
 
 type IdentityDbPoolOptions struct {
@@ -431,6 +435,8 @@ type IdentityDbPoolOptions struct {
 type SharedDbPoolOptions struct {
 	// +kubebuilder:default:="SELECT 1"
 	ValidationQuery string `json:"validationQuery,omitempty" toml:"validationQuery,omitempty"`
+
+	MaxActive string `json:"maxActive,omitempty" toml:"maxActive,omitempty"`
 }
 
 type HttpsProperties struct {
@@ -450,10 +456,10 @@ type Basic struct {
 }
 
 type Totp struct {
-	// +kubebuilder:default:={"Issuer":"WSO2","TOTPAuthenticationEndpointEnableTOTPPage":"/totpauthenticationendpoint/enableTOTP.jsp","TOTPAuthenticationEndpointErrorPage":"/totpauthenticationendpoint/totpError.jsp","TOTPAuthenticationEndpointURL":"/totpauthenticationendpoint/totp.jsp","UseCommonIssuer":true,"authenticationMandatory":true,"encodingMethod":"Base32","enrolUserInAuthenticationFlow":true,"secondaryUserstore":"primary","timeStepSize":"30","usecase":"local","windowSize":"3"}
+	// +kubebuilder:default:={"Issuer":"WSO2","totpAuthenticationEndpointEnableTotpPage":"/totpauthenticationendpoint/enableTOTP.jsp","totpAuthenticationEndpointErrorPage":"/totpauthenticationendpoint/totpError.jsp","totpAuthenticationEndpointUrl":"/totpauthenticationendpoint/totp.jsp","useCommonIssuer":true,"authenticationMandatory":true,"encodingMethod":"Base32","enrolUserInAuthenticationFlow":true,"secondaryUserstore":"primary","timeStepSize":"30","usecase":"local","windowSize":"3"}
 	Parameters TotpParameters `json:"parameters,omitempty" toml:"parameters,omitempty"`
 
-	// +kubebuilder:default:=FALSE
+	// +kubebuilder:default:=false
 	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 }
 
@@ -461,10 +467,10 @@ type EmailOtp struct {
 	// +kubebuilder:default:="EmailOTP"
 	Name string `json:"name,omitempty" toml:"name,omitempty"`
 
-	// +kubebuilder:default:=FALSE
+	// +kubebuilder:default:=false
 	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 
-	// +kubebuilder:default:={"CaptureAndUpdateEmailAddress":true,"EMAILOTPAuthenticationEndpointURL":"/emailotpauthenticationendpoint/emailotp.jsp","EMAILOTPMandatory":false,"EmailAddressRequestPage":"/emailotpauthenticationendpoint/emailAddress.jsp","EmailOTPAuthenticationEndpointErrorPage":"/emailotpauthenticationendpoint/emailotpError.jsp","EmailOTPEnableByUserClaim":true,"federatedEmailAttributeKey":"email","secondaryUserstore":"primary","sendOTPToFederatedEmailAttribute":false,"showEmailAddressInUI":true,"useEventHandlerBasedEmailSender":true,"usecase":"local"}
+	// +kubebuilder:default:={"captureAndUpdateEmailAddress":true,"emailOtpAuthenticationEndpointUrl":"/emailotpauthenticationendpoint/emailotp.jsp","emailOtpMandatory":false,"emailAddressRequestPage":"/emailotpauthenticationendpoint/emailAddress.jsp","emailOtpAuthenticationEndpointErrorPage":"/emailotpauthenticationendpoint/emailotpError.jsp","emailOtpEnableByUserClaim":true,"federatedEmailAttributeKey":"email","secondaryUserstore":"primary","sendOtpToFederatedEmailAttribute":false,"showEmailAddressInUi":true,"useEventHandlerBasedEmailSender":true,"usecase":"local"}
 	Parameters EmailOtpParameters `json:"parameters,omitempty" toml:"parameters,omitempty"`
 }
 
@@ -472,17 +478,17 @@ type SmsOtp struct {
 	// +kubebuilder:default:="SmsOTP"
 	Name string `json:"name,omitempty" toml:"name,omitempty"`
 
-	// +kubebuilder:default:={"BackupCode":true,"CaptureAndUpdateMobileNumber":true,"MobileNumberRegPage":"/smsotpauthenticationendpoint/mobile.jsp","ResendEnable":true,"RetryEnable":true,"SMSOTPAuthenticationEndpointErrorPage":"/smsotpauthenticationendpoint/smsotpError.jsp","SMSOTPAuthenticationEndpointURL":"/smsotpauthenticationendpoint/smsotp.jsp","SMSOTPEnableByUserClaim":true,"SMSOTPMandatory":false,"SendOTPDirectlyToMobile":false,"redirectToMultiOptionPageOnFailure":false}
+	// +kubebuilder:default:={"backupCode":true,"captureAndUpdateMobileNumber":true,"mobileNumberRegPage":"/smsotpauthenticationendpoint/mobile.jsp","resendEnable":true,"retryEnable":true,"smsOtpAuthenticationEndpointErrorPage":"/smsotpauthenticationendpoint/smsotpError.jsp","smsOtpAuthenticationEndpointUrl":"/smsotpauthenticationendpoint/smsotp.jsp","smsOtpEnableByUserClaim":true,"smsOtpMandatory":false,"sendOtpDirectlyToMobile":false,"redirectToMultiOptionPageOnFailure":false}
 	Parameters SmsParameters `json:"parameters,omitempty" toml:"parameters,omitempty"`
 
-	// +kubebuilder:default:=FALSE
-	Enable string `json:"enable,omitempty" toml:"enable,omitempty"`
+	// +kubebuilder:default:=false
+	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 }
 
 type MagicLink struct {
 	Name string `json:"name,omitempty" toml:"name,omitempty"`
 
-	// +kubebuilder:default:=FALSE
+	// +kubebuilder:default:=false
 	Enable bool `json:"enable,omitempty" toml:"enable,omitempty"`
 
 	Parameters MagicLinkParameters `json:"parameters,omitempty" toml:"parameters,omitempty"`
@@ -521,9 +527,9 @@ type TotpParameters struct {
 
 	WindowSize string `json:"windowSize,omitempty" toml:"windowSize,omitempty"`
 
-	AuthenticationMandatory string `json:"authenticationMandatory,omitempty" toml:"authenticationMandatory,omitempty"`
+	AuthenticationMandatory bool `json:"authenticationMandatory,omitempty" toml:"authenticationMandatory,omitempty"`
 
-	EnrolUserInAuthenticationFlow string `json:"enrolUserInAuthenticationFlow,omitempty" toml:"enrolUserInAuthenticationFlow,omitempty"`
+	EnrolUserInAuthenticationFlow bool `json:"enrolUserInAuthenticationFlow,omitempty" toml:"enrolUserInAuthenticationFlow,omitempty"`
 
 	UseCase string `json:"usecase,omitempty" toml:"usecase,omitempty"`
 
@@ -537,7 +543,7 @@ type TotpParameters struct {
 
 	Issuer string `json:"Issuer,omitempty" toml:"Issuer,omitempty"`
 
-	UserCommonIssuer string `json:"useCommonIssuer,omitempty" toml:"UseCommonIssuer,omitempty"`
+	UseCommonIssuer bool `json:"useCommonIssuer,omitempty" toml:"UseCommonIssuer,omitempty"`
 }
 
 type EmailOtpParameters struct {
@@ -567,7 +573,7 @@ type EmailOtpParameters struct {
 
 	ShowEmailAddressInUi bool `json:"showEmailAddressInUi,omitempty" toml:"showEmailAddressInUI,omitempty"`
 
-	UseEventHandlerBasedEmailSender string `json:"useEventHandlerBasedEmailSender,omitempty" toml:"useEventHandlerBasedEmailSender,omitempty"`
+	UseEventHandlerBasedEmailSender bool `json:"useEventHandlerBasedEmailSender,omitempty" toml:"useEventHandlerBasedEmailSender,omitempty"`
 }
 
 type SmsParameters struct {
@@ -581,7 +587,7 @@ type SmsParameters struct {
 
 	ResendEnable bool `json:"resendEnable,omitempty" toml:"ResendEnable,omitempty"`
 
-	BackupCode string `json:"backupCode,omitempty" toml:"BackupCode,omitempty"`
+	BackupCode bool `json:"backupCode,omitempty" toml:"BackupCode,omitempty"`
 
 	SmsOtpEnabledByUserClaim bool `json:"smsOtpEnableByUserClaim,omitempty" toml:"SMSOTPEnableByUserClaim,omitempty"`
 

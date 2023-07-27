@@ -14,9 +14,9 @@ import (
 )
 
 func (r *Wso2IsReconciler) defineHpa(m wso2v1beta1.Wso2Is) *autoscalingv2.HorizontalPodAutoscaler {
-	minReplicas := int32(1)
-	maxReplicas := int32(3)
-	targetCpuUtilizationPercentage := int32(50)
+	minReplicas := m.Spec.Hpa.MinReplicas
+	maxReplicas := m.Spec.Hpa.MaxReplicas
+	targetCpuUtilizationPercentage := m.Spec.Hpa.CpuUtilizationPercentage
 
 	hpa := &autoscalingv2.HorizontalPodAutoscaler{
 		ObjectMeta: metav1.ObjectMeta{

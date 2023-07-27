@@ -69,7 +69,7 @@ spec:
                       wsdl:
                         properties:
                           enable:
-                            default: "FALSE"
+                            default: false
                             type: boolean
                         type: object
                     type: object
@@ -101,23 +101,23 @@ spec:
                           emailOtp:
                             properties:
                               enable:
-                                default: "FALSE"
+                                default: false
                                 type: boolean
                               name:
                                 default: EmailOTP
                                 type: string
                               parameters:
                                 default:
-                                  CaptureAndUpdateEmailAddress: true
-                                  EMAILOTPAuthenticationEndpointURL: /emailotpauthenticationendpoint/emailotp.jsp
-                                  EMAILOTPMandatory: false
-                                  EmailAddressRequestPage: /emailotpauthenticationendpoint/emailAddress.jsp
-                                  EmailOTPAuthenticationEndpointErrorPage: /emailotpauthenticationendpoint/emailotpError.jsp
-                                  EmailOTPEnableByUserClaim: true
+                                  captureAndUpdateEmailAddress: true
+                                  emailAddressRequestPage: /emailotpauthenticationendpoint/emailAddress.jsp
+                                  emailOtpAuthenticationEndpointErrorPage: /emailotpauthenticationendpoint/emailotpError.jsp
+                                  emailOtpAuthenticationEndpointUrl: /emailotpauthenticationendpoint/emailotp.jsp
+                                  emailOtpEnableByUserClaim: true
+                                  emailOtpMandatory: false
                                   federatedEmailAttributeKey: email
                                   secondaryUserstore: primary
-                                  sendOTPToFederatedEmailAttribute: false
-                                  showEmailAddressInUI: true
+                                  sendOtpToFederatedEmailAttribute: false
+                                  showEmailAddressInUi: true
                                   useEventHandlerBasedEmailSender: true
                                   usecase: local
                                 properties:
@@ -146,7 +146,7 @@ spec:
                                   showEmailAddressInUi:
                                     type: boolean
                                   useEventHandlerBasedEmailSender:
-                                    type: string
+                                    type: boolean
                                   usecase:
                                     type: string
                                 type: object
@@ -162,7 +162,7 @@ spec:
                           magiclink:
                             properties:
                               enable:
-                                default: "FALSE"
+                                default: false
                                 type: boolean
                               name:
                                 type: string
@@ -179,27 +179,27 @@ spec:
                           smsOtp:
                             properties:
                               enable:
-                                default: "FALSE"
-                                type: string
+                                default: false
+                                type: boolean
                               name:
                                 default: SmsOTP
                                 type: string
                               parameters:
                                 default:
-                                  BackupCode: true
-                                  CaptureAndUpdateMobileNumber: true
-                                  MobileNumberRegPage: /smsotpauthenticationendpoint/mobile.jsp
-                                  ResendEnable: true
-                                  RetryEnable: true
-                                  SMSOTPAuthenticationEndpointErrorPage: /smsotpauthenticationendpoint/smsotpError.jsp
-                                  SMSOTPAuthenticationEndpointURL: /smsotpauthenticationendpoint/smsotp.jsp
-                                  SMSOTPEnableByUserClaim: true
-                                  SMSOTPMandatory: false
-                                  SendOTPDirectlyToMobile: false
+                                  backupCode: true
+                                  captureAndUpdateMobileNumber: true
+                                  mobileNumberRegPage: /smsotpauthenticationendpoint/mobile.jsp
                                   redirectToMultiOptionPageOnFailure: false
+                                  resendEnable: true
+                                  retryEnable: true
+                                  sendOtpDirectlyToMobile: false
+                                  smsOtpAuthenticationEndpointErrorPage: /smsotpauthenticationendpoint/smsotpError.jsp
+                                  smsOtpAuthenticationEndpointUrl: /smsotpauthenticationendpoint/smsotp.jsp
+                                  smsOtpEnableByUserClaim: true
+                                  smsOtpMandatory: false
                                 properties:
                                   backupCode:
-                                    type: string
+                                    type: boolean
                                   captureAndUpdateMobileNumber:
                                     type: boolean
                                   mobileNumberRegPage:
@@ -225,31 +225,31 @@ spec:
                           totp:
                             properties:
                               enable:
-                                default: "FALSE"
+                                default: false
                                 type: boolean
                               parameters:
                                 default:
                                   Issuer: WSO2
-                                  TOTPAuthenticationEndpointEnableTOTPPage: /totpauthenticationendpoint/enableTOTP.jsp
-                                  TOTPAuthenticationEndpointErrorPage: /totpauthenticationendpoint/totpError.jsp
-                                  TOTPAuthenticationEndpointURL: /totpauthenticationendpoint/totp.jsp
-                                  UseCommonIssuer: true
                                   authenticationMandatory: true
                                   encodingMethod: Base32
                                   enrolUserInAuthenticationFlow: true
                                   secondaryUserstore: primary
                                   timeStepSize: "30"
+                                  totpAuthenticationEndpointEnableTotpPage: /totpauthenticationendpoint/enableTOTP.jsp
+                                  totpAuthenticationEndpointErrorPage: /totpauthenticationendpoint/totpError.jsp
+                                  totpAuthenticationEndpointUrl: /totpauthenticationendpoint/totp.jsp
+                                  useCommonIssuer: true
                                   usecase: local
                                   windowSize: "3"
                                 properties:
                                   Issuer:
                                     type: string
                                   authenticationMandatory:
-                                    type: string
+                                    type: boolean
                                   encodingMethod:
                                     type: string
                                   enrolUserInAuthenticationFlow:
-                                    type: string
+                                    type: boolean
                                   secondaryUserstore:
                                     type: string
                                   showAuthFailureReason:
@@ -265,7 +265,7 @@ spec:
                                   totpAuthenticationEndpointUrl:
                                     type: string
                                   useCommonIssuer:
-                                    type: string
+                                    type: boolean
                                   usecase:
                                     type: string
                                   windowSize:
@@ -357,17 +357,17 @@ spec:
                       identityDb:
                         password: wso2carbon
                         type: h2
-                        url: jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                        url: jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000
                         username: wso2carbon
                       sharedDb:
                         password: wso2carbon
                         type: h2
-                        url: jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                        url: jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000
                         username: wso2carbon
                       userDb:
                         password: wso2carbon
                         type: h2
-                        url: jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                        url: jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=false;LOCK_TIMEOUT=60000
                         username: wso2carbon
                     properties:
                       identityDb:
@@ -414,6 +414,8 @@ spec:
                             type: string
                           poolOptions:
                             properties:
+                              maxActive:
+                                type: string
                               validationQuery:
                                 default: SELECT 1
                                 type: string
@@ -425,7 +427,7 @@ spec:
                           username:
                             type: string
                         type: object
-                      user:
+                      userDb:
                         properties:
                           driver:
                             type: string
@@ -435,6 +437,8 @@ spec:
                             type: string
                           poolOptions:
                             properties:
+                              maxActive:
+                                type: string
                               validationQuery:
                                 type: string
                             type: object
@@ -448,8 +452,10 @@ spec:
                     type: object
                   hazelcast:
                     default:
-                      hazelcastLoggingType: log4j2
-                      hazelcastShutdownHookEnabled: false
+                      logging:
+                        type: log4j2
+                      shutdownhook:
+                        enabled: false
                     properties:
                       logging:
                         properties:
@@ -516,9 +522,9 @@ spec:
                   monitoring:
                     properties:
                       jmx:
-                        default: "TRUE"
                         properties:
                           rmiServerStart:
+                            default: true
                             type: boolean
                         type: object
                     type: object
@@ -548,7 +554,7 @@ spec:
                         default: https://www.google.com/recaptcha/api.js
                         type: string
                       enabled:
-                        default: "FALSE"
+                        default: false
                         type: boolean
                       requestWrapUrls:
                         type: string
@@ -561,16 +567,15 @@ spec:
                         type: string
                     type: object
                   server:
-                    default:
-                      basePath: https://$ref{server.hostname}
-                      hostname: wso2is.com
-                      nodeIp: $env{NODE_IP}
                     properties:
                       basePath:
+                        default: https://$ref{server.hostname}
                         type: string
                       hostname:
+                        default: wso2is.com
                         type: string
                       nodeIp:
+                        default: $env{NODE_IP}
                         type: string
                     type: object
                   serviceType:
@@ -622,7 +627,7 @@ spec:
                   tenantMgt:
                     properties:
                       enableEmailDomain:
-                        default: "FALSE"
+                        default: false
                         type: boolean
                     type: object
                   transport:
@@ -675,6 +680,22 @@ spec:
                         type: string
                     type: object
                 type: object
+              hpa:
+                properties:
+                  cpuUtilizationPercentage:
+                    format: int32
+                    type: integer
+                  maxReplicas:
+                    format: int32
+                    type: integer
+                  minReplicas:
+                    format: int32
+                    type: integer
+                required:
+                - cpuUtilizationPercentage
+                - maxReplicas
+                - minReplicas
+                type: object
               keystoreMounts:
                 items:
                   properties:
@@ -690,6 +711,32 @@ spec:
               replicas:
                 format: int32
                 type: integer
+              resources:
+                properties:
+                  limits:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    required:
+                    - cpu
+                    - memory
+                    type: object
+                  requests:
+                    properties:
+                      cpu:
+                        type: string
+                      memory:
+                        type: string
+                    required:
+                    - cpu
+                    - memory
+                    type: object
+                required:
+                - limits
+                - requests
+                type: object
               template:
                 properties:
                   annotations:
@@ -707,6 +754,7 @@ spec:
             required:
             - configurations
             - replicas
+            - resources
             type: object
           status:
             description: Wso2IsStatus defines the observed state of Wso2Is
