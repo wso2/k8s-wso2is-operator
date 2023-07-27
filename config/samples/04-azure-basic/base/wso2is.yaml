@@ -1,0 +1,58 @@
+apiVersion: iam.wso2.com/v1beta1
+kind: Wso2Is
+metadata:
+  name: wso2is
+  namespace: wso2-iam-system
+spec:
+  replicas: 1
+  resources:
+    requests:
+      cpu: "1"
+      memory: "4096Mi"
+    limits:
+      cpu: "2"
+      memory: "8000Mi"
+  hpa:
+    minReplicas: 1
+    maxReplicas: 2
+    cpuUtilizationPercentage: 50
+  configurations:
+    server:
+      hostname: wso2is.com
+    serviceType: ClusterIP
+    superAdmin:
+      username: admin
+      password: admin
+      createAdminAccount: true
+    userStore:
+      type: database_unique_id
+    database:
+      userDb:
+        driver: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql:3306/UM_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+        username: wso2carbon
+        password: wso2carbon
+        poolOptions:
+          maxActive: '300'
+      identityDb:
+        driver: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql:3306/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+        username: wso2carbon
+        password: wso2carbon
+      sharedDb:
+        driver: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql:3306/WSO2IS_SHARED_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+        username: wso2carbon
+        password: wso2carbon
+    clustering:
+      membershipScheme: 'kubernetes'
+      properties:
+        membershipSchemeClassName: 'org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme'
+        kubernetesNamespace: 'wso2-iam-system'
+        kubernetesServices: 'wso2is-service'
+        kubernetesMasterSkipSslVerification: true
+        useDns: false
+    keystore:
+      primary:
+        name: wso2carbon.jks
+        password: wso2carbon

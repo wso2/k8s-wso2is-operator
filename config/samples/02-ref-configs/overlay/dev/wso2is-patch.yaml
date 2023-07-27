@@ -1,0 +1,15 @@
+- op: replace
+  path: /metadata/name
+  value: dev-wso2is
+
+- op: replace
+  path: /spec/replicas
+  value: 1
+
+- op: replace
+  path: /spec/tomlConfigFile
+  value: theis-external-dev-config
+
+- op: add
+  path: /metadata/labels/instance
+  value: dev-wso2is

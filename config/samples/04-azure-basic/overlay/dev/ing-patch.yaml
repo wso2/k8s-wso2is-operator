@@ -1,0 +1,21 @@
+- op: replace
+  path: /spec/rules/0/host
+  value: dev.wso2is.com
+
+- op: add
+  path: /spec/tls
+  value:
+    - hosts:
+        - dev.wso2is.com
+
+- op: replace
+  path: /spec/tls/0/secretName
+  value: quickstart-example-tls
+
+- op: replace
+  path: /spec/rules/0/http/paths/0/backend/service/name
+  value: dev-wso2is-service
+
+- op: replace
+  path: /metadata/name
+  value: dev-wso2is-ingress

@@ -1,0 +1,15 @@
+apiVersion: iam.wso2.com/v1beta1
+kind: Wso2Is
+metadata:
+  name: wso2is
+  namespace: wso2-iam-system
+  labels:
+    app: wso2is
+spec:
+  template:
+    annotations:
+      configmapHash: ''
+  replicas: 1
+  configurations:
+    serviceType: ClusterIP
+  tomlConfig: <replaced-by-kustomize>

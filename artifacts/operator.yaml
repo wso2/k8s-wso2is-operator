@@ -27,7 +27,7 @@ metadata:
   name: controller
 rules:
   - apiGroups:
-      - ""
+      - ''
     resources:
       - pods
       - namespaces
@@ -205,13 +205,11 @@ subjects:
     name: controller
     namespace: wso2-iam-system
 ---
-
----
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.3.0
+    controller-gen.kubebuilder.io/version: v0.6.2
   creationTimestamp: null
   name: userstores.iam.wso2.com
 spec:
@@ -229,36 +227,29 @@ spec:
           description: Userstore is the Schema for the userstores API
           properties:
             apiVersion:
-              description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+              description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
               type: string
-            auth:
-              properties:
-                host:
-                  type: string
-                password:
-                  type: string
-                username:
-                  type: string
-              required:
-                - host
-                - password
-                - username
-              type: object
             kind:
-              description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+              description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
               type: string
             metadata:
               type: object
             spec:
-              description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN! NOTE:
-              json tags are required.  Any new fields you add must have json tags
-              for the fields to be serialized. UserstoreSpec defines the desired state
-              of Userstore'
+              description: 'EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN! NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized. UserstoreSpec defines the desired state of Userstore'
               properties:
+                auth:
+                  properties:
+                    host:
+                      type: string
+                    password:
+                      type: string
+                    username:
+                      type: string
+                  required:
+                    - host
+                    - password
+                    - username
+                  type: object
                 description:
                   type: string
                 insecureSkipVerify:
@@ -279,10 +270,10 @@ spec:
                     type: object
                   type: array
                 typeId:
-                  description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-                  Important: Run "make" to regenerate code after modifying this file'
+                  description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster Important: Run "make" to regenerate code after modifying this file'
                   type: string
               required:
+                - auth
                 - description
                 - name
                 - properties
@@ -291,25 +282,25 @@ spec:
             status:
               description: UserstoreStatus defines the observed state of Userstore
               type: object
-          required:
-            - auth
           type: object
       served: true
       storage: true
       subresources:
-        status: { }
+        status: {}
 status:
   acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: [ ]
-  storedVersions: [ ]
+    kind: ''
+    plural: ''
+  conditions: []
+  storedVersions: []
+---
+
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.3.0
+    controller-gen.kubebuilder.io/version: v0.6.2
   creationTimestamp: null
   name: wso2is.iam.wso2.com
 spec:
@@ -344,13 +335,13 @@ spec:
           properties:
             apiVersion:
               description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+                of an object. Servers should convert recognized schemas to the latest
+                internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
               type: string
             kind:
               description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                object represents. Servers may infer this from the endpoint the client
+                submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
               type: string
             metadata:
               type: object
@@ -513,9 +504,9 @@ spec:
                                     encodingMethod: Base32
                                     enrolUserInAuthenticationFlow: true
                                     secondaryUserstore: primary
-                                    timeStepSize: "30"
+                                    timeStepSize: '30'
                                     usecase: local
-                                    windowSize: "3"
+                                    windowSize: '3'
                                   description: ' TOTP parameters'
                                   properties:
                                     Issuer:
@@ -546,49 +537,50 @@ spec:
                                       default: primary
                                       type: string
                                     timeStepSize:
-                                      default: "30"
+                                      default: '30'
                                       type: string
                                     usecase:
                                       default: local
                                       type: string
                                     windowSize:
-                                      default: "3"
+                                      default: '3'
                                       type: string
                                   type: object
                               type: object
                           type: object
                       type: object
                     clustering:
+                      default:
+                        membershipScheme: kubernetes
+                        properties:
+                          kubernetesMasterSkipSslVerification: true
+                          kubernetesNamespace: wso2-iam-system
+                          kubernetesServices: wso2is-service
+                          membershipSchemeClassName: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
+                          useDns: false
                       description: ' Clustering configurations'
                       properties:
-                        domain:
-                          default: wso2.is.domain
-                          type: string
-                        membership_scheme:
+                        membershipScheme:
                           default: kubernetes
                           type: string
                         properties:
                           description: ' Clustering Properties'
                           properties:
-                            KUBERNETES_API_SERVER:
-                              type: string
-                            KUBERNETES_MASTER_SKIP_SSL_VERIFICATION:
+                            kubernetesMasterSkipSslVerification:
                               default: true
                               type: boolean
-                            KUBERNETES_NAMESPACE:
-                              default: default
+                            kubernetesNamespace:
+                              default: wso2-iam-system
                               type: string
-                            KUBERNETES_SERVICES:
+                            kubernetesServices:
                               default: wso2is-service
                               type: string
-                            USE_DNS:
-                              default: false
-                              type: boolean
                             membershipSchemeClassName:
                               default: org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme
                               type: string
-                          required:
-                            - KUBERNETES_API_SERVER
+                            useDns:
+                              default: false
+                              type: boolean
                           type: object
                       required:
                         - properties
@@ -598,12 +590,17 @@ spec:
                         identityDb:
                           password: wso2carbon
                           type: h2
-                          url: jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          url: jdbc:h2:./repository/database/WSO2IS_IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
                           username: wso2carbon
                         sharedDb:
                           password: wso2carbon
                           type: h2
-                          url: jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          url: jdbc:h2:./repository/database/WSO2IS_SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
+                          username: wso2carbon
+                        userDb:
+                          password: wso2carbon
+                          type: h2
+                          url: jdbc:h2:./repository/database/UM_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000
                           username: wso2carbon
                       description: ' Database connections and configs'
                       properties:
@@ -616,11 +613,25 @@ spec:
                               type: string
                             password:
                               type: string
-                            pool_options:
+                            poolOptions:
                               default:
                                 validationQuery: SELECT 1
                               description: ' MySQL pool options'
                               properties:
+                                commitOnReturn:
+                                  type: boolean
+                                defaultAutoCommit:
+                                  type: boolean
+                                maxActive:
+                                  type: string
+                                maxWait:
+                                  type: string
+                                minIdle:
+                                  type: string
+                                testOnBorrow:
+                                  type: boolean
+                                validationInterval:
+                                  type: string
                                 validationQuery:
                                   default: SELECT 1
                                   type: string
@@ -644,11 +655,67 @@ spec:
                               type: string
                             password:
                               type: string
-                            pool_options:
+                            poolOptions:
                               default:
                                 validationQuery: SELECT 1
                               description: ' MySQL pool options'
                               properties:
+                                commitOnReturn:
+                                  type: boolean
+                                defaultAutoCommit:
+                                  type: boolean
+                                maxActive:
+                                  type: string
+                                maxWait:
+                                  type: string
+                                minIdle:
+                                  type: string
+                                testOnBorrow:
+                                  type: boolean
+                                validationInterval:
+                                  type: string
+                                validationQuery:
+                                  default: SELECT 1
+                                  type: string
+                              type: object
+                            type:
+                              type: string
+                            url:
+                              type: string
+                            username:
+                              type: string
+                          required:
+                            - password
+                            - username
+                          type: object
+                        userDb:
+                          description: ' User database'
+                          properties:
+                            driver:
+                              type: string
+                            hostname:
+                              type: string
+                            password:
+                              type: string
+                            poolOptions:
+                              default:
+                                validationQuery: SELECT 1
+                              description: ' MySQL pool options'
+                              properties:
+                                commitOnReturn:
+                                  type: boolean
+                                defaultAutoCommit:
+                                  type: boolean
+                                maxActive:
+                                  type: string
+                                maxWait:
+                                  type: string
+                                minIdle:
+                                  type: string
+                                testOnBorrow:
+                                  type: boolean
+                                validationInterval:
+                                  type: string
                                 validationQuery:
                                   default: SELECT 1
                                   type: string
@@ -666,29 +733,49 @@ spec:
                       required:
                         - identityDb
                         - sharedDb
+                        - userDb
                       type: object
                     hazelcast:
                       default:
-                        hazelcastLoggingType: log4j
-                        hazelcastShutdownhookEnabled: false
+                        hazelcastLoggingType: log4j2
+                        hazelcastShutdownHookEnabled: false
                       description: ' Hazelcast clustering configs'
                       properties:
                         hazelcastLoggingType:
                           default: log4j
                           type: string
-                        hazelcastShutdownhookEnabled:
+                        hazelcastShutdownHookEnabled:
                           default: false
                           type: boolean
                       type: object
                     host:
                       type: string
-                    keystore:
+                    keyStore:
                       default:
                         primary:
                           name: wso2carbon.jks
                           password: wso2carbon
                       description: ' Keystore configurations'
                       properties:
+                        internal:
+                          properties:
+                            alias:
+                              type: string
+                            fileName:
+                              type: string
+                            keyPassword:
+                              type: string
+                            password:
+                              type: string
+                            type:
+                              type: string
+                          required:
+                            - alias
+                            - fileName
+                            - keyPassword
+                            - password
+                            - type
+                          type: object
                         primary:
                           description: ' Primary Keystore configurations'
                           properties:
@@ -700,19 +787,33 @@ spec:
                             - name
                             - password
                           type: object
-                      required:
-                        - primary
+                        tls:
+                          properties:
+                            alias:
+                              type: string
+                            fileName:
+                              type: string
+                            keyPassword:
+                              type: string
+                            password:
+                              type: string
+                            type:
+                              type: string
+                          required:
+                            - alias
+                            - fileName
+                            - keyPassword
+                            - password
+                            - type
+                          type: object
                       type: object
                     monitoring:
-                      default:
-                        jmx:
-                          rmi_server_start: true
                       description: ' Monitoring configurations'
                       properties:
                         jmx:
                           description: ' Jmx monitoring configurations'
                           properties:
-                            rmi_server_start:
+                            rmiServerStart:
                               default: true
                               type: boolean
                           type: object
@@ -735,7 +836,7 @@ spec:
                             password:
                               type: string
                             port:
-                              default: "587"
+                              default: '587'
                               type: string
                             username:
                               type: string
@@ -760,12 +861,15 @@ spec:
                       type: object
                     server:
                       default:
+                        basePath: https://$ref{server.hostname}
                         hostname: $env{HOST_NAME}
                         nodeIp: $env{NODE_IP}
-                      description: ' Primary server configs'
                       properties:
+                        basePath:
+                          default: https://$ref{server.hostname}
+                          type: string
                         hostname:
-                          default: $env{HOST_NAME}
+                          default: wso2is.com
                           type: string
                         nodeIp:
                           default: $env{NODE_IP}
@@ -790,6 +894,13 @@ spec:
                         username:
                           default: admin
                           type: string
+                      type: object
+                    tenant_context:
+                      default:
+                        enableTenantQualifiedUrls: true
+                      properties:
+                        enableTenantQualifiedUrls:
+                          type: boolean
                       type: object
                     tenant_mgt:
                       properties:
@@ -821,26 +932,35 @@ spec:
                       required:
                         - https
                       type: object
-                    userStore:
-                      default:
-                        base_dn: dc=wso2,dc=org
-                        connection_name: uid=admin,ou=system
-                        connection_password: admin
-                        connection_url: ldap://localhost:${Ports.EmbeddedLDAP.LDAPServerPort}
-                        type: read_write_ldap_unique_id
-                      description: ' UserStore configs'
+                    trustStore:
                       properties:
-                        base_dn:
+                        fileName:
                           type: string
-                        connection_name:
-                          type: string
-                        connection_password:
-                          type: string
-                        connection_url:
+                        password:
                           type: string
                         type:
                           type: string
-                        user_name_attribute:
+                      required:
+                        - fileName
+                        - password
+                        - type
+                      type: object
+                    userStore:
+                      default:
+                        type: database_unique_id
+                      description: ' UserStore configs'
+                      properties:
+                        baseDn:
+                          type: string
+                        connectionName:
+                          type: string
+                        connectionPassword:
+                          type: string
+                        connectionUrl:
+                          type: string
+                        type:
+                          type: string
+                        userNameAttribute:
                           type: string
                       required:
                         - type
@@ -863,10 +983,19 @@ spec:
                 replicas:
                   format: int32
                   type: integer
+                template:
+                  properties:
+                    annotations:
+                      additionalProperties:
+                        type: string
+                      type: object
+                  type: object
                 tomlConfig:
                   type: string
+                tomlConfigFile:
+                  type: string
                 version:
-                  default: 5.11.0
+                  default: 6.1.0
                   type: string
               required:
                 - configurations
@@ -879,8 +1008,8 @@ spec:
                   type: string
                 nodes:
                   description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
+                    of cluster Important: Run "make" to regenerate code after modifying
+                    this file'
                   items:
                     type: string
                   type: array
@@ -898,32 +1027,13 @@ spec:
       served: true
       storage: true
       subresources:
-        status: { }
+        status: {}
 status:
   acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: [ ]
-  storedVersions: [ ]
+    kind: ''
+    plural: ''
+  conditions: []
+  storedVersions: []
+
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: controller
-  namespace: wso2-iam-system
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: controller
-  template:
-    metadata:
-      annotations:
-        sidecar.istio.io/inject: "false"
-      labels:
-        app: controller
-    spec:
-      containers:
-        - name: controller
-          image: sureshmichael/wso2-iam-operator:latest
-      serviceAccountName: controller
+

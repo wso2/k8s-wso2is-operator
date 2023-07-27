@@ -1,0 +1,51 @@
+- op: replace
+  path: /metadata/name
+  value: dev-wso2is
+
+- op: replace
+  path: /spec/replicas
+  value: 1
+  
+- op: replace
+  path: /spec/configurations/server/hostname
+  value: dev.wso2is.com
+
+- op: replace
+  path: /spec/configurations/database/userDb/url
+  value: jdbc:mysql://dev-mysql:3307/UM_USER?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+
+- op: replace
+  path: /spec/configurations/database/userDb/username
+  value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/database/userDb/password
+  value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/database/identityDb/url
+  value: jdbc:mysql://dev-mysql:3307/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+
+- op: replace
+  path: /spec/configurations/database/identityDb/username
+  value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/database/identityDb/password
+  value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/database/sharedDb/url
+  value: jdbc:mysql://dev-mysql:3307/WSO2IS_SHARED_DB?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+
+- op: replace
+  path: /spec/configurations/database/sharedDb/username
+  value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/database/sharedDb/password
+  value: wso2carbon
+
+- op: replace
+  path: /spec/configurations/clustering/properties/kubernetesServices
+  value: dev-wso2is-service

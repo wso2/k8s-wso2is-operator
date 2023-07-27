@@ -1,0 +1,7 @@
+- op: replace
+  path: /metadata/name
+  value: dev-mysql-pv
+
+- op: replace
+  path: /spec/hostPath/path
+  value: /mnt/data/data-dev

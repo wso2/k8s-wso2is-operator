@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: wso2-iam-system
+  name: wso2is-ingress
+  annotations:
+    cert-manager.io/issuer: 'letsencrypt-prod'
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - wso2is.com
+  rules:
+    - host: wso2is.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: wso2is-service
+                port:
+                  number: 9443
+            path: /
+            pathType: Prefix

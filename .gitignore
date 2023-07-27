@@ -45,3 +45,6 @@ bin
 *.swp
 *.swo
 *~
+
+# scenario test files
+testbin/temp
