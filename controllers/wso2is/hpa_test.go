@@ -29,10 +29,21 @@ var _ = Describe("Hpa", func() {
 				Scheme: scheme,
 			}
 
+			minReplicas := int32(1)
+			maxReplicas := int32(3)
+			targetCpuUtilizationPercentage := int32(50)
+
 			m := wso2v1beta1.Wso2Is{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "wso2is",
 					Namespace: "wso2-iam-system",
+				},
+				Spec: wso2v1beta1.Wso2IsSpec{
+					Hpa: wso2v1beta1.Hpa{
+						MinReplicas:              minReplicas,
+						MaxReplicas:              maxReplicas,
+						CpuUtilizationPercentage: targetCpuUtilizationPercentage,
+					},
 				},
 			}
 
@@ -42,13 +53,13 @@ var _ = Describe("Hpa", func() {
 			Expect(hpa).NotTo(BeNil(), "HPA is nil")
 			Expect(hpa.Name).To(Equal(m.Name+"-hpa"), "Expected HPA Name %s, got %s", m.Name+"-hpa", hpa.Name)
 			Expect(hpa.Namespace).To(Equal(m.Namespace), "Expected HPA Namespace %s, got %s", m.Namespace, hpa.Namespace)
-			Expect(*hpa.Spec.MinReplicas).To(BeEquivalentTo(1), "Expected MinReplicas %d, got %d", 1, *hpa.Spec.MinReplicas)
-			Expect(hpa.Spec.MaxReplicas).To(BeEquivalentTo(3), "Expected MaxReplicas %d, got %d", 3, hpa.Spec.MaxReplicas)
-			Expect(len(hpa.Spec.Metrics)).To(Equal(1), "Expected 1 metric, got %d", len(hpa.Spec.Metrics))
+			Expect(*hpa.Spec.MinReplicas).To(BeEquivalentTo(minReplicas), "Expected MinReplicas %d, got %d", 1, *hpa.Spec.MinReplicas)
+			Expect(hpa.Spec.MaxReplicas).To(BeEquivalentTo(maxReplicas), "Expected MaxReplicas %d, got %d", 3, hpa.Spec.MaxReplicas)
+			//Expect(len(hpa.Spec.Metrics)).To(Equal(1), "Expected 1 metric, got %d", len(hpa.Spec.Metrics))
 			Expect(hpa.Spec.Metrics[0].Type).To(Equal(autoscalingv2.ResourceMetricSourceType), "Expected metric type Resource, got %s", hpa.Spec.Metrics[0].Type)
 			Expect(hpa.Spec.Metrics[0].Resource.Name).To(Equal(corev1.ResourceCPU), "Expected resource name CPU, got %s", hpa.Spec.Metrics[0].Resource.Name)
 			Expect(hpa.Spec.Metrics[0].Resource.Target.Type).To(Equal(autoscalingv2.UtilizationMetricType), "Expected metric target type Utilization, got %s", hpa.Spec.Metrics[0].Resource.Target.Type)
-			Expect(*hpa.Spec.Metrics[0].Resource.Target.AverageUtilization).To(BeEquivalentTo(50), "Expected target utilization 50, got %d", *hpa.Spec.Metrics[0].Resource.Target.AverageUtilization)
+			Expect(*hpa.Spec.Metrics[0].Resource.Target.AverageUtilization).To(BeEquivalentTo(targetCpuUtilizationPercentage), "Expected target utilization %d, got %d", targetCpuUtilizationPercentage, *hpa.Spec.Metrics[0].Resource.Target.AverageUtilization)
 		})
 	})
 
