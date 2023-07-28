@@ -16,20 +16,37 @@ import (
 )
 
 var _ = Describe("StatefulSet", func() {
+	cpuRequests := "1"
+	memoryRequests := "4096Mi"
+	cpuLimits := "2"
+	memoryLimits := "8000Mi"
+	expectedReplicas := int32(3)
+
+	instance := wso2v1beta1.Wso2Is{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "wso2is",
+			Namespace: "wso2-iam-system",
+		},
+		Spec: wso2v1beta1.Wso2IsSpec{
+			Version:        "v1.0",
+			Size:           expectedReplicas,
+			TomlConfigFile: "",
+			Resources: wso2v1beta1.Resources{
+				Requests: wso2v1beta1.ResourceRequests{
+					Cpu:    cpuRequests,
+					Memory: memoryRequests,
+				},
+				Limits: wso2v1beta1.ResourceLimits{
+					Cpu:    cpuLimits,
+					Memory: memoryLimits,
+				},
+			},
+		},
+	}
+
 	It("should define the correct StatefulSet", func() {
 		r := &Wso2IsReconciler{
 			Scheme: runtime.NewScheme(),
-		}
-
-		instance := wso2v1beta1.Wso2Is{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "wso2is",
-				Namespace: "wso2-iam-system",
-			},
-			Spec: wso2v1beta1.Wso2IsSpec{
-				Size:    3,
-				Version: "v1.0",
-			},
 		}
 
 		statefulSet := r.defineStatefulSet(instance)
@@ -39,7 +56,6 @@ var _ = Describe("StatefulSet", func() {
 		Expect(statefulSet.ObjectMeta.Namespace).To(Equal("wso2-iam-system"), "Expected StatefulSet Namespace wso2-iam-system, got %s", statefulSet.ObjectMeta.Namespace)
 
 		// Verify Spec properties
-		expectedReplicas := int32(3)
 		Expect(*statefulSet.Spec.Replicas).To(Equal(expectedReplicas), "Expected StatefulSet Replicas %d, got %d", expectedReplicas, *statefulSet.Spec.Replicas)
 		expectedServiceName := "wso2is-service"
 		Expect(statefulSet.Spec.ServiceName).To(Equal(expectedServiceName), "Expected StatefulSet ServiceName %s, got %s", expectedServiceName, statefulSet.Spec.ServiceName)
@@ -76,6 +92,7 @@ var _ = Describe("StatefulSet", func() {
 	})
 
 	Context("StatefulSet reconciliation", func() {
+
 		scheme := runtime.NewScheme()
 		_ = corev1.AddToScheme(scheme)
 		_ = appsv1.AddToScheme(scheme)
@@ -89,16 +106,6 @@ var _ = Describe("StatefulSet", func() {
 			Client: client,
 			Log:    logger,
 			Scheme: scheme,
-		}
-
-		instance := wso2v1beta1.Wso2Is{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "wso2is",
-				Namespace: "wso2-iam-system",
-			},
-			Spec: wso2v1beta1.Wso2IsSpec{
-				TomlConfigFile: "",
-			},
 		}
 
 		ctx := context.TODO()

@@ -12,26 +12,43 @@ import (
 
 var _ = Describe("ResourceRequirements", func() {
 	It("should create the correct resource requirements", func() {
+		// Define your variables for CPU, memory, etc.
+		cpuRequests := "1"
+		memoryRequests := "4096Mi"
+		cpuLimits := "2"
+		memoryLimits := "8000Mi"
+
 		instance := wso2v1beta1.Wso2Is{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "wso2is",
 				Namespace: "wso2-iam-system",
 			},
-			Spec: wso2v1beta1.Wso2IsSpec{},
+			Spec: wso2v1beta1.Wso2IsSpec{
+				Resources: wso2v1beta1.Resources{
+					Requests: wso2v1beta1.ResourceRequests{
+						Cpu:    cpuRequests,
+						Memory: memoryRequests,
+					},
+					Limits: wso2v1beta1.ResourceLimits{
+						Cpu:    cpuLimits,
+						Memory: memoryLimits,
+					},
+				},
+			},
 		}
 		resourceReqs := MakeResourceRequirements(instance)
 
 		// Verify Requests
 		expectedRequests := corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("1"),
-			corev1.ResourceMemory: resource.MustParse("4096Mi"),
+			corev1.ResourceCPU:    resource.MustParse(cpuRequests),
+			corev1.ResourceMemory: resource.MustParse(memoryRequests),
 		}
 		Expect(resourceReqs.Requests).To(Equal(expectedRequests))
 
 		// Verify Limits
 		expectedLimits := corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("2"),
-			corev1.ResourceMemory: resource.MustParse("8000Mi"),
+			corev1.ResourceCPU:    resource.MustParse(cpuLimits),
+			corev1.ResourceMemory: resource.MustParse(memoryLimits),
 		}
 		Expect(resourceReqs.Limits).To(Equal(expectedLimits))
 	})
